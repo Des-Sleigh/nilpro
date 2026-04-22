@@ -672,7 +672,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.45rem 0.85rem;
+  padding: 0.45rem 0.95rem;
   background: var(--green-dim);
   border: 1px solid var(--green);
   color: var(--green);
@@ -684,6 +684,7 @@
   margin-bottom: 2rem;
   transform: skew(-8deg);
   border-radius: var(--r-pill);
+  max-width: 100%;
 }
 
 .hero__badge > span {
@@ -691,6 +692,23 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+/* Mobile: drop the skew so the pill wraps cleanly inside the container */
+@media (max-width: 640px) {
+  .hero__badge {
+    transform: none;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    padding: 0.5rem 0.9rem;
+    white-space: normal;
+    line-height: 1.35;
+    text-align: left;
+  }
+  .hero__badge > span {
+    transform: none;
+    flex-wrap: wrap;
+  }
 }
 
 .hero__badge .dot {
@@ -1319,7 +1337,14 @@
 }
 
 @media (max-width: 960px) {
-  .control__grid { grid-template-columns: 1fr; }
+  .control__grid {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 3rem;
+  }
+  /* Kill the perspective transform on mobile so the app-mock reads flat
+     below the numbered points, with clear separation. */
+  .app-mock { transform: none; }
 }
 
 .control__points {
