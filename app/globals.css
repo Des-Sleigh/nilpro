@@ -622,6 +622,67 @@
 }
 
 /* ============================================================
+   AUTH FORMS (signin, signup steps)
+   ============================================================ */
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin-top: 2rem;
+}
+
+.auth-form__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.auth-form__label > span {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--green);
+  font-weight: 700;
+}
+
+.auth-form__input,
+.auth-form__select,
+.auth-form__textarea {
+  background: var(--bg-soft);
+  border: 2px solid #000;
+  box-shadow: 0 0 0 1px var(--border-strong), 0 2px 0 #000;
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--r-sm);
+  width: 100%;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.auth-form__input::placeholder {
+  color: var(--text-faint);
+}
+
+.auth-form__input:focus,
+.auth-form__select:focus,
+.auth-form__textarea:focus {
+  outline: none;
+  border-color: #000;
+  box-shadow:
+    0 0 0 1px var(--green),
+    0 2px 0 #000,
+    0 0 16px var(--green-glow);
+}
+
+.auth-form__input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================================
    HOME — HERO
    ============================================================ */
 
