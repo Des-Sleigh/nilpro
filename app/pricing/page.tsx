@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { PlaceholderHero } from "@/components/PlaceholderHero";
+import { PricingHero } from "@/components/pages/pricing/PricingHero";
+import { PricingTiers } from "@/components/pages/pricing/PricingTiers";
+import { PricingFinalCta } from "@/components/pages/pricing/PricingFinalCta";
 
 export const metadata: Metadata = {
   title: "Pricing — NILPro",
@@ -7,11 +9,10 @@ export const metadata: Metadata = {
 
 export default function Pricing() {
   return (
-    <PlaceholderHero
-      eyebrow="PRICING"
-      title="$19 a year."
-      accent="Zero commission."
-      body="Three tiers. Flat annual pricing. No cut of any deal you sign. Pick the tier that fits how hard you want to go."
-    />
+    <main>
+      <PricingHero />
+      <PricingTiers />
+      <PricingFinalCta />
+    </main>
   );
 }

@@ -3,7 +3,7 @@ import { AudienceMarquee } from "@/components/home/AudienceMarquee";
 import { FourPlays } from "@/components/home/FourPlays";
 import { DealTypes } from "@/components/home/DealTypes";
 import { YourCall } from "@/components/home/YourCall";
-import { EligibilityPlaceholder } from "@/components/home/EligibilityPlaceholder";
+import { NilMap } from "@/components/home/NilMap";
 import { PlayByPlay } from "@/components/home/PlayByPlay";
 import { Quote } from "@/components/home/Quote";
 import { PricingTeaser } from "@/components/home/PricingTeaser";
@@ -18,7 +18,7 @@ export default function Home() {
       <FourPlays />
       <DealTypes />
       <YourCall />
-      <EligibilityPlaceholder />
+      <NilMap />
       <PlayByPlay />
       <Quote />
       <PricingTeaser />

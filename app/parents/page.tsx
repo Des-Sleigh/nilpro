@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { PlaceholderHero } from "@/components/PlaceholderHero";
+import { ParentsHero } from "@/components/pages/parents/ParentsHero";
+import { Worries } from "@/components/pages/parents/Worries";
+import { FoundersQuote } from "@/components/pages/parents/FoundersQuote";
 
 export const metadata: Metadata = {
   title: "Parents — NILPro",
@@ -7,11 +9,10 @@ export const metadata: Metadata = {
 
 export default function Parents() {
   return (
-    <PlaceholderHero
-      eyebrow="FOR PARENTS"
-      title="What every parent"
-      accent="needs to know."
-      body="For parents of student-athletes. Legal, compliance, contracts, minors, school rules, and where the money goes."
-    />
+    <main>
+      <ParentsHero />
+      <Worries />
+      <FoundersQuote />
+    </main>
   );
 }

@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { PlaceholderHero } from "@/components/PlaceholderHero";
+import { ReferralsHero } from "@/components/pages/referrals/ReferralsHero";
+import { ReferralLadder } from "@/components/pages/referrals/ReferralLadder";
+import { ReferralMechanics } from "@/components/pages/referrals/ReferralMechanics";
+import { ReferralsFinalCta } from "@/components/pages/referrals/ReferralsFinalCta";
 
 export const metadata: Metadata = {
   title: "Referrals — NILPro",
@@ -7,11 +10,11 @@ export const metadata: Metadata = {
 
 export default function Referrals() {
   return (
-    <PlaceholderHero
-      eyebrow="REFER AND EARN"
-      title="Bring a teammate."
-      accent="Stack rewards."
-      body="One referral = a free month. Three = Pro upgrade. Five = a full year of Pro. Ten = a full year of Champion."
-    />
+    <main>
+      <ReferralsHero />
+      <ReferralLadder />
+      <ReferralMechanics />
+      <ReferralsFinalCta />
+    </main>
   );
 }

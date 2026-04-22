@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { PlaceholderHero } from "@/components/PlaceholderHero";
+import { CoachesHero } from "@/components/pages/coaches/CoachesHero";
+import { CoachesContent } from "@/components/pages/coaches/CoachesContent";
 
 export const metadata: Metadata = {
   title: "Coaches — NILPro",
@@ -7,11 +8,9 @@ export const metadata: Metadata = {
 
 export default function Coaches() {
   return (
-    <PlaceholderHero
-      eyebrow="FOR COACHES"
-      title="Help your athletes"
-      accent="land real deals."
-      body="Why coaches use NILPro, the compliance guardrails, team rates, and how we stay out of your way."
-    />
+    <main>
+      <CoachesHero />
+      <CoachesContent />
+    </main>
   );
 }
