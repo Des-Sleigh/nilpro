@@ -3,6 +3,7 @@ import { Bebas_Neue, Barlow, Barlow_Condensed, JetBrains_Mono } from "next/font/
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { TickerBar } from "@/components/TickerBar";
+import { RevealOnScroll } from "@/components/RevealOnScroll";
 import "./globals.css";
 
 const bebas = Bebas_Neue({
@@ -50,6 +51,7 @@ export default function RootLayout({
       className={`${bebas.variable} ${barlow.variable} ${barlowCond.variable} ${jetbrains.variable}`}
     >
       <body className="antialiased">
+        <RevealOnScroll />
         <TickerBar />
         <Nav />
         {children}

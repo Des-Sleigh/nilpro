@@ -1917,6 +1917,19 @@
    HOME — FAQ TEASER
    ============================================================ */
 
+.faq-head {
+  font-family: var(--display);
+  font-size: 1.3rem;
+  letter-spacing: 0.02em;
+  color: var(--green);
+  margin: 3rem 0 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--green);
+  text-transform: uppercase;
+}
+
+.faq-head:first-child { margin-top: 0; }
+
 .faq-item {
   border-top: 1px solid var(--border);
   padding: 0;

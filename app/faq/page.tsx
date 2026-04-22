@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { PlaceholderHero } from "@/components/PlaceholderHero";
+import { FaqHero } from "@/components/pages/faq/FaqHero";
+import { FaqList } from "@/components/pages/faq/FaqList";
 
 export const metadata: Metadata = {
   title: "FAQ — NILPro",
@@ -7,11 +8,9 @@ export const metadata: Metadata = {
 
 export default function FAQ() {
   return (
-    <PlaceholderHero
-      eyebrow="COMMON QUESTIONS"
-      title="Everything you"
-      accent="might be wondering."
-      body="Signup, verification, fees, deals, taxes, compliance, minors, school rules — the full list."
-    />
+    <>
+      <FaqHero />
+      <FaqList />
+    </>
   );
 }
