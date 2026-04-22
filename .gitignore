@@ -37,3 +37,10 @@ next-env.d.ts
 
 # claude code personal config
 .claude/settings.local.json
+
+# secrets / credentials files that should never be committed
+*.rtf
+*.key
+*.pem.txt
+secrets/
+credentials/
