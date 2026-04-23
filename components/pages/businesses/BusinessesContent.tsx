@@ -47,7 +47,7 @@ export function BusinessesContent() {
               </li>
               <li>
                 <strong>Low commitment, small upside risk.</strong> Most deals
-                run $25–$300. Even a single new repeat customer from the
+                run $1–$500. Even a single new repeat customer from the
                 campaign pays for the entire partnership in under a month.
               </li>
               <li>
@@ -77,16 +77,12 @@ export function BusinessesContent() {
               </li>
               <li>
                 <strong>Cash for posts</strong> — typically{" "}
-                <strong>$25–$300 per sponsored Instagram post</strong>,
+                <strong>$1–$500 per sponsored Instagram post</strong>,
                 depending on audience size and engagement.
               </li>
               <li>
-                <strong>Appearances</strong> — $100–$500 for an in-store visit,
+                <strong>Appearances</strong> — $1–$500 for an in-store visit,
                 grand opening, or signing event.
-              </li>
-              <li>
-                <strong>Mutual promotion</strong> — zero-cost shoutout exchanges
-                if cash or product aren&apos;t a fit.
               </li>
             </ul>
 

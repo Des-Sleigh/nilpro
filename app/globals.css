@@ -682,6 +682,14 @@
   cursor: not-allowed;
 }
 
+/* Dashboard avatar — photo variant overrides the initials circle so the
+   same DOM slot becomes an image without layout shift. */
+.dash-avatar.dash-avatar--photo {
+  padding: 0;
+  object-fit: cover;
+  background: var(--bg);
+}
+
 /* Two-column form row that collapses to one column on narrow mobile.
    Used for first/last name, DOB/grad year, hometown/state — side-by-side
    on tight screens pushes native date pickers past the viewport edge. */

@@ -60,7 +60,7 @@ export function PricingTeaser() {
             <div className="tier__desc">More reach. Better tools. Bigger network.</div>
             <ul className="tier__features">
               <li>Everything in Starter</li>
-              <li>Up to 300 businesses pitched / year</li>
+              <li>Up to 500 businesses pitched / year</li>
               <li>AI follow-up automation</li>
               <li>Priority response monitoring</li>
               <li>Advanced deal analytics</li>

@@ -29,7 +29,7 @@ export function YourCall() {
                 <span className="control__points-num">01</span>
                 <div className="control__points-text">
                   <strong>See your full list first.</strong>
-                  All 100–200 businesses shown to you before a single email sends. No
+                  Every business we pull is shown to you before a single email sends. No
                   surprises. Nothing hidden.
                 </div>
               </li>
@@ -37,8 +37,8 @@ export function YourCall() {
                 <span className="control__points-num">02</span>
                 <div className="control__points-text">
                   <strong>Remove anyone you don&apos;t want.</strong>
-                  One click takes any business off your list permanently. Remove individuals,
-                  entire categories, or full zip codes. They&apos;re never contacted.
+                  One click takes any business off your list permanently. Remove individuals
+                  or entire categories. They&apos;re never contacted.
                 </div>
               </li>
               <li>

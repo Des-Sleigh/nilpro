@@ -21,8 +21,8 @@ const ITEMS: Item[] = [
     a: (
       <p>
         It won&apos;t. You review every business on your target list before any email sends.
-        You can kill individuals, entire categories (no restaurants), or entire zip codes.
-        Blacklist is permanent — once out, forever out.
+        You can remove individuals or entire categories (no restaurants), and add names to
+        your skip list so they&apos;re never pitched again.
       </p>
     ),
   },

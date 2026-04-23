@@ -14,10 +14,10 @@ const CATEGORIES: Category[] = [
         q: "How long does signup take?",
         a: (
           <p>
-            About 5 minutes. Create an account, pay the $19 subscription, fill
-            in your profile. We verify you within 24 hours and build your
-            target list overnight — next day you review it and remove anyone
-            you don&apos;t want contacted.
+            About 5 minutes. Create an account, fill in your profile, and
+            your target list of local businesses populates instantly. You
+            review it, remove anyone you don&apos;t want contacted, and
+            outreach kicks off once your Instagram is verified (~24 hours).
           </p>
         ),
       },
@@ -26,11 +26,11 @@ const CATEGORIES: Category[] = [
         a: (
           <p>
             Credit card for the $19 subscription, your school and hometown
-            info, and an <strong>Instagram or TikTok handle</strong> (required
-            for verification — we have to confirm you&apos;re a real athlete
-            before contacting businesses in your name). Photo is optional but
-            recommended — businesses respond at a higher rate when there&apos;s
-            a face.
+            info, and an <strong>Instagram handle</strong> (required for
+            verification — we confirm you&apos;re a real athlete before
+            contacting businesses in your name). TikTok is optional. Profile
+            photo is optional but recommended — businesses respond at a
+            higher rate when there&apos;s a face.
           </p>
         ),
       },
@@ -96,8 +96,8 @@ const CATEGORIES: Category[] = [
           <p>
             No. NILPro is a software tool. At signup you build a &ldquo;deal
             menu&rdquo; — checking boxes for deal types you&apos;ll accept
-            (e.g., $50 per social post, monthly free meal for weekly posts,
-            $200 event appearance). We pitch that menu to local businesses. We
+            (e.g., cash per social post, product/service trades, in-store
+            appearances). We pitch that menu to local businesses. We
             deliver their responses, but{" "}
             <strong>we never negotiate on your behalf</strong>. Counter-offers,
             price changes, or any deviation from your menu always come back to
@@ -126,10 +126,10 @@ const CATEGORIES: Category[] = [
         q: "How many emails do you send per day?",
         a: (
           <p>
-            10–20/day per athlete. Paced deliberately to stay out of spam
-            filters, give you time to handle replies, and avoid overwhelming
-            businesses in your area. Full round of 100–200 businesses takes 1–2
-            weeks.
+            Paced deliberately to stay out of spam filters, give you time to
+            handle replies, and avoid overwhelming businesses in your area.
+            A full round of hundreds of businesses takes a few weeks,
+            depending on your tier.
           </p>
         ),
       },

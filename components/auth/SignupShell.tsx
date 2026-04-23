@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { ScrollToTopOnMount } from "@/components/util/ScrollToTopOnMount";
 
 type Props = {
   step: number;
@@ -40,6 +41,7 @@ export async function SignupShell({
 
   return (
     <main className="section" style={{ paddingTop: "clamp(2rem, 5vw, 4rem)" }}>
+      <ScrollToTopOnMount />
       <div className="container-page" style={{ maxWidth: "34rem" }}>
         <div
           className="signup-progress"

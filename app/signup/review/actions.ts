@@ -91,8 +91,11 @@ export async function submitReviewAction(formData: FormData) {
     if (error) fail(error.message);
   }
 
-  revalidatePath("/signup/photo");
-  redirect("/signup/photo");
+  // Per founder decision: the /signup/photo and /signup/done pages are
+  // removed. After approving the target list, land straight on the
+  // dashboard. The dashboard's ActionBanner surfaces "what's next".
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
 }
 
 /**

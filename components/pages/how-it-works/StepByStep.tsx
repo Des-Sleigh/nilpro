@@ -31,23 +31,23 @@ const STEPS: { num: string; title: string; body: React.ReactNode }[] = [
     body: (
       <>
         This is the most important step. Check the boxes for deal types
-        you&apos;ll accept: cash per social post ($25–300), product/service
-        deals (meals, gym access, etc. — you pick the frequency), appearances
-        ($50–500), or mutual promotion (zero-cost). Each checkbox has a default
-        amount — adjust up or down to set your minimum. Also pick which cities
-        we&apos;ll pitch in (your hometown and school city are pre-added) and
-        which business categories interest you.
+        you&apos;ll accept: cash per social post ($1–500), product/service
+        deals (meals, gym access, etc. — you pick the frequency), or in-store
+        appearances ($1–500). Each checkbox has a default amount — adjust up
+        or down to set your minimum. Also pick which cities we&apos;ll pitch
+        in (your hometown is pre-added) and which business categories
+        interest you.
       </>
     ),
   },
   {
     num: "04",
-    title: "We build your target list · 24 hours",
+    title: "Your target list populates instantly",
     body: (
       <>
-        Overnight, we pull 100–200 local businesses in your radius, filtered by
-        preferences. Each gets a short &quot;why we picked them&quot; so you
-        understand the reasoning.
+        As soon as you pick your cities and categories, we pull hundreds of
+        local businesses from that area — name, address, category, rating —
+        and show them to you on the next screen. No waiting.
       </>
     ),
   },
@@ -57,20 +57,20 @@ const STEPS: { num: string; title: string; body: React.ReactNode }[] = [
     body: (
       <>
         Nothing sends until you say go. See every business on the list. Remove
-        individuals, bulk-remove by category, bulk-remove by zip code. Anyone
-        you take off gets permanently excluded — they&apos;ll never be
-        contacted, even in future rounds. One click starts outreach.
+        individuals or bulk-remove by category. Add names to your skip list and
+        they&apos;re never pitched again — even in future rounds. One click
+        starts outreach.
       </>
     ),
   },
   {
     num: "06",
-    title: "Outreach fires · 10–20/day",
+    title: "Outreach fires — paced to stay effective",
     body: (
       <>
-        Paced to stay out of spam filters. Every email personalized to that
-        specific business — their location, their reviews, why you&apos;d be a
-        good fit for them. Pause outreach anytime in one click.
+        Steady, personalized outreach paced to stay out of spam filters. Every
+        email written for that specific business — their location, their
+        reviews, why you&apos;d be a good fit. Pause anytime in one click.
       </>
     ),
   },

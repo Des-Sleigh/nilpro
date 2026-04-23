@@ -31,7 +31,7 @@ export default async function Dashboard() {
   const { data: athlete } = await supabase
     .from("athletes")
     .select(
-      "first_name, last_name, sport, school, level, referral_code, business_categories, created_at"
+      "first_name, last_name, sport, school, level, referral_code, business_categories, created_at, profile_photo_url"
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -152,6 +152,7 @@ export default async function Dashboard() {
           level={athlete.level}
           sport={athlete.sport}
           school={athlete.school}
+          profilePhotoUrl={athlete.profile_photo_url as string | null}
         />
 
         <StatusBar

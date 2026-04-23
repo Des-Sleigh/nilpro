@@ -25,8 +25,8 @@ export function FourPlays() {
             <span className="play-card__num">02</span>
             <h3>Scout the targets</h3>
             <p>
-              We pull 100–200 local businesses in your hometown &amp; school area, matched to
-              your preferences.
+              We pull hundreds of local businesses in your hometown &amp; school area,
+              matched to your preferences.
             </p>
           </div>
           <div className="play-card play-card--accent">

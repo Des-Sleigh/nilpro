@@ -10,8 +10,8 @@ const STOPS: {
     label: "Kickoff",
     title: "Pitches fire",
     desc:
-      "Your approved target list goes live. 10–20 personalized pitches go out per day to local businesses in your radius.",
-    tag: "100–200 businesses contacted",
+      "Your approved target list goes live. Personalized pitches start going out, paced to stay effective and never spammy.",
+    tag: "Hundreds of businesses contacted",
   },
   {
     week: "WK 2",

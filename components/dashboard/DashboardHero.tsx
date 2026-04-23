@@ -4,6 +4,7 @@ type Props = {
   level: string | null;
   sport: string | null;
   school: string | null;
+  profilePhotoUrl?: string | null;
 };
 
 function initials(first: string, last: string) {
@@ -12,7 +13,14 @@ function initials(first: string, last: string) {
   return `${f}${l}` || "NP";
 }
 
-export function DashboardHero({ firstName, lastName, level, sport, school }: Props) {
+export function DashboardHero({
+  firstName,
+  lastName,
+  level,
+  sport,
+  school,
+  profilePhotoUrl,
+}: Props) {
   const metaParts: string[] = [];
   if (level) metaParts.push(level);
   if (sport) metaParts.push(sport);
@@ -40,9 +48,18 @@ export function DashboardHero({ firstName, lastName, level, sport, school }: Pro
       </div>
 
       <div className="dash-hero__right">
-        <div className="dash-avatar" aria-hidden>
-          {initials(firstName, lastName)}
-        </div>
+        {profilePhotoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={profilePhotoUrl}
+            alt={`${firstName}'s profile photo`}
+            className="dash-avatar dash-avatar--photo"
+          />
+        ) : (
+          <div className="dash-avatar" aria-hidden>
+            {initials(firstName, lastName)}
+          </div>
+        )}
       </div>
     </header>
   );
