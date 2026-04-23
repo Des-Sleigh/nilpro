@@ -38,7 +38,7 @@ export function PricingTeaser() {
             </div>
             <div className="tier__desc">Everything you need to land real deals.</div>
             <ul className="tier__features">
-              <li>Outreach to 100–200 local businesses</li>
+              <li>Up to 100 local businesses pitched / year</li>
               <li>AI pitches you preview &amp; approve</li>
               <li>Full response dashboard</li>
               <li>Contract templates</li>
@@ -60,7 +60,7 @@ export function PricingTeaser() {
             <div className="tier__desc">More reach. Better tools. Bigger network.</div>
             <ul className="tier__features">
               <li>Everything in Starter</li>
-              <li>Up to 400 businesses pitched</li>
+              <li>Up to 300 businesses pitched / year</li>
               <li>AI follow-up automation</li>
               <li>Priority response monitoring</li>
               <li>Advanced deal analytics</li>
@@ -82,7 +82,7 @@ export function PricingTeaser() {
             </div>
             <ul className="tier__features">
               <li>Everything in Pro</li>
-              <li>Unlimited outreach rounds</li>
+              <li>Up to 1,000 businesses pitched / year</li>
               <li>Pro bio &amp; press-kit generation</li>
               <li>Quarterly 1-on-1 strategy calls</li>
               <li>First access to new features</li>

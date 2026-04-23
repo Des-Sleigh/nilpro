@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function signUpAction(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
+  const passwordConfirm = String(formData.get("password_confirm") ?? "");
   const referralCode = String(formData.get("ref") ?? "").trim() || null;
 
   if (!email || !password) {
@@ -21,6 +22,12 @@ export async function signUpAction(formData: FormData) {
       `/signup/create?error=${encodeURIComponent(
         "Use at least 8 characters for your password."
       )}`
+    );
+  }
+
+  if (password !== passwordConfirm) {
+    redirect(
+      `/signup/create?error=${encodeURIComponent("Passwords don't match.")}`
     );
   }
 

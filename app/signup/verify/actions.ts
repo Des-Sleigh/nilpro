@@ -4,7 +4,9 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-const VALID_PLATFORMS = ["instagram", "tiktok"] as const;
+// Verification is Instagram-only. TikTok is a secondary profile link
+// and doesn't go through this flow.
+const VALID_PLATFORMS = ["instagram"] as const;
 type Platform = (typeof VALID_PLATFORMS)[number];
 
 function fail(msg: string): never {

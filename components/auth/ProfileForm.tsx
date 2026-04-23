@@ -75,7 +75,7 @@ export function ProfileForm({ error }: { error?: string }) {
         </div>
       ) : null}
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+      <div className="form-grid-2">
         <label className="auth-form__label">
           <span>First name</span>
           <input
@@ -133,7 +133,7 @@ export function ProfileForm({ error }: { error?: string }) {
         <input type="hidden" name="level" value={level} required />
       </label>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+      <div className="form-grid-2">
         <label className="auth-form__label">
           <span>Sport</span>
           <input
@@ -166,7 +166,7 @@ export function ProfileForm({ error }: { error?: string }) {
         />
       </label>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+      <div className="form-grid-2">
         <label className="auth-form__label">
           <span>Date of birth</span>
           <input
@@ -198,7 +198,7 @@ export function ProfileForm({ error }: { error?: string }) {
         </label>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "1rem" }}>
+      <div className="form-grid-2-1">
         <label className="auth-form__label">
           <span>Hometown city</span>
           <input

@@ -682,6 +682,22 @@
   cursor: not-allowed;
 }
 
+/* Two-column form row that collapses to one column on narrow mobile.
+   Used for first/last name, DOB/grad year, hometown/state — side-by-side
+   on tight screens pushes native date pickers past the viewport edge. */
+.form-grid-2,
+.form-grid-2-1 {
+  display: grid;
+  gap: 1rem;
+}
+.form-grid-2 { grid-template-columns: 1fr 1fr; }
+.form-grid-2-1 { grid-template-columns: 2fr 1fr; }
+
+@media (max-width: 520px) {
+  .form-grid-2,
+  .form-grid-2-1 { grid-template-columns: 1fr; }
+}
+
 /* ============================================================
    HOME — HERO
    ============================================================ */

@@ -15,7 +15,7 @@ export function PricingTiers() {
               Everything you need to land real deals.
             </div>
             <ul className="tier__features">
-              <li>Outreach to 100–200 local businesses</li>
+              <li>Up to 100 local businesses pitched / year</li>
               <li>Your terms pitched to every business</li>
               <li>Full response dashboard (Yes / No / Counter)</li>
               <li>Contract templates at your terms</li>
@@ -42,7 +42,7 @@ export function PricingTiers() {
             </div>
             <ul className="tier__features">
               <li>Everything in Starter</li>
-              <li>Up to 400 businesses pitched</li>
+              <li>Up to 300 businesses pitched / year</li>
               <li>AI follow-up automation</li>
               <li>Priority response monitoring</li>
               <li>Advanced deal analytics</li>
@@ -67,7 +67,7 @@ export function PricingTiers() {
             </div>
             <ul className="tier__features">
               <li>Everything in Pro</li>
-              <li>Unlimited outreach rounds</li>
+              <li>Up to 1,000 businesses pitched / year</li>
               <li>Pro bio &amp; press-kit generation</li>
               <li>Quarterly 1-on-1 strategy calls</li>
               <li>First access to new features</li>

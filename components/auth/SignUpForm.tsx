@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { signUpAction } from "@/app/signup/create/actions";
 
@@ -24,6 +25,11 @@ export function SignUpForm({
   error?: string;
   referralCode?: string;
 }) {
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+
+  const mismatch = confirm.length > 0 && password !== confirm;
+
   return (
     <form action={signUpAction} className="auth-form">
       {error ? (
@@ -64,8 +70,38 @@ export function SignUpForm({
           minLength={8}
           autoComplete="new-password"
           placeholder="At least 8 characters"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           className="auth-form__input"
         />
+      </label>
+
+      <label className="auth-form__label">
+        <span>Confirm password</span>
+        <input
+          type="password"
+          name="password_confirm"
+          required
+          minLength={8}
+          autoComplete="new-password"
+          placeholder="Re-enter your password"
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          className="auth-form__input"
+          aria-invalid={mismatch || undefined}
+        />
+        {mismatch ? (
+          <span
+            style={{
+              fontSize: "0.78rem",
+              color: "var(--red)",
+              fontFamily: "var(--mono)",
+              letterSpacing: "0.04em",
+            }}
+          >
+            Passwords don&apos;t match.
+          </span>
+        ) : null}
       </label>
 
       {referralCode ? (

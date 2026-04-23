@@ -4,8 +4,6 @@ import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { startVerificationAction } from "@/app/signup/verify/actions";
 
-type Platform = "instagram" | "tiktok";
-
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
@@ -25,7 +23,6 @@ function SubmitButton() {
 }
 
 export function VerifyForm({ error }: { error?: string }) {
-  const [platform, setPlatform] = useState<Platform>("instagram");
   const [handle, setHandle] = useState<string>("");
 
   return (
@@ -47,49 +44,7 @@ export function VerifyForm({ error }: { error?: string }) {
       ) : null}
 
       <label className="auth-form__label">
-        <span>Platform</span>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          {(
-            [
-              { v: "instagram", label: "Instagram" },
-              { v: "tiktok", label: "TikTok" },
-            ] as const
-          ).map((p) => {
-            const active = platform === p.v;
-            return (
-              <button
-                type="button"
-                key={p.v}
-                onClick={() => setPlatform(p.v)}
-                aria-pressed={active}
-                style={{
-                  flex: 1,
-                  padding: "0.75rem 0.9rem",
-                  border: `2px solid ${
-                    active ? "var(--green)" : "var(--border-strong)"
-                  }`,
-                  background: active ? "var(--green-dim)" : "var(--bg-soft)",
-                  color: active ? "var(--green)" : "var(--text-dim)",
-                  fontFamily: "var(--cond)",
-                  fontSize: "0.95rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                  borderRadius: "var(--r-sm)",
-                  cursor: "pointer",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                {p.label}
-              </button>
-            );
-          })}
-        </div>
-        <input type="hidden" name="platform" value={platform} required />
-      </label>
-
-      <label className="auth-form__label">
-        <span>Your handle</span>
+        <span>Your Instagram handle</span>
         <div
           style={{
             position: "relative",
@@ -136,6 +91,10 @@ export function VerifyForm({ error }: { error?: string }) {
         </div>
       </label>
 
+      {/* Platform is fixed to Instagram for verification. TikTok can be
+          linked as a secondary social later on the profile page. */}
+      <input type="hidden" name="platform" value="instagram" />
+
       <p
         style={{
           fontSize: "0.85rem",
@@ -144,8 +103,8 @@ export function VerifyForm({ error }: { error?: string }) {
           lineHeight: 1.5,
         }}
       >
-        We verify every athlete before pitching on your behalf. Takes about
-        30 seconds.
+        We verify every athlete via Instagram DM before pitching on your behalf.
+        Takes about 30 seconds. You can link TikTok from your profile later.
       </p>
 
       <SubmitButton />
