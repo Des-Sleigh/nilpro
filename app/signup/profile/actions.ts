@@ -116,5 +116,5 @@ export async function saveProfileAction(formData: FormData) {
   if (error) fail(error.message);
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  redirect("/signup/verify");
 }

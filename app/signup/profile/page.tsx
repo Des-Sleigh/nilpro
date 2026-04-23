@@ -30,7 +30,7 @@ export default async function ProfileStep({
     .maybeSingle();
 
   if (athlete) {
-    redirect("/dashboard");
+    redirect("/signup/verify");
   }
 
   const params = await searchParams;
