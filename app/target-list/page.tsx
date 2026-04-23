@@ -58,6 +58,14 @@ export default async function TargetListPage({
 
   if (!athlete) redirect("/signup/profile");
 
+  const { data: firstCity } = await supabase
+    .from("pitch_cities")
+    .select("city, state")
+    .eq("athlete_id", user.id)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
   const { data: raw } = await supabase
     .from("target_lists")
     .select(
@@ -141,7 +149,11 @@ export default async function TargetListPage({
           </div>
         ) : null}
 
-        <TargetListManager rows={rows} />
+        <TargetListManager
+          rows={rows}
+          defaultCity={(firstCity?.city as string | undefined) ?? null}
+          defaultState={(firstCity?.state as string | undefined) ?? null}
+        />
       </div>
     </main>
   );

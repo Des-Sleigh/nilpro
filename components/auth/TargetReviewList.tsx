@@ -1,14 +1,16 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import {
   submitReviewAction,
   skipBusinessAction,
   unskipTermAction,
-  addManualBusinessAction,
+  addPlacesBusinessAction,
 } from "@/app/signup/review/actions";
-import { CATEGORIES, CATEGORY_LABELS } from "@/lib/places/categories";
+import { CATEGORY_LABELS } from "@/lib/places/categories";
+import { AddBusinessSearch } from "@/components/auth/AddBusinessSearch";
 
 export type ReviewBusiness = {
   target_id: string;
@@ -21,26 +23,23 @@ export type ReviewBusiness = {
   ratings_count: number | null;
 };
 
-const US_STATES = [
-  "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA",
-  "HI","ID","IL","IN","IA","KS","KY","LA","ME","MD",
-  "MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ",
-  "NM","NY","NC","ND","OH","OK","OR","PA","RI","SC",
-  "SD","TN","TX","UT","VT","VA","WA","WV","WI","WY","DC",
-];
-
 function SubmitButton({ count }: { count: number }) {
   const { pending } = useFormStatus();
   return (
     <button
       type="submit"
       disabled={pending}
-      className="btn btn--primary btn--lg"
+      className={`btn btn--primary btn--lg${pending ? " btn--pending" : ""}`}
       style={{ width: "100%", justifyContent: "center", marginTop: "0.5rem" }}
     >
-      {pending
-        ? "Saving…"
-        : `Confirm ${count} target${count === 1 ? "" : "s"} →`}
+      {pending ? (
+        <>
+          <span aria-hidden className="btn__spinner" />
+          Saving…
+        </>
+      ) : (
+        `Confirm ${count} target${count === 1 ? "" : "s"} →`
+      )}
     </button>
   );
 }
@@ -48,10 +47,15 @@ function SubmitButton({ count }: { count: number }) {
 export function TargetReviewList({
   businesses,
   initialBlacklistTerms,
+  defaultCity = null,
+  defaultState = null,
 }: {
   businesses: ReviewBusiness[];
   initialBlacklistTerms: string[];
+  defaultCity?: string | null;
+  defaultState?: string | null;
 }) {
+  const router = useRouter();
   // Skip terms are the source of truth for the "skip list" section.
   // Adding a term here also hides any matching businesses from the list.
   const [blacklistTerms, setBlacklistTerms] = useState<string[]>(
@@ -65,12 +69,6 @@ export function TargetReviewList({
     () => new Set()
   );
 
-  // Rows the athlete manually added — inserted into the visible list
-  // before any refetch. The server action owns persistence.
-  const [manualBusinesses, setManualBusinesses] = useState<ReviewBusiness[]>(
-    []
-  );
-
   // Search across business names (case-insensitive, substring).
   const [query, setQuery] = useState<string>("");
 
@@ -82,11 +80,9 @@ export function TargetReviewList({
 
   const [, startTransition] = useTransition();
 
-  // Merge live manual additions onto the server-provided list.
-  const allBusinesses = useMemo(
-    () => [...businesses, ...manualBusinesses],
-    [businesses, manualBusinesses]
-  );
+  // Manual additions now come back through the server (the action calls
+  // revalidatePath) + router.refresh() from the add handler.
+  const allBusinesses = businesses;
 
   // Businesses after skip-term filter + row-skip filter. These are the
   // ones we send up on submit (via checked includes).
@@ -216,32 +212,12 @@ export function TargetReviewList({
     setBlacklistTerms((prev) => (prev.includes(t) ? prev : [...prev, t]));
   }
 
-  // ---- Manual add --------------------------------------------------------
-  // We use the same server action via a <form>, but on success we also
-  // want to show the new business inline. We handle that by listening
-  // for a successful submit and inserting an optimistic row.
-  function handleManualSuccess(payload: {
-    name: string;
-    city: string;
-    state: string;
-    category: string;
-  }) {
-    const optimistic: ReviewBusiness = {
-      target_id: `manual-${Date.now()}`,
-      business_id: `manual-${Date.now()}`,
-      name: payload.name,
-      category: payload.category,
-      city: payload.city,
-      state: payload.state,
-      rating: null,
-      ratings_count: null,
-    };
-    setManualBusinesses((prev) => [...prev, optimistic]);
-    setSelected((prev) => {
-      const next = new Set(prev);
-      next.add(optimistic.business_id);
-      return next;
-    });
+  // ---- Places add --------------------------------------------------------
+  // The server action upserts the business + target_lists row and
+  // revalidates /signup/review. We also call router.refresh() so this
+  // server-rendered component re-fetches and the row shows up below.
+  function handlePlacesAdded() {
+    router.refresh();
   }
 
   return (
@@ -546,7 +522,12 @@ export function TargetReviewList({
           );
         })}
 
-        <ManualAddSection onSuccess={handleManualSuccess} />
+        <AddBusinessSearch
+          addAction={addPlacesBusinessAction}
+          defaultCity={defaultCity}
+          defaultState={defaultState}
+          onAdded={handlePlacesAdded}
+        />
 
         <SkipListSection
           terms={blacklistTerms}
@@ -556,178 +537,6 @@ export function TargetReviewList({
 
         <SubmitButton count={visibleSelectedCount} />
       </form>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------
-// Manual business add — inline collapsible form
-// ---------------------------------------------------------------------
-
-function ManualAddSection({
-  onSuccess,
-}: {
-  onSuccess: (payload: {
-    name: string;
-    city: string;
-    state: string;
-    category: string;
-  }) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [website, setWebsite] = useState("");
-  const [category, setCategory] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!name || !city || !state || !category || submitting) return;
-    const fd = new FormData();
-    fd.set("name", name);
-    fd.set("city", city);
-    fd.set("state", state);
-    fd.set("website", website);
-    fd.set("primary_category", category);
-    setSubmitting(true);
-    try {
-      await addManualBusinessAction(fd);
-      onSuccess({ name, city, state, category });
-      setName("");
-      setCity("");
-      setState("");
-      setWebsite("");
-      setCategory("");
-      setOpen(false);
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <div
-      style={{
-        border: "1px dashed var(--border-strong)",
-        background: "var(--bg-soft)",
-        borderRadius: "var(--r-sm)",
-        padding: open ? "1rem" : "0.65rem 0.9rem",
-      }}
-    >
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        style={{
-          width: "100%",
-          textAlign: "left",
-          background: "transparent",
-          border: "none",
-          cursor: "pointer",
-          color: "var(--green)",
-          fontFamily: "var(--cond)",
-          fontSize: "0.9rem",
-          fontWeight: 700,
-          letterSpacing: "0.06em",
-          textTransform: "uppercase",
-        }}
-      >
-        {open ? "× Cancel" : "+ Add a business manually"}
-      </button>
-
-      {open ? (
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.65rem",
-            marginTop: "0.85rem",
-          }}
-        >
-          <label className="auth-form__label">
-            <span>Business name</span>
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="auth-form__input"
-              placeholder="Joe's Pizza"
-            />
-          </label>
-
-          <div className="form-grid-2-1">
-            <label className="auth-form__label">
-              <span>City</span>
-              <input
-                type="text"
-                required
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="auth-form__input"
-              />
-            </label>
-            <label className="auth-form__label">
-              <span>State</span>
-              <select
-                required
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-                className="auth-form__input auth-form__select"
-              >
-                <option value="" disabled>
-                  State…
-                </option>
-                {US_STATES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-
-          <label className="auth-form__label">
-            <span>Website (optional)</span>
-            <input
-              type="url"
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-              className="auth-form__input"
-              placeholder="https://…"
-            />
-          </label>
-
-          <label className="auth-form__label">
-            <span>Category</span>
-            <select
-              required
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="auth-form__input auth-form__select"
-            >
-              <option value="" disabled>
-                Pick a category…
-              </option>
-              {CATEGORIES.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="btn btn--primary btn--sm"
-            style={{ alignSelf: "flex-start" }}
-          >
-            {submitting ? "Adding…" : "Add business →"}
-          </button>
-        </form>
-      ) : null}
     </div>
   );
 }

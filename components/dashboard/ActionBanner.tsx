@@ -10,6 +10,11 @@ type Props = {
     href: string;
     cta: string;
   };
+  /** True when the athlete is a minor and their parent hasn't approved yet.
+   *  Takes priority over verificationPending since it's a longer blocker. */
+  parentApprovalPending?: boolean;
+  /** Parent's email — shown in the parent approval copy. */
+  parentEmail?: string | null;
   /** True when the athlete has an IG handle saved but it hasn't been
    *  verified yet. Shown ahead of the quiet "sit tight" state so new
    *  accounts know outreach is gated on verification. */
@@ -19,8 +24,15 @@ type Props = {
 export function ActionBanner({
   quiet = true,
   missingStep,
+  parentApprovalPending = false,
+  parentEmail = null,
   verificationPending = false,
 }: Props) {
+  // Priority order:
+  //   1. missingStep  (athlete is blocked on their own data)
+  //   2. parentApprovalPending  (longest blocker: out-of-band approval)
+  //   3. verificationPending    (admin-side IG verification)
+  //   4. quiet ✓
   if (missingStep) {
     return (
       <div className="action-items">
@@ -34,6 +46,33 @@ export function ActionBanner({
         <Link href={missingStep.href} className="action-items__btn">
           {missingStep.cta} →
         </Link>
+      </div>
+    );
+  }
+
+  if (parentApprovalPending) {
+    return (
+      <div className="action-items">
+        <div className="action-items__left">
+          <div className="action-items__icon">⏳</div>
+          <div className="action-items__text">
+            Parent approval needed
+            <small>
+              {parentEmail ? (
+                <>
+                  Your parent will get an email at{" "}
+                  <strong style={{ color: "var(--text)" }}>{parentEmail}</strong>{" "}
+                  — pitches don&apos;t start until they approve.
+                </>
+              ) : (
+                <>
+                  Your parent will get an email — pitches don&apos;t start until
+                  they approve.
+                </>
+              )}
+            </small>
+          </div>
+        </div>
       </div>
     );
   }

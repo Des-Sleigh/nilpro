@@ -78,10 +78,13 @@ export default async function ReviewStep({
 
   const { data: cities } = await supabase
     .from("pitch_cities")
-    .select("id")
+    .select("city, state")
     .eq("athlete_id", user.id)
+    .order("created_at", { ascending: true })
     .limit(1);
   if (!cities || cities.length === 0) redirect("/signup/targets");
+  const firstCity = cities[0]?.city as string | undefined;
+  const firstState = cities[0]?.state as string | undefined;
 
   const { data: targetsRaw } = await supabase
     .from("target_lists")
@@ -160,6 +163,8 @@ export default async function ReviewStep({
           <TargetReviewList
             businesses={businesses}
             initialBlacklistTerms={initialBlacklistTerms}
+            defaultCity={firstCity ?? null}
+            defaultState={firstState ?? null}
           />
         </>
       )}

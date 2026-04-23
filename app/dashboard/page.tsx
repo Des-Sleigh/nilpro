@@ -31,7 +31,7 @@ export default async function Dashboard() {
   const { data: athlete } = await supabase
     .from("athletes")
     .select(
-      "first_name, last_name, sport, school, level, referral_code, business_categories, created_at, profile_photo_url"
+      "first_name, last_name, sport, school, level, referral_code, business_categories, created_at, profile_photo_url, is_minor, parent_approved_at, parent_email, parent_first_name"
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -166,6 +166,10 @@ export default async function Dashboard() {
         <ActionBanner
           quiet={!missingStep}
           missingStep={missingStep}
+          parentApprovalPending={Boolean(
+            athlete.is_minor && !athlete.parent_approved_at
+          )}
+          parentEmail={(athlete.parent_email as string | null) ?? null}
           verificationPending={Boolean(social && !social.verified)}
         />
 

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { CATEGORIES } from "@/lib/places/categories";
+import { CATEGORIES, categoryFromPlaceType } from "@/lib/places/categories";
 
 function normalizeTerm(raw: string): string {
   return raw.trim().toLowerCase();
@@ -184,4 +184,98 @@ export async function addManualBusinessToTargetListAction(formData: FormData) {
 
   revalidatePath("/target-list");
   revalidatePath("/dashboard");
+}
+
+export type PlacesAddResult = {
+  placeId: string;
+  name: string;
+  formattedAddress: string | null;
+  city: string | null;
+  state: string | null;
+  primaryType: string | null;
+  rating: number | null;
+};
+
+/**
+ * Mirror of addPlacesBusinessAction in /signup/review — used from the
+ * /target-list page. Returns a result object instead of redirecting so
+ * the client component can stay put and show inline confirmation.
+ */
+export async function addPlacesBusinessToTargetListAction(
+  placeId: string,
+  result: PlacesAddResult,
+  categoryDefault?: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Not signed in." };
+
+  if (!placeId || !result) {
+    return { ok: false, error: "Missing place data." };
+  }
+
+  const category = categoryFromPlaceType(
+    result.primaryType,
+    categoryDefault && CATEGORIES.some((c) => c.id === categoryDefault)
+      ? categoryDefault
+      : "professional_services"
+  );
+
+  const admin = createAdminClient();
+
+  const { data: upserted, error: upsertErr } = await admin
+    .from("businesses")
+    .upsert(
+      {
+        google_place_id: placeId,
+        name: result.name,
+        formatted_address: result.formattedAddress ?? null,
+        city: result.city,
+        state: result.state,
+        primary_category: category,
+        google_rating:
+          typeof result.rating === "number" ? result.rating : null,
+        last_google_sync_at: new Date().toISOString(),
+      },
+      { onConflict: "google_place_id" }
+    )
+    .select("id, global_blacklisted")
+    .maybeSingle();
+
+  if (upsertErr || !upserted) {
+    return {
+      ok: false,
+      error: upsertErr?.message ?? "Couldn't save that business.",
+    };
+  }
+
+  if (upserted.global_blacklisted) {
+    return {
+      ok: false,
+      error: "That business isn't available on NILPro.",
+    };
+  }
+
+  const { error: tlErr } = await admin.from("target_lists").upsert(
+    {
+      athlete_id: user.id,
+      business_id: upserted.id,
+      status: "approved",
+      source_category: category,
+      source_city: result.city ?? null,
+      approved_at: new Date().toISOString(),
+      removed_at: null,
+    },
+    { onConflict: "athlete_id,business_id" }
+  );
+
+  if (tlErr) {
+    return { ok: false, error: tlErr.message };
+  }
+
+  revalidatePath("/target-list");
+  revalidatePath("/dashboard");
+  return { ok: true };
 }

@@ -32,10 +32,17 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="btn btn--primary btn--lg"
+      className={`btn btn--primary btn--lg${pending ? " btn--pending" : ""}`}
       style={{ width: "100%", justifyContent: "center", marginTop: "0.5rem" }}
     >
-      {pending ? "Finding businesses…" : "Find my targets →"}
+      {pending ? (
+        <>
+          <span aria-hidden className="btn__spinner" />
+          Finding businesses…
+        </>
+      ) : (
+        "Find my targets →"
+      )}
     </button>
   );
 }

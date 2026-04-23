@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 import {
   setTargetStatusAction,
   skipBusinessFromTargetListAction,
-  addManualBusinessToTargetListAction,
+  addPlacesBusinessToTargetListAction,
 } from "@/app/target-list/actions";
-import { CATEGORIES, CATEGORY_LABELS } from "@/lib/places/categories";
+import { CATEGORY_LABELS } from "@/lib/places/categories";
+import { AddBusinessSearch } from "@/components/auth/AddBusinessSearch";
 
 export type TargetRowView = {
   target_id: string;
@@ -24,15 +25,15 @@ export type TargetRowView = {
 
 type Tab = "approved" | "pending" | "removed" | "all";
 
-const US_STATES = [
-  "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA",
-  "HI","ID","IL","IN","IA","KS","KY","LA","ME","MD",
-  "MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ",
-  "NM","NY","NC","ND","OH","OK","OR","PA","RI","SC",
-  "SD","TN","TX","UT","VT","VA","WA","WV","WI","WY","DC",
-];
-
-export function TargetListManager({ rows }: { rows: TargetRowView[] }) {
+export function TargetListManager({
+  rows,
+  defaultCity = null,
+  defaultState = null,
+}: {
+  rows: TargetRowView[];
+  defaultCity?: string | null;
+  defaultState?: string | null;
+}) {
   const [tab, setTab] = useState<Tab>("approved");
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -132,7 +133,12 @@ export function TargetListManager({ rows }: { rows: TargetRowView[] }) {
         </div>
       </div>
 
-      <ManualAddSection />
+      <AddBusinessSearch
+        addAction={addPlacesBusinessToTargetListAction}
+        defaultCity={defaultCity}
+        defaultState={defaultState}
+        onAdded={() => router.refresh()}
+      />
 
       {grouped.length === 0 ? (
         <EmptyState tab={tab} />
@@ -408,180 +414,3 @@ function EmptyState({ tab }: { tab: Tab }) {
   );
 }
 
-function ManualAddSection() {
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [website, setWebsite] = useState("");
-  const [category, setCategory] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!name || !city || !state || !category || submitting) return;
-    setError(null);
-    const fd = new FormData();
-    fd.set("name", name);
-    fd.set("city", city);
-    fd.set("state", state);
-    fd.set("website", website);
-    fd.set("primary_category", category);
-    setSubmitting(true);
-    try {
-      await addManualBusinessToTargetListAction(fd);
-      setName("");
-      setCity("");
-      setState("");
-      setWebsite("");
-      setCategory("");
-      setOpen(false);
-      router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't add business.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <div
-      style={{
-        border: "1px dashed var(--border-strong)",
-        background: "var(--bg-soft)",
-        borderRadius: "var(--r-sm)",
-        padding: open ? "1rem" : "0.65rem 0.9rem",
-      }}
-    >
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        style={{
-          width: "100%",
-          textAlign: "left",
-          background: "transparent",
-          border: "none",
-          cursor: "pointer",
-          color: "var(--green)",
-          fontFamily: "var(--cond)",
-          fontSize: "0.9rem",
-          fontWeight: 700,
-          letterSpacing: "0.06em",
-          textTransform: "uppercase",
-        }}
-      >
-        {open ? "× Cancel" : "+ Add a business manually"}
-      </button>
-
-      {open ? (
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.65rem",
-            marginTop: "0.85rem",
-          }}
-        >
-          {error ? (
-            <div
-              role="alert"
-              style={{
-                padding: "0.65rem 0.85rem",
-                border: "1px solid var(--red)",
-                background: "rgba(255, 58, 87, 0.08)",
-                borderRadius: "var(--r-sm)",
-                fontSize: "0.85rem",
-                color: "var(--red)",
-              }}
-            >
-              {error}
-            </div>
-          ) : null}
-
-          <label className="auth-form__label">
-            <span>Business name</span>
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="auth-form__input"
-            />
-          </label>
-
-          <div className="form-grid-2-1">
-            <label className="auth-form__label">
-              <span>City</span>
-              <input
-                type="text"
-                required
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="auth-form__input"
-              />
-            </label>
-            <label className="auth-form__label">
-              <span>State</span>
-              <select
-                required
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-                className="auth-form__input auth-form__select"
-              >
-                <option value="" disabled>
-                  State…
-                </option>
-                {US_STATES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-
-          <label className="auth-form__label">
-            <span>Website (optional)</span>
-            <input
-              type="url"
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-              className="auth-form__input"
-            />
-          </label>
-
-          <label className="auth-form__label">
-            <span>Category</span>
-            <select
-              required
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="auth-form__input auth-form__select"
-            >
-              <option value="" disabled>
-                Pick a category…
-              </option>
-              {CATEGORIES.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="btn btn--primary btn--sm"
-            style={{ alignSelf: "flex-start" }}
-          >
-            {submitting ? "Adding…" : "Add business →"}
-          </button>
-        </form>
-      ) : null}
-    </div>
-  );
-}
