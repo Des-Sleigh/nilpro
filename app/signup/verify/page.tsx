@@ -49,9 +49,10 @@ export default async function VerifyStep({
   const params = await searchParams;
 
   // If they already have a social row AND this page wasn't just hit by the
-  // "sent=1" redirect from startVerificationAction, skip to targets.
+  // "sent=1" redirect from startVerificationAction, skip to deal-menu
+  // (deal-menu is now the next step after verify).
   if (social && params.sent !== "1") {
-    redirect("/signup/targets");
+    redirect("/signup/deal-menu");
   }
 
   const sent = params.sent === "1";

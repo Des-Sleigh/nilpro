@@ -5,44 +5,43 @@
 // because SUPABASE_SERVICE_ROLE_KEY is unavailable there.
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { CATEGORIES, CATEGORY_BY_ID } from "@/lib/places/categories";
 
 /**
  * Google Places (New) integration used during /signup/targets.
  *
  * For each (city, category) combo the athlete selected, we:
  *  1. Check the `places_queries` cache — skip if fetched within 30 days.
- *  2. Otherwise hit https://places.googleapis.com/v1/places:searchText
- *     with a text query like "restaurants in Waco, TX".
- *  3. Upsert each returned place into `businesses`.
- *  4. Insert target_lists rows (athlete_id, business_id) with status='pending'.
- *  5. Skip businesses marked global_blacklisted.
+ *  2. Otherwise run one text-search call PER searchTerm in the category
+ *     (e.g. "restaurant" AND "cafe" for food_drink) against
+ *     https://places.googleapis.com/v1/places:searchText.
+ *  3. Dedup results by google_place_id across terms within the same
+ *     (city, category) so we don't create duplicate businesses rows.
+ *  4. Upsert each unique place into `businesses`.
+ *  5. Insert target_lists rows (athlete_id, business_id) status='pending'.
+ *  6. Skip businesses marked global_blacklisted.
  *
  * Design notes:
  *  - We don't have reliable city-center lat/lng on hand during signup, so
- *    we skip `locationBias` and trust the text query's implicit geo. A later
- *    enhancement: geocode the city once, cache it, and pass a circle bias
- *    with the athlete's chosen radius.
- *  - "retail" is intentionally lossy — Places doesn't have a direct match,
- *    so "local retail" surfaces boutiques, sporting-goods, and specialty stores
- *    along with some noise. Acceptable for Phase 1.
+ *    we skip `locationBias` and trust the text query's implicit geo.
  *  - All writes use the service_role admin client because RLS blocks anon
  *    inserts into `businesses` and `places_queries`.
+ *  - places_queries is keyed by (city, state, category.id, radius) — the
+ *    category's first searchTerm drives the Google call but the cache
+ *    entry uses the category id, which keeps cache-hit logic clean.
  *  - Throws are swallowed at the top level — the athlete should never be
  *    blocked from continuing by an upstream Places hiccup.
  */
 
 const CACHE_DAYS = 30;
 
-// Map our internal category id -> Google text-search term.
-export const CATEGORY_QUERIES: Record<string, string> = {
-  restaurants: "restaurants",
-  fitness: "gym",
-  beauty: "hair salon",
-  retail: "local retail",
-  coffee: "coffee shop",
-  auto: "auto shop",
-  // "other" is skipped on purpose — no sensible default query.
-};
+// Back-compat export: some callers imported this map of category id ->
+// Google text-search term. Keep a minimal version so existing imports
+// still type-check; prefer importing CATEGORIES directly from
+// "@/lib/places/categories" going forward.
+export const CATEGORY_QUERIES: Record<string, string> = Object.fromEntries(
+  CATEGORIES.map((c) => [c.id, c.searchTerms[0] ?? c.id])
+);
 
 // Re-exported for convenience for server callers; client code should import
 // directly from "@/lib/places/categories".
@@ -187,21 +186,20 @@ export async function runPlacesSearchForAthlete(
   let totalInserted = 0;
 
   for (const city of input.cities) {
-    for (const category of input.categories) {
-      const queryTerm = CATEGORY_QUERIES[category];
-      if (!queryTerm) continue; // "other" and unknown keys — skip.
+    for (const categoryId of input.categories) {
+      const category = CATEGORY_BY_ID[categoryId];
+      if (!category) continue; // unknown category id — skip.
 
-      // Cache check.
+      // Cache check — keyed by category id (not individual searchTerms).
       const { data: cached } = await admin
         .from("places_queries")
         .select("id, last_fetched_at, result_count")
         .eq("city", city.city)
         .eq("state", city.state)
-        .eq("category", category)
+        .eq("category", category.id)
         .eq("radius_miles", input.radiusMiles)
         .maybeSingle();
 
-      let places: PlacesPlace[] = [];
       const isFresh =
         cached?.last_fetched_at &&
         new Date(cached.last_fetched_at).toISOString() > cutoff;
@@ -209,16 +207,16 @@ export async function runPlacesSearchForAthlete(
       if (isFresh) {
         // Cache hit — we still need the businesses to hook up target_lists
         // for THIS athlete, so pull from our businesses table by the
-        // search-term category.
+        // category id (stored as primary_category).
         const { data: existingBusinesses, error: fetchErr } = await admin
           .from("businesses")
           .select("id, city, state, global_blacklisted, primary_category")
           .eq("city", city.city)
           .eq("state", city.state)
-          .eq("primary_category", category);
+          .eq("primary_category", category.id);
 
         if (fetchErr) {
-          errors.push(`cache-read-${city.city}-${category}: ${fetchErr.message}`);
+          errors.push(`cache-read-${city.city}-${category.id}: ${fetchErr.message}`);
           continue;
         }
 
@@ -228,7 +226,7 @@ export async function runPlacesSearchForAthlete(
             athlete_id: input.athleteId,
             business_id: b.id,
             status: "pending",
-            source_category: category,
+            source_category: category.id,
             source_city: city.city,
           });
           // 23505 = unique violation (already targeted). Ignore.
@@ -243,15 +241,26 @@ export async function runPlacesSearchForAthlete(
         continue;
       }
 
-      // Cache miss — hit Google.
-      const textQuery = `${queryTerm} in ${city.city}, ${city.state}`;
-      try {
-        places = await googleTextSearch(textQuery, apiKey);
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        console.error(`[places] fetch threw for "${textQuery}":`, msg);
-        errors.push(`fetch-${city.city}-${category}: ${msg}`);
-        places = [];
+      // Cache miss — fan out one Google call per searchTerm, then dedup
+      // results by google_place_id.
+      const seenPlaceIds = new Set<string>();
+      const uniquePlaces: PlacesPlace[] = [];
+      for (const term of category.searchTerms) {
+        const textQuery = `${term} in ${city.city}, ${city.state}`;
+        let places: PlacesPlace[] = [];
+        try {
+          places = await googleTextSearch(textQuery, apiKey);
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          console.error(`[places] fetch threw for "${textQuery}":`, msg);
+          errors.push(`fetch-${city.city}-${category.id}-${term}: ${msg}`);
+          continue;
+        }
+        for (const place of places) {
+          if (!place.id || seenPlaceIds.has(place.id)) continue;
+          seenPlaceIds.add(place.id);
+          uniquePlaces.push(place);
+        }
       }
 
       // Upsert the places_queries row regardless (so we don't hammer
@@ -262,15 +271,15 @@ export async function runPlacesSearchForAthlete(
           {
             city: city.city,
             state: city.state,
-            category,
+            category: category.id,
             radius_miles: input.radiusMiles,
             last_fetched_at: new Date().toISOString(),
-            result_count: places.length,
+            result_count: uniquePlaces.length,
           },
           { onConflict: "city,state,category,radius_miles" }
         );
 
-      for (const place of places) {
+      for (const place of uniquePlaces) {
         if (!place.id) continue;
 
         const parsedCity =
@@ -302,7 +311,7 @@ export async function runPlacesSearchForAthlete(
             place.internationalPhoneNumber ??
             null,
           website: place.websiteUri ?? null,
-          primary_category: category,
+          primary_category: category.id,
           google_types: place.types ?? null,
           google_rating: place.rating ?? null,
           google_user_ratings_total: place.userRatingCount ?? null,
@@ -330,7 +339,7 @@ export async function runPlacesSearchForAthlete(
           athlete_id: input.athleteId,
           business_id: (upserted as BusinessRow).id,
           status: "pending",
-          source_category: category,
+          source_category: category.id,
           source_city: city.city,
         });
 

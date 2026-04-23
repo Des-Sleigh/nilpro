@@ -26,6 +26,9 @@ export default async function DealMenuStep({
     .maybeSingle();
   if (!athlete) redirect("/signup/profile");
 
+  // New order: deal-menu comes AFTER verify, BEFORE targets.
+  // Require a social_accounts row; if deal_menus already saved, jump to
+  // targets (the next step in the new flow).
   const { data: social } = await supabase
     .from("social_accounts")
     .select("id")
@@ -33,23 +36,15 @@ export default async function DealMenuStep({
     .maybeSingle();
   if (!social) redirect("/signup/verify");
 
-  const { data: cities } = await supabase
-    .from("pitch_cities")
-    .select("id")
-    .eq("athlete_id", user.id)
-    .limit(1);
-  if (!cities || cities.length === 0) redirect("/signup/targets");
-
-  // If deal_menus already saved, jump to dashboard.
   const { data: existing } = await supabase
     .from("deal_menus")
     .select(
-      "cash_per_post_enabled, cash_per_post_min, product_trade_enabled, appearance_enabled, appearance_min, mutual_promo_enabled"
+      "cash_per_post_enabled, cash_per_post_min, product_trade_enabled, appearance_enabled, appearance_min"
     )
     .eq("athlete_id", user.id)
     .maybeSingle();
 
-  if (existing) redirect("/dashboard");
+  if (existing) redirect("/signup/targets");
 
   const defaults = {
     cashEnabled: false,
@@ -57,14 +52,13 @@ export default async function DealMenuStep({
     productEnabled: false,
     appearanceEnabled: false,
     appearanceMin: null,
-    mutualEnabled: false,
   };
 
   const params = await searchParams;
 
   return (
     <SignupShell
-      step={6}
+      step={4}
       eyebrow="YOUR DEAL MENU"
       title={
         <>

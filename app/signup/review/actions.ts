@@ -9,52 +9,27 @@ function fail(msg: string): never {
 }
 
 /**
- * Mark one business global_blacklisted (never shown to any athlete again)
- * and the athlete's own target_list row 'blacklisted'. Called via a small
- * per-row form; stays on /signup/review.
+ * Parse the skip-list textarea. Trims each line, lowercases (so the
+ * outreach filter can do simple case-insensitive substring matching),
+ * drops empties and duplicates.
  */
-export async function blacklistBusinessAction(formData: FormData) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/signup/create");
-
-  const businessId = String(formData.get("business_id") ?? "");
-  if (!businessId) fail("Missing business.");
-
-  // Use the admin client — businesses.global_blacklisted isn't updatable by
-  // a regular authed user (RLS denies writes on businesses).
-  const { createAdminClient } = await import("@/lib/supabase/admin");
-  const admin = createAdminClient();
-
-  const { error: bizErr } = await admin
-    .from("businesses")
-    .update({
-      global_blacklisted: true,
-      blacklisted_reason: `athlete-request:${user.id}`,
-    })
-    .eq("id", businessId);
-  if (bizErr) fail(bizErr.message);
-
-  const { error: tlErr } = await supabase
-    .from("target_lists")
-    .update({
-      status: "blacklisted",
-      removed_at: new Date().toISOString(),
-    })
-    .eq("athlete_id", user.id)
-    .eq("business_id", businessId);
-  if (tlErr) fail(tlErr.message);
-
-  revalidatePath("/signup/review");
-  redirect("/signup/review");
+function parseBlacklistTerms(raw: string): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const line of raw.split(/\r?\n/)) {
+    const t = line.trim().toLowerCase();
+    if (!t || seen.has(t)) continue;
+    seen.add(t);
+    out.push(t);
+  }
+  return out;
 }
 
 /**
- * Final submit for the review screen. We look at which business_ids are
- * checked in the form, mark those 'approved', and mark every other pending
- * row 'removed'.
+ * Final submit for the review screen. Persists the athlete's skip-list,
+ * approves every business_id checked in the form, and marks every other
+ * pending row 'removed'. Then redirects to /dashboard (the photo step
+ * isn't built yet — we skip it cleanly).
  */
 export async function submitReviewAction(formData: FormData) {
   const supabase = await createClient();
@@ -62,6 +37,18 @@ export async function submitReviewAction(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/signup/create");
+
+  const blacklistRaw = String(formData.get("blacklist_terms") ?? "");
+  const blacklistTerms = parseBlacklistTerms(blacklistRaw);
+
+  const { error: athleteErr } = await supabase
+    .from("athletes")
+    .update({
+      blacklist_terms: blacklistTerms,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+  if (athleteErr) fail(athleteErr.message);
 
   const includedIds = new Set(
     formData.getAll("include").map((v) => String(v))
@@ -102,6 +89,7 @@ export async function submitReviewAction(formData: FormData) {
     if (error) fail(error.message);
   }
 
-  revalidatePath("/signup/deal-menu");
-  redirect("/signup/deal-menu");
+  // Photo + done steps aren't built yet — skip straight to dashboard.
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
 }

@@ -10,7 +10,6 @@ type Defaults = {
   productEnabled: boolean;
   appearanceEnabled: boolean;
   appearanceMin: number | null;
-  mutualEnabled: boolean;
 };
 
 function SubmitButton() {
@@ -22,7 +21,7 @@ function SubmitButton() {
       className="btn btn--primary btn--lg"
       style={{ width: "100%", justifyContent: "center", marginTop: "0.5rem" }}
     >
-      {pending ? "Saving…" : "Finish setup →"}
+      {pending ? "Saving…" : "Continue →"}
     </button>
   );
 }
@@ -43,10 +42,8 @@ export function DealMenuForm({
   const [appearanceMin, setAppearanceMin] = useState<string>(
     defaults.appearanceMin !== null ? String(defaults.appearanceMin) : "100"
   );
-  const [mutual, setMutual] = useState(defaults.mutualEnabled);
 
-  const onCount =
-    Number(cash) + Number(product) + Number(appearance) + Number(mutual);
+  const onCount = Number(cash) + Number(product) + Number(appearance);
 
   return (
     <form action={saveDealMenuAction} className="auth-form">
@@ -98,7 +95,7 @@ export function DealMenuForm({
             fontWeight: 700,
           }}
         >
-          {onCount} OF 4 ON
+          {onCount} OF 3 ON
         </span>
       </div>
 
@@ -143,14 +140,6 @@ export function DealMenuForm({
           />
         ) : null}
       </DealRow>
-
-      <DealRow
-        checked={mutual}
-        onToggle={() => setMutual((v) => !v)}
-        label="Mutual promo (zero cost)"
-        desc="Shoutout exchange · good first-deal starter"
-        inputName="mutual_promo_enabled"
-      />
 
       <div
         style={{

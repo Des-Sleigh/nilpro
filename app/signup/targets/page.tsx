@@ -5,13 +5,14 @@ import { SignupShell } from "@/components/auth/SignupShell";
 import { TargetsForm } from "@/components/auth/TargetsForm";
 
 export const metadata: Metadata = {
-  title: "Pitch targets — NILPro",
+  title: "Pitch locations — NILPro",
 };
 
 // Supabase stores state two-letter codes; our dropdown is also two-letter.
 // We don't attempt to derive the school city here — `athletes.school` is a
 // free-text school name (e.g. "Baylor University"), not a city. Phase 1
-// just pre-fills the hometown and lets the athlete add more cities manually.
+// just pre-fills the hometown and lets the athlete add more locations
+// manually.
 
 export default async function TargetsStep({
   searchParams,
@@ -43,29 +44,31 @@ export default async function TargetsStep({
 
   if (!social) redirect("/signup/verify");
 
-  // If deal_menus already exists, they finished signup — go to dashboard.
+  // New flow: deal-menu MUST come before targets.
   const { data: dealMenu } = await supabase
     .from("deal_menus")
     .select("id")
     .eq("athlete_id", user.id)
     .maybeSingle();
 
-  if (dealMenu) redirect("/dashboard");
+  if (!dealMenu) redirect("/signup/deal-menu");
 
-  // Pre-fill cities from existing pitch_cities rows if any; otherwise seed
-  // with the hometown from the athlete record.
+  // If pitch_cities rows already exist, they've completed this step —
+  // jump forward to review.
   const { data: existingCities } = await supabase
     .from("pitch_cities")
     .select("city, state, radius_miles")
     .eq("athlete_id", user.id)
     .order("created_at", { ascending: true });
 
-  let defaultCities: { city: string; state: string }[] = [];
-  let defaultRadius = 10;
   if (existingCities && existingCities.length > 0) {
-    defaultCities = existingCities.map((c) => ({ city: c.city, state: c.state }));
-    defaultRadius = existingCities[0].radius_miles ?? 10;
-  } else if (athlete.hometown_city && athlete.hometown_state) {
+    redirect("/signup/review");
+  }
+
+  // Seed the form with the hometown when we have nothing stored yet.
+  let defaultCities: { city: string; state: string }[] = [];
+  const defaultRadius = 10;
+  if (athlete.hometown_city && athlete.hometown_state) {
     defaultCities = [
       { city: athlete.hometown_city, state: athlete.hometown_state },
     ];
@@ -78,7 +81,7 @@ export default async function TargetsStep({
 
   return (
     <SignupShell
-      step={4}
+      step={5}
       eyebrow="WHO WE PITCH"
       title={
         <>
@@ -87,7 +90,7 @@ export default async function TargetsStep({
       }
     >
       <p className="lede" style={{ marginTop: "0.25rem" }}>
-        Pick the cities and categories you want us to reach out in. Your
+        Pick the locations and categories you want us to reach out in. Your
         hometown is pre-added — edit, remove, or add more.
       </p>
       <TargetsForm

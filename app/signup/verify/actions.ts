@@ -91,5 +91,5 @@ export async function confirmDmSentAction() {
   if (!social) fail("Submit your handle first.");
 
   revalidatePath("/signup/verify");
-  redirect("/signup/targets");
+  redirect("/signup/deal-menu");
 }

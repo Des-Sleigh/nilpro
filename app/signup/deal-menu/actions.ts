@@ -37,9 +37,8 @@ export async function saveDealMenuAction(formData: FormData) {
   const appearanceMin = parseIntOrNull(
     String(formData.get("appearance_min") ?? "")
   );
-  const mutualEnabled = formData.get("mutual_promo_enabled") === "on";
 
-  if (!cashEnabled && !productEnabled && !appearanceEnabled && !mutualEnabled) {
+  if (!cashEnabled && !productEnabled && !appearanceEnabled) {
     fail("Pick at least one deal type.");
   }
 
@@ -51,6 +50,8 @@ export async function saveDealMenuAction(formData: FormData) {
     fail("Enter a minimum dollar amount for appearances.");
   }
 
+  // Note: `mutual_promo_enabled` column still exists in the DB from 0001 —
+  // we simply don't touch it here. Harmless to leave dormant.
   const payload = {
     athlete_id: user.id,
     cash_per_post_enabled: cashEnabled,
@@ -58,7 +59,6 @@ export async function saveDealMenuAction(formData: FormData) {
     product_trade_enabled: productEnabled,
     appearance_enabled: appearanceEnabled,
     appearance_min: appearanceEnabled ? appearanceMin : null,
-    mutual_promo_enabled: mutualEnabled,
     updated_at: new Date().toISOString(),
   };
 
@@ -67,6 +67,7 @@ export async function saveDealMenuAction(formData: FormData) {
     .upsert(payload, { onConflict: "athlete_id" });
   if (error) fail(error.message);
 
-  revalidatePath("/dashboard");
-  redirect("/dashboard");
+  // Next step in the new flow is locations & categories (targets).
+  revalidatePath("/signup/targets");
+  redirect("/signup/targets");
 }

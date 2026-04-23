@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { runPlacesSearchForAthlete, CATEGORY_QUERIES } from "@/lib/places/search";
+import { runPlacesSearchForAthlete } from "@/lib/places/search";
+import { CATEGORIES } from "@/lib/places/categories";
 
 const VALID_RADII = [5, 10, 25, 50] as const;
 type Radius = (typeof VALID_RADII)[number];
@@ -34,7 +35,7 @@ export async function saveTargetsAction(formData: FormData) {
   const stateValues = formData.getAll("state").map((v) => String(v).trim());
 
   if (cityValues.length === 0 || cityValues.length !== stateValues.length) {
-    fail("Add at least one city.");
+    fail("Add at least one location.");
   }
 
   const cities: { city: string; state: string }[] = [];
@@ -48,7 +49,7 @@ export async function saveTargetsAction(formData: FormData) {
     seen.add(key);
     cities.push({ city, state });
   }
-  if (cities.length === 0) fail("Add at least one city.");
+  if (cities.length === 0) fail("Add at least one location.");
 
   // ---- Radius -----------------------------------------------------------
   const radiusRaw = Number(formData.get("radius"));
@@ -61,7 +62,7 @@ export async function saveTargetsAction(formData: FormData) {
     .getAll("category")
     .map((v) => String(v))
     .filter((v) => v.length > 0);
-  const validKeys = new Set([...Object.keys(CATEGORY_QUERIES), "other"]);
+  const validKeys = new Set(CATEGORIES.map((c) => c.id));
   const categories = Array.from(new Set(categoryValues)).filter((c) =>
     validKeys.has(c)
   );

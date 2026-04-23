@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { saveTargetsAction } from "@/app/signup/targets/actions";
+import { CATEGORIES } from "@/lib/places/categories";
 
 const US_STATES = [
   "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA",
@@ -14,23 +15,7 @@ const US_STATES = [
 
 const RADII = [5, 10, 25, 50] as const;
 
-const CATEGORIES = [
-  { v: "restaurants", label: "Restaurants & cafés", desc: "Local restaurants, family-owned spots" },
-  { v: "fitness", label: "Gyms & fitness", desc: "Gyms, CrossFit, yoga, boutique studios" },
-  { v: "beauty", label: "Beauty & salons", desc: "Hair salons, barbers, spas" },
-  { v: "retail", label: "Local retail", desc: "Boutiques, sporting goods, specialty" },
-  { v: "coffee", label: "Coffee shops", desc: "Cafés, roasters, specialty coffee" },
-  { v: "auto", label: "Automotive", desc: "Detailing, repair, car washes" },
-  { v: "other", label: "Other", desc: "We'll ask for specifics later" },
-] as const;
-
-type Category = (typeof CATEGORIES)[number]["v"];
-
-const VALID_CATEGORIES: Set<string> = new Set(CATEGORIES.map((c) => c.v));
-
-function coerceCategory(v: string): Category | null {
-  return VALID_CATEGORIES.has(v) ? (v as Category) : null;
-}
+const VALID_CATEGORY_IDS: Set<string> = new Set(CATEGORIES.map((c) => c.id));
 
 type Props = {
   defaultCities: { city: string; state: string }[];
@@ -69,12 +54,14 @@ export function TargetsForm({
   const [radius, setRadius] = useState<number>(
     (RADII as readonly number[]).includes(defaultRadius) ? defaultRadius : 10
   );
-  const [selected, setSelected] = useState<Set<Category>>(() => {
-    const safeDefaults = defaultCategories
-      .map(coerceCategory)
-      .filter((c): c is Category => c !== null);
-    const seed: Category[] =
-      safeDefaults.length > 0 ? safeDefaults : ["restaurants", "fitness", "retail"];
+  const [selected, setSelected] = useState<Set<string>>(() => {
+    const safeDefaults = defaultCategories.filter((c) =>
+      VALID_CATEGORY_IDS.has(c)
+    );
+    const seed: string[] =
+      safeDefaults.length > 0
+        ? safeDefaults
+        : ["food_drink", "fitness_wellness", "retail_apparel"];
     return new Set(seed);
   });
 
@@ -90,11 +77,11 @@ export function TargetsForm({
     setCities((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== idx) : prev));
   }
 
-  function toggleCategory(v: Category) {
+  function toggleCategory(id: string) {
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(v)) next.delete(v);
-      else next.add(v);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }
@@ -118,7 +105,7 @@ export function TargetsForm({
       ) : null}
 
       <div className="auth-form__label" style={{ gap: "0.6rem" }}>
-        <span>Pitch cities</span>
+        <span>Pitch locations</span>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
           {cities.map((c, idx) => (
             <div
@@ -159,7 +146,7 @@ export function TargetsForm({
                 type="button"
                 onClick={() => removeCity(idx)}
                 disabled={cities.length <= 1}
-                aria-label="Remove city"
+                aria-label="Remove location"
                 style={{
                   padding: "0 0.9rem",
                   border: "2px solid var(--border-strong)",
@@ -194,12 +181,12 @@ export function TargetsForm({
             cursor: "pointer",
           }}
         >
-          + Add another city
+          + Add another location
         </button>
       </div>
 
       <label className="auth-form__label">
-        <span>Radius · applies to all cities</span>
+        <span>Radius · applies to all locations</span>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
           {RADII.map((r) => {
             const active = radius === r;
@@ -236,10 +223,10 @@ export function TargetsForm({
         <span>Business categories · pick all that fit</span>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
           {CATEGORIES.map((cat) => {
-            const active = selected.has(cat.v);
+            const active = selected.has(cat.id);
             return (
               <label
-                key={cat.v}
+                key={cat.id}
                 style={{
                   display: "flex",
                   gap: "0.85rem",
@@ -254,9 +241,9 @@ export function TargetsForm({
                 <input
                   type="checkbox"
                   name="category"
-                  value={cat.v}
+                  value={cat.id}
                   checked={active}
-                  onChange={() => toggleCategory(cat.v)}
+                  onChange={() => toggleCategory(cat.id)}
                   style={{ marginTop: "0.2rem", accentColor: "var(--green)" }}
                 />
                 <div>
@@ -272,7 +259,7 @@ export function TargetsForm({
                     {cat.label}
                   </div>
                   <div style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>
-                    {cat.desc}
+                    {cat.searchTerms.join(" · ")}
                   </div>
                 </div>
               </label>

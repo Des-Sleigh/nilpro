@@ -54,7 +54,7 @@ export default async function ReviewStep({
 
   const { data: athlete } = await supabase
     .from("athletes")
-    .select("id")
+    .select("id, blacklist_terms")
     .eq("id", user.id)
     .maybeSingle();
   if (!athlete) redirect("/signup/profile");
@@ -66,20 +66,22 @@ export default async function ReviewStep({
     .maybeSingle();
   if (!social) redirect("/signup/verify");
 
+  // New flow: deal-menu must be completed before targets, and targets
+  // before review. No forward skip — review is always visitable during
+  // signup until the photo step lands.
+  const { data: dealMenu } = await supabase
+    .from("deal_menus")
+    .select("id")
+    .eq("athlete_id", user.id)
+    .maybeSingle();
+  if (!dealMenu) redirect("/signup/deal-menu");
+
   const { data: cities } = await supabase
     .from("pitch_cities")
     .select("id")
     .eq("athlete_id", user.id)
     .limit(1);
   if (!cities || cities.length === 0) redirect("/signup/targets");
-
-  // If deal_menus exists, they've already passed this step — go to dashboard.
-  const { data: dealMenu } = await supabase
-    .from("deal_menus")
-    .select("id")
-    .eq("athlete_id", user.id)
-    .maybeSingle();
-  if (dealMenu) redirect("/dashboard");
 
   const { data: targetsRaw } = await supabase
     .from("target_lists")
@@ -112,12 +114,16 @@ export default async function ReviewStep({
     })
     .filter((x): x is ReviewBusiness => x !== null);
 
+  const initialBlacklistTerms = Array.isArray(athlete.blacklist_terms)
+    ? (athlete.blacklist_terms as string[])
+    : [];
+
   const params = await searchParams;
 
   return (
     <SignupShell
-      step={5}
-      eyebrow="REVIEW TARGETS"
+      step={6}
+      eyebrow="YOUR LIST"
       title={
         <>
           Your <span className="accent-green">target list.</span>
@@ -146,12 +152,15 @@ export default async function ReviewStep({
       ) : (
         <>
           <p className="lede" style={{ marginTop: "0.25rem" }}>
-            We found {businesses.length} businesses that match your cities and
-            categories. Uncheck any you don&apos;t want us pitching. Hit{" "}
-            <strong style={{ color: "var(--text)" }}>Blacklist</strong> on anything
-            that should never be shown to any athlete.
+            We found{" "}
+            <strong style={{ color: "var(--text)" }}>{businesses.length}</strong>{" "}
+            businesses in your area. Uncheck any you don&apos;t want to pitch,
+            or tell us below which ones to always skip.
           </p>
-          <TargetReviewList businesses={businesses} />
+          <TargetReviewList
+            businesses={businesses}
+            initialBlacklistTerms={initialBlacklistTerms}
+          />
         </>
       )}
     </SignupShell>
@@ -191,11 +200,11 @@ function EmptyReview() {
           lineHeight: 1.55,
         }}
       >
-        We couldn&apos;t find businesses for your cities and categories. Try
-        adding another city or picking different categories.
+        We couldn&apos;t find businesses for your locations and categories. Try
+        adding another location or picking different categories.
       </p>
       <Link href="/signup/targets" className="btn btn--primary">
-        Back to targets
+        Back to locations
       </Link>
     </div>
   );
