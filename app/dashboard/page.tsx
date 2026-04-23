@@ -11,6 +11,7 @@ import { QuickActions } from "@/components/dashboard/QuickActions";
 import { TargetListSummary } from "@/components/dashboard/TargetListSummary";
 import { DealMenuSummary } from "@/components/dashboard/DealMenuSummary";
 import { SocialLinkSummary } from "@/components/dashboard/SocialLinkSummary";
+import { activeLabel } from "@/lib/time/activeLabel";
 
 export const metadata: Metadata = {
   title: "Dashboard — NILPro",
@@ -100,15 +101,7 @@ export default async function Dashboard() {
   const dealsClosed = 0;
   const isLive = approvedBusinessIds.size > 0;
 
-  const weeksActive = athlete.created_at
-    ? Math.max(
-        1,
-        Math.floor(
-          (Date.now() - new Date(athlete.created_at).getTime()) /
-            (1000 * 60 * 60 * 24 * 7)
-        )
-      )
-    : 1;
+  const activeLabelText = activeLabel(athlete.created_at as string | null);
 
   // ---- Action banner: pick the highest-priority missing step ------------
   let missingStep:
@@ -165,7 +158,7 @@ export default async function Dashboard() {
           approvedCount={approvedBusinessIds.size}
           pitchesSent={pitchesSent}
           repliesCount={repliesCount}
-          weeksActive={weeksActive}
+          activeLabel={activeLabelText}
           isLive={isLive}
         />
 

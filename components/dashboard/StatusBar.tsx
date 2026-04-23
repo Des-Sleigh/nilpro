@@ -2,7 +2,7 @@ type Props = {
   approvedCount: number;
   pitchesSent: number;
   repliesCount: number;
-  weeksActive: number;
+  activeLabel: string;
   isLive: boolean;
 };
 
@@ -10,7 +10,7 @@ export function StatusBar({
   approvedCount,
   pitchesSent,
   repliesCount,
-  weeksActive,
+  activeLabel,
   isLive,
 }: Props) {
   return (
@@ -31,9 +31,7 @@ export function StatusBar({
         <span>
           <strong>{approvedCount}</strong> on list
         </span>
-        <span>
-          <strong>{weeksActive}</strong> {weeksActive === 1 ? "week" : "weeks"} active
-        </span>
+        <span>{activeLabel}</span>
       </div>
     </div>
   );

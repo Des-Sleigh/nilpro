@@ -9,11 +9,18 @@ import { Quote } from "@/components/home/Quote";
 import { PricingTeaser } from "@/components/home/PricingTeaser";
 import { FaqTeaser } from "@/components/home/FaqTeaser";
 import { FinalCta } from "@/components/home/FinalCta";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isSignedIn = Boolean(user);
+
   return (
     <main>
-      <Hero />
+      <Hero isSignedIn={isSignedIn} />
       <AudienceMarquee />
       <FourPlays />
       <DealTypes />
@@ -23,7 +30,7 @@ export default function Home() {
       <Quote />
       <PricingTeaser />
       <FaqTeaser />
-      <FinalCta />
+      <FinalCta isSignedIn={isSignedIn} />
     </main>
   );
 }

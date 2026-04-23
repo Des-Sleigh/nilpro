@@ -8,7 +8,7 @@ function ArrowIcon() {
   );
 }
 
-export function Hero() {
+export function Hero({ isSignedIn = false }: { isSignedIn?: boolean }) {
   return (
     <section className="hero">
       <div className="container-page">
@@ -33,8 +33,11 @@ export function Hero() {
             </p>
 
             <div className="hero__ctas">
-              <Link href="/signup" className="btn btn--primary btn--lg">
-                Get in the game
+              <Link
+                href={isSignedIn ? "/dashboard" : "/signup"}
+                className="btn btn--primary btn--lg"
+              >
+                {isSignedIn ? "Go to dashboard" : "Get in the game"}
                 <ArrowIcon />
               </Link>
               <Link href="/how-it-works" className="btn btn--ghost btn--lg">

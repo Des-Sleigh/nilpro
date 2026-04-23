@@ -8,7 +8,7 @@ function ArrowIcon() {
   );
 }
 
-export function FinalCta() {
+export function FinalCta({ isSignedIn = false }: { isSignedIn?: boolean }) {
   return (
     <section className="final-cta">
       <div className="container-page">
@@ -21,8 +21,11 @@ export function FinalCta() {
             every move. Let&apos;s get you paid.
           </p>
           <div className="hero__ctas" style={{ justifyContent: "center" }}>
-            <Link href="/signup" className="btn btn--primary btn--lg">
-              Start your profile
+            <Link
+              href={isSignedIn ? "/dashboard" : "/signup"}
+              className="btn btn--primary btn--lg"
+            >
+              {isSignedIn ? "Go to dashboard" : "Start your profile"}
               <ArrowIcon />
             </Link>
             <Link href="/how-it-works" className="btn btn--ghost btn--lg">

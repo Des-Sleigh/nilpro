@@ -14,7 +14,7 @@ const LINKS: { href: string; label: string }[] = [
   { href: "/faq", label: "FAQ" },
 ];
 
-export function Nav() {
+export function Nav({ isSignedIn = false }: { isSignedIn?: boolean }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -56,12 +56,20 @@ export function Nav() {
         </div>
 
         <div className="nav__cta">
-          <Link href="/signin" className="btn btn--ghost btn--sm">
-            Sign in
-          </Link>
-          <Link href="/signup" className="btn btn--primary btn--sm">
-            Get started
-          </Link>
+          {isSignedIn ? (
+            <Link href="/dashboard" className="btn btn--primary btn--sm">
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link href="/signin" className="btn btn--ghost btn--sm">
+                Sign in
+              </Link>
+              <Link href="/signup" className="btn btn--primary btn--sm">
+                Get started
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>

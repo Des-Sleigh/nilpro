@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 
 type Props = {
   step: number;
@@ -9,7 +10,7 @@ type Props = {
   footer?: React.ReactNode;
 };
 
-export function SignupShell({
+export async function SignupShell({
   step,
   total = 8,
   eyebrow,
@@ -18,6 +19,24 @@ export function SignupShell({
   footer,
 }: Props) {
   const pct = Math.round((step / total) * 100);
+
+  // If the athlete row already exists, exit should send them back to the
+  // dashboard instead of the marketing home (where "Get in the game" could
+  // be confusing for someone mid-signup).
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let exitHref: string = "/";
+  if (user) {
+    const { data: athlete } = await supabase
+      .from("athletes")
+      .select("id")
+      .eq("id", user.id)
+      .maybeSingle();
+    exitHref = athlete ? "/dashboard" : "/";
+  }
 
   return (
     <main className="section" style={{ paddingTop: "clamp(2rem, 5vw, 4rem)" }}>
@@ -43,7 +62,7 @@ export function SignupShell({
             </strong>{" "}
             of {String(total).padStart(2, "0")}
           </span>
-          <Link href="/" style={{ color: "var(--text-faint)" }}>
+          <Link href={exitHref} style={{ color: "var(--text-faint)" }}>
             Exit
           </Link>
         </div>

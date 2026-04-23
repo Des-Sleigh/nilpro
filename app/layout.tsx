@@ -4,6 +4,7 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { TickerBar } from "@/components/TickerBar";
 import { RevealOnScroll } from "@/components/RevealOnScroll";
+import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
 const bebas = Bebas_Neue({
@@ -40,11 +41,17 @@ export const metadata: Metadata = {
     "NILPro pitches local businesses on your behalf — so every high school and college athlete can land real hometown deals. Free meals, gear, cash for posts, and more. $19/year. Zero commission.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isSignedIn = Boolean(user);
+
   return (
     <html
       lang="en"
@@ -53,7 +60,7 @@ export default function RootLayout({
       <body className="antialiased">
         <RevealOnScroll />
         <TickerBar />
-        <Nav />
+        <Nav isSignedIn={isSignedIn} />
         {children}
         <Footer />
       </body>
