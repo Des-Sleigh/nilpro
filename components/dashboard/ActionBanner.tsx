@@ -10,9 +10,17 @@ type Props = {
     href: string;
     cta: string;
   };
+  /** True when the athlete has an IG handle saved but it hasn't been
+   *  verified yet. Shown ahead of the quiet "sit tight" state so new
+   *  accounts know outreach is gated on verification. */
+  verificationPending?: boolean;
 };
 
-export function ActionBanner({ quiet = true, missingStep }: Props) {
+export function ActionBanner({
+  quiet = true,
+  missingStep,
+  verificationPending = false,
+}: Props) {
   if (missingStep) {
     return (
       <div className="action-items">
@@ -26,6 +34,23 @@ export function ActionBanner({ quiet = true, missingStep }: Props) {
         <Link href={missingStep.href} className="action-items__btn">
           {missingStep.cta} →
         </Link>
+      </div>
+    );
+  }
+
+  if (verificationPending) {
+    return (
+      <div className="action-items">
+        <div className="action-items__left">
+          <div className="action-items__icon">⏳</div>
+          <div className="action-items__text">
+            Verification pending
+            <small>
+              We&apos;re confirming your Instagram. Outreach starts the moment
+              you&apos;re verified (usually within 24 hours).
+            </small>
+          </div>
+        </div>
       </div>
     );
   }

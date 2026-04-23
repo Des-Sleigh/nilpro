@@ -163,7 +163,11 @@ export default async function Dashboard() {
           isLive={isLive}
         />
 
-        <ActionBanner quiet={!missingStep} missingStep={missingStep} />
+        <ActionBanner
+          quiet={!missingStep}
+          missingStep={missingStep}
+          verificationPending={Boolean(social && !social.verified)}
+        />
 
         <StatsRow
           dealsClosed={dealsClosed}

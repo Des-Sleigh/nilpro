@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const LINKS: { href: string; label: string }[] = [
   { href: "/how-it-works", label: "How it works" },
@@ -17,11 +17,44 @@ const LINKS: { href: string; label: string }[] = [
 export function Nav({ isSignedIn = false }: { isSignedIn?: boolean }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
 
   const close = () => setOpen(false);
 
+  // Close the mobile menu when:
+  // - the user clicks anywhere outside the nav element
+  // - the user presses Escape
+  // - the route changes (handled via pathname effect below)
+  useEffect(() => {
+    if (!open) return;
+    function onDocPointerDown(e: MouseEvent | TouchEvent) {
+      if (!navRef.current) return;
+      const target = e.target as Node | null;
+      if (target && !navRef.current.contains(target)) {
+        setOpen(false);
+      }
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onDocPointerDown);
+    document.addEventListener("touchstart", onDocPointerDown, { passive: true });
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocPointerDown);
+      document.removeEventListener("touchstart", onDocPointerDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  // Close the menu whenever the route changes (includes tapping the logo
+  // or any internal Link).
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   return (
-    <nav className="nav">
+    <nav className="nav" ref={navRef}>
       <div className="nav__inner">
         <Link href="/" className="logo" onClick={close}>
           <span className="logo__mark">N</span>

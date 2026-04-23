@@ -131,5 +131,6 @@ export async function saveProfileSettingsAction(formData: FormData) {
 
   revalidatePath("/settings/profile");
   revalidatePath("/dashboard");
-  redirect("/settings/profile?saved=1");
+  // Back to the dashboard so the athlete sees their change reflected.
+  redirect("/dashboard");
 }
