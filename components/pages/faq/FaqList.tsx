@@ -227,11 +227,11 @@ const CATEGORIES: Category[] = [
         a: (
           <p>
             Every athlete gets a unique link. A friend signs up via your link
-            AND pays → you earn rewards: <strong>+1 month</strong> added per
-            referral, <strong>free Pro upgrade</strong> at 3 referrals,{" "}
-            <strong>free next year at Pro</strong> at 5, and{" "}
-            <strong>free year at Champion</strong> at 10. Rewards stack.{" "}
-            <Link href="/referrals">See the full ladder →</Link>
+            AND pays → you earn{" "}
+            <strong>+50 pitches added to your current year</strong> per
+            referral. Linear stacking — 4 paid referrals = +200 pitches, 10 =
+            +500. No tier upgrades, no milestones, just more outreach.{" "}
+            <Link href="/referrals">See the full breakdown →</Link>
           </p>
         ),
       },

@@ -1,75 +1,149 @@
+const STACKS = [1, 2, 3, 4] as const;
+
 export function ReferralLadder() {
   return (
     <section className="section" style={{ paddingTop: "2rem" }}>
       <div className="container-page">
         <div className="section-head">
-          <span className="label">THE LADDER</span>
+          <span className="label">THE MATH</span>
           <h2 style={{ marginTop: "1.25rem" }}>
-            Every referral <span className="accent-green">stacks.</span>
+            Every paid referral ={" "}
+            <span className="accent-green">+50 pitches.</span>
           </h2>
           <p className="section-head__lede">
-            Refer as few or as many as you want. Rewards hit automatically the
-            moment your friend pays.
+            Linear. No tiers. No milestones. One paid referral adds 50 pitches
+            to your current year&apos;s allowance. Two adds 100. Ten adds 500.
           </p>
         </div>
 
-        <div className="rungs">
-          <div className="rung">
-            <div className="rung__count">
-              1<small>REF</small>
-            </div>
-            <div className="rung__label">First unlock</div>
-            <div className="rung__reward">+1 Month free</div>
-            <div className="rung__desc">
-              Added to your subscription the moment your friend pays. Stacks
-              with every referral after.
-            </div>
+        <div
+          style={{
+            marginTop: "2.5rem",
+            padding: "2rem 1.5rem",
+            border: "1px solid var(--border)",
+            background: "var(--bg-soft)",
+            borderRadius: "var(--r-md)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "1rem",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "var(--mono)",
+              fontSize: "0.72rem",
+              letterSpacing: "0.16em",
+              textTransform: "uppercase",
+              color: "var(--text-muted)",
+              fontWeight: 700,
+            }}
+          >
+            THE EQUATION
           </div>
-
-          <div className="rung">
-            <div className="rung__count">
-              3<small>REFS</small>
-            </div>
-            <div className="rung__label">Tier up</div>
-            <div className="rung__reward">Free Pro upgrade</div>
-            <div className="rung__desc">
-              Instant upgrade to Pro for the remainder of your current term. 2×
-              outreach reach, follow-up automation, advanced analytics.
-            </div>
-          </div>
-
-          <div className="rung">
-            <div className="rung__count">
-              5<small>REFS</small>
-            </div>
-            <div className="rung__label">Full year</div>
-            <div className="rung__reward">Free next year at Pro</div>
-            <div className="rung__desc">
-              Your next full year renewed free at the Pro tier. No payment, no
-              lapse. Normal value: $39.
-            </div>
-          </div>
-
-          <div className="rung rung--max">
-            <div className="rung__badge">MAX</div>
-            <div className="rung__count">
-              10<small>REFS</small>
-            </div>
-            <div className="rung__label">Champion</div>
-            <div className="rung__reward">Free year at Champion</div>
-            <div className="rung__desc">
-              Full year of Champion tier on us — unlimited outreach, 1-on-1
-              strategy calls, first access to new features. Normal value: $79.
-            </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              fontFamily: "var(--display)",
+              fontWeight: 800,
+            }}
+          >
+            <span
+              style={{
+                fontSize: "clamp(1.4rem, 3.2vw, 2rem)",
+                color: "var(--text)",
+              }}
+            >
+              1 paid referral
+            </span>
+            <span
+              style={{
+                fontSize: "clamp(1.6rem, 4vw, 2.5rem)",
+                color: "var(--green)",
+              }}
+            >
+              =
+            </span>
+            <span
+              style={{
+                fontSize: "clamp(1.4rem, 3.2vw, 2rem)",
+                color: "var(--green)",
+                textShadow: "0 0 18px var(--green-glow)",
+              }}
+            >
+              +50 pitches
+            </span>
           </div>
         </div>
 
+        <div
+          style={{
+            marginTop: "2rem",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(9rem, 1fr))",
+            gap: "0.85rem",
+          }}
+        >
+          {STACKS.map((n) => (
+            <div
+              key={n}
+              style={{
+                padding: "1.25rem 1rem",
+                border: "1px solid var(--border-strong)",
+                background: "var(--bg)",
+                borderRadius: "var(--r-sm)",
+                textAlign: "center",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.35rem",
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "var(--mono)",
+                  fontSize: "0.7rem",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: "var(--text-muted)",
+                  fontWeight: 700,
+                }}
+              >
+                {n} REFERRAL{n === 1 ? "" : "S"}
+              </div>
+              <div
+                style={{
+                  fontFamily: "var(--display)",
+                  fontSize: "2rem",
+                  fontWeight: 800,
+                  color: "var(--green)",
+                  lineHeight: 1,
+                  textShadow: "0 0 14px var(--green-glow)",
+                }}
+              >
+                +{n * 50}
+              </div>
+              <div
+                style={{
+                  fontSize: "0.8rem",
+                  color: "var(--text-muted)",
+                }}
+              >
+                extra pitches
+              </div>
+            </div>
+          ))}
+        </div>
+
         <div className="notebox" style={{ marginTop: "2rem" }}>
-          <span className="notebox__head">HOW STACKING WORKS</span>
-          Each milestone triggers its own reward. Hit 3 referrals? You get the
-          +3 months (1+1+1) AND the free Pro upgrade. Hit 10? You collect
-          everything along the way. Rewards don&apos;t replace each other — they
-          stack.
+          <span className="notebox__head">HOW IT WORKS</span>
+          Rewards apply once your friend&apos;s payment clears and verification
+          passes. The 50 pitches get added to your current plan year — use them
+          anytime in the next 12 months. No cap on how many referrals stack.
         </div>
       </div>
     </section>

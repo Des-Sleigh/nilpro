@@ -7,12 +7,12 @@ export function ReferralsHero() {
           className="page-hero__title"
           style={{ marginTop: "1.25rem" }}
         >
-          Bring your teammates. <em>Earn free tiers.</em>
+          Bring your teammates. <em>Earn more pitches.</em>
         </h1>
         <p className="page-hero__lede lede">
-          Every athlete you refer makes your subscription better. Free months,
-          free tier upgrades, even a free year at Champion. You help us grow —
-          we keep rewarding you for it.
+          Every paid referral adds 50 pitches to your current year&apos;s
+          allowance. Linear stacking — no tiers, no milestones. Help us grow
+          and we pour more outreach back into your account.
         </p>
       </div>
     </section>

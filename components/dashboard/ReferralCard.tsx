@@ -6,17 +6,16 @@ type Props = {
   referralCode: string;
   /** Count of signups that converted to paid via this code. */
   paidReferrals: number;
-  /** Number needed to hit the next tier (default 3 for Pro). */
-  goal?: number;
 };
 
 const BASE = "https://thenilpro.com/signup/create?ref=";
+const PITCHES_PER_REFERRAL = 50;
 
-export function ReferralCard({ referralCode, paidReferrals, goal = 3 }: Props) {
+export function ReferralCard({ referralCode, paidReferrals }: Props) {
   const [copied, setCopied] = useState(false);
   const url = `${BASE}${referralCode}`;
   const shortUrl = url.replace(/^https?:\/\//, "");
-  const progress = Math.min(100, Math.round((paidReferrals / goal) * 100));
+  const pitchesEarned = paidReferrals * PITCHES_PER_REFERRAL;
 
   const onCopy = async () => {
     try {
@@ -24,8 +23,6 @@ export function ReferralCard({ referralCode, paidReferrals, goal = 3 }: Props) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
-      // Clipboard can fail on older browsers / insecure contexts — fall back
-      // to select+copy via a hidden textarea.
       const ta = document.createElement("textarea");
       ta.value = url;
       document.body.appendChild(ta);
@@ -42,28 +39,105 @@ export function ReferralCard({ referralCode, paidReferrals, goal = 3 }: Props) {
   };
 
   const smsBody = encodeURIComponent(
-    `Hey — sign up for NILPro with my link and I get a free month on my plan: ${url}`
+    `Hey — sign up for NILPro with my link and I get 50 more pitches added to my year: ${url}`
   );
   const shareText = encodeURIComponent(
     `NILPro pitches local businesses for NIL deals on my behalf. Join with my link: ${url}`
   );
 
   return (
-    <div className="dash-panel">
+    <div className="dash-panel" id="referrals">
       <div className="dash-panel__head">
         <div className="dash-panel__title">Your referrals</div>
         <div className="dash-panel__meta">
-          {paidReferrals} / {goal} TO PRO
+          +{pitchesEarned} PITCHES EARNED
         </div>
       </div>
       <div className="referral-widget">
-        <div className="rw-title">Refer teammates, earn free months</div>
+        <div className="rw-title">Refer a teammate — earn pitches</div>
         <div className="rw-sub">
-          Next: free Pro upgrade at {goal} paid referrals
+          Every paid referral adds 50 pitches to this year&apos;s allowance.
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "0.5rem",
+            marginBottom: "0.85rem",
+          }}
+        >
+          <div
+            style={{
+              padding: "0.65rem 0.75rem",
+              border: "1px solid var(--border)",
+              background: "var(--bg)",
+              borderRadius: "var(--r-sm)",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "var(--mono)",
+                fontSize: "0.62rem",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "var(--text-muted)",
+                marginBottom: "0.25rem",
+              }}
+            >
+              Paid referrals
+            </div>
+            <div
+              style={{
+                fontFamily: "var(--display)",
+                fontSize: "1.4rem",
+                fontWeight: 800,
+                color: "var(--text)",
+                lineHeight: 1,
+              }}
+            >
+              {paidReferrals}
+            </div>
+          </div>
+          <div
+            style={{
+              padding: "0.65rem 0.75rem",
+              border: "1px solid var(--border)",
+              background: "var(--bg)",
+              borderRadius: "var(--r-sm)",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "var(--mono)",
+                fontSize: "0.62rem",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "var(--text-muted)",
+                marginBottom: "0.25rem",
+              }}
+            >
+              Pitches earned
+            </div>
+            <div
+              style={{
+                fontFamily: "var(--display)",
+                fontSize: "1.4rem",
+                fontWeight: 800,
+                color: "var(--green)",
+                lineHeight: 1,
+                textShadow: "0 0 10px var(--green-glow)",
+              }}
+            >
+              +{pitchesEarned}
+            </div>
+          </div>
         </div>
 
         <div className="rw-link">
-          <span className="rw-link__url" title={url}>{shortUrl}</span>
+          <span className="rw-link__url" title={url}>
+            {shortUrl}
+          </span>
           <button
             type="button"
             onClick={onCopy}
@@ -74,26 +148,10 @@ export function ReferralCard({ referralCode, paidReferrals, goal = 3 }: Props) {
           </button>
         </div>
 
-        <div className="rw-progress">
-          <div className="rw-progress__label">
-            <span>Signed &amp; paid</span>
-            <strong>
-              {paidReferrals} / {goal}
-            </strong>
-          </div>
-          <div className="rw-progress__bar">
-            <div
-              className="rw-progress__bar-fill"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
-
         <div className="rw-share">
           <a
             href={`sms:?&body=${smsBody}`}
             onClick={(e) => {
-              // Best-effort — mobile native sms:, on desktop we just copy.
               if (!/Android|iPhone|iPad/i.test(navigator.userAgent)) {
                 e.preventDefault();
                 onCopy();

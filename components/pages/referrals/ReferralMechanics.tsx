@@ -63,11 +63,11 @@ export function ReferralMechanics() {
               <div className="mechanic">
                 <span className="mechanic__num">04</span>
                 <div className="mechanic__text">
-                  <h4>Reward lands</h4>
+                  <h4>+50 pitches land</h4>
                   <p>
-                    The moment they pay, your next reward applies. You see it
-                    in your dashboard immediately. No forms to fill, no
-                    waiting.
+                    The moment they pay, 50 pitches drop into your current
+                    year&apos;s allowance. You see the new total in your
+                    dashboard immediately. No forms, no waiting.
                   </p>
                 </div>
               </div>
@@ -86,8 +86,8 @@ export function ReferralMechanics() {
               </div>
               <div className="share-mock__progress">
                 <div className="share-mock__progress-label">
-                  <span>Next reward · Free Pro</span>
-                  <strong>1 of 3 referred</strong>
+                  <span>Pitches earned · this year</span>
+                  <strong>+50</strong>
                 </div>
                 <div className="share-mock__bar">
                   <div className="share-mock__bar-fill"></div>
@@ -103,8 +103,8 @@ export function ReferralMechanics() {
                   <div className="share-mock__stat-label">Pending</div>
                 </div>
                 <div className="share-mock__stat">
-                  <div className="share-mock__stat-num">+1</div>
-                  <div className="share-mock__stat-label">Month earned</div>
+                  <div className="share-mock__stat-num">+50</div>
+                  <div className="share-mock__stat-label">Pitches earned</div>
                 </div>
               </div>
             </div>

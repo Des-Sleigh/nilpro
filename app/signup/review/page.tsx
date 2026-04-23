@@ -155,7 +155,7 @@ export default async function ReviewStep({
             We found{" "}
             <strong style={{ color: "var(--text)" }}>{businesses.length}</strong>{" "}
             businesses in your area. Uncheck any you don&apos;t want to pitch,
-            or tell us below which ones to always skip.
+            skip the ones to never contact, or add your own.
           </p>
           <TargetReviewList
             businesses={businesses}

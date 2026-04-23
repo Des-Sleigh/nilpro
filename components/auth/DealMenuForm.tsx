@@ -12,7 +12,9 @@ type Defaults = {
   appearanceMin: number | null;
 };
 
-function SubmitButton() {
+type ActionFn = (formData: FormData) => void | Promise<void>;
+
+function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return (
     <button
@@ -21,7 +23,7 @@ function SubmitButton() {
       className="btn btn--primary btn--lg"
       style={{ width: "100%", justifyContent: "center", marginTop: "0.5rem" }}
     >
-      {pending ? "Saving…" : "Continue →"}
+      {pending ? "Saving…" : label}
     </button>
   );
 }
@@ -29,9 +31,14 @@ function SubmitButton() {
 export function DealMenuForm({
   defaults,
   error,
+  action,
+  submitLabel = "Continue →",
 }: {
   defaults: Defaults;
   error?: string;
+  /** Server action to submit to. Defaults to the signup flow action. */
+  action?: ActionFn;
+  submitLabel?: string;
 }) {
   const [cash, setCash] = useState(defaults.cashEnabled);
   const [cashMin, setCashMin] = useState<string>(
@@ -46,7 +53,7 @@ export function DealMenuForm({
   const onCount = Number(cash) + Number(product) + Number(appearance);
 
   return (
-    <form action={saveDealMenuAction} className="auth-form">
+    <form action={action ?? saveDealMenuAction} className="auth-form">
       {error ? (
         <div
           role="alert"
@@ -169,7 +176,7 @@ export function DealMenuForm({
         </div>
       </div>
 
-      <SubmitButton />
+      <SubmitButton label={submitLabel} />
     </form>
   );
 }
