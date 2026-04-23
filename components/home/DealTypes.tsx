@@ -26,23 +26,23 @@ export function DealTypes() {
             <div className="deal-slip__rows">
               <div className="deal-slip__row">
                 <span className="deal-slip__label">Single social post</span>
-                <span className="deal-slip__amt">$25–300</span>
+                <span className="deal-slip__amt">$1–500</span>
               </div>
               <div className="deal-slip__row">
                 <span className="deal-slip__label">Post series (3–5 posts)</span>
-                <span className="deal-slip__amt">$75–300</span>
+                <span className="deal-slip__amt">$1–500</span>
               </div>
               <div className="deal-slip__row">
                 <span className="deal-slip__label">In-store appearance</span>
-                <span className="deal-slip__amt">$50–250</span>
+                <span className="deal-slip__amt">$1–500</span>
               </div>
               <div className="deal-slip__row">
                 <span className="deal-slip__label">Event appearance</span>
-                <span className="deal-slip__amt">$100–500</span>
+                <span className="deal-slip__amt">$1–500</span>
               </div>
               <div className="deal-slip__row">
                 <span className="deal-slip__label">Monthly partnership</span>
-                <span className="deal-slip__amt">$200–1K</span>
+                <span className="deal-slip__amt">$25–1K</span>
               </div>
             </div>
             <div className="deal-slip__foot">

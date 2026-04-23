@@ -761,14 +761,21 @@
     transform: none;
     font-size: 0.65rem;
     letter-spacing: 0.1em;
-    padding: 0.5rem 0.9rem;
+    padding: 0.55rem 0.95rem;
     white-space: normal;
-    line-height: 1.35;
+    line-height: 1.4;
     text-align: left;
   }
+  /* Swap the inner span from inline-flex to inline-block so the .dot sits
+     next to the first word instead of wrapping onto its own line. */
   .hero__badge > span {
     transform: none;
-    flex-wrap: wrap;
+    display: inline-block;
+  }
+  .hero__badge > span .dot {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.5rem;
   }
 }
 
@@ -1579,6 +1586,21 @@
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* On narrow screens, stack the status text + CTA cleanly centered
+   instead of wrapping them jagged. */
+@media (max-width: 520px) {
+  .app-mock__foot {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .app-mock__foot .btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .app-mock__status {
