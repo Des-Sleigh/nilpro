@@ -62,9 +62,15 @@ function buildHtml(p: ParentConsentParams): string {
           <!-- Header -->
           <tr>
             <td style="padding:28px 32px 8px 32px;">
-              <div style="font-family:Impact,'Arial Black',sans-serif;font-size:28px;letter-spacing:0.04em;color:#ffffff;text-transform:uppercase;">
-                NIL<span style="color:#00e676;">PRO</span>
-              </div>
+              <a href="https://thenilpro.com" style="display:inline-block;text-decoration:none;line-height:0;">
+                <img
+                  src="https://thenilpro.com/logo.png"
+                  alt="NILPro"
+                  width="160"
+                  height="54"
+                  style="display:block;width:160px;height:auto;border:0;outline:none;"
+                />
+              </a>
             </td>
           </tr>
 

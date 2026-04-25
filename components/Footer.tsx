@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const PRODUCT = [
@@ -35,12 +36,15 @@ export function Footer() {
       <div className="container-page">
         <div className="footer__top">
           <div className="footer__brand">
-            <div className="footer__brand-name">
-              <span className="logo__mark">N</span>
-              <span>
-                NIL<em>PRO</em>
-              </span>
-            </div>
+            <Link href="/" aria-label="NILPro home" style={{ display: "inline-block", marginBottom: "1rem" }}>
+              <Image
+                src="/logo.png"
+                alt="NILPro"
+                width={160}
+                height={54}
+                style={{ height: "44px", width: "auto", display: "block" }}
+              />
+            </Link>
             <div className="footer__tagline">
               Local NIL deals for every high school and college athlete. Every sport. Every level.
               $19/year. Zero commission.

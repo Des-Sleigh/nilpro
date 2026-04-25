@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -56,11 +57,15 @@ export function Nav({ isSignedIn = false }: { isSignedIn?: boolean }) {
   return (
     <nav className="nav" ref={navRef}>
       <div className="nav__inner">
-        <Link href="/" className="logo" onClick={close}>
-          <span className="logo__mark">N</span>
-          <span className="logo__text">
-            NIL<em>PRO</em>
-          </span>
+        <Link href="/" className="logo" onClick={close} aria-label="NILPro home">
+          <Image
+            src="/logo.png"
+            alt="NILPro"
+            width={144}
+            height={48}
+            priority
+            style={{ height: "36px", width: "auto", display: "block" }}
+          />
         </Link>
 
         <button
