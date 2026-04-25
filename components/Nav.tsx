@@ -61,11 +61,11 @@ export function Nav({ isSignedIn = false }: { isSignedIn?: boolean }) {
           <Image
             src="/logo.svg"
             alt="NILPro"
-            width={104}
-            height={36}
+            width={132}
+            height={48}
             priority
             unoptimized
-            style={{ height: "36px", width: "auto", display: "block" }}
+            style={{ height: "48px", width: "auto", display: "block" }}
           />
         </Link>
 

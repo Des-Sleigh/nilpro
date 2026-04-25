@@ -40,10 +40,10 @@ export function Footer() {
               <Image
                 src="/logo.svg"
                 alt="NILPro"
-                width={127}
-                height={44}
+                width={154}
+                height={56}
                 unoptimized
-                style={{ height: "44px", width: "auto", display: "block" }}
+                style={{ height: "56px", width: "auto", display: "block" }}
               />
             </Link>
             <div className="footer__tagline">
