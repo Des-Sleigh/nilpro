@@ -18,7 +18,12 @@ export const metadata: Metadata = {
   title: "Dashboard — NILPro",
 };
 
-export default async function Dashboard() {
+export default async function Dashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ email_resent?: string }>;
+}) {
+  const { email_resent } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -175,6 +180,7 @@ export default async function Dashboard() {
             (athlete.parent_approval_code as string | null) ?? null
           }
           resendParentConsentAction={resendParentConsentAction}
+          parentEmailRecentlySent={email_resent === "1"}
           verificationPending={Boolean(social && !social.verified)}
         />
 

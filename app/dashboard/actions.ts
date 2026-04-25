@@ -86,4 +86,7 @@ export async function resendParentConsentAction(): Promise<void> {
     .eq("id", user.id);
 
   revalidatePath("/dashboard");
+  // Drop a flag in the URL so the dashboard can flip the resend button
+  // to the green "✓ Email sent" pill for a moment after this returns.
+  redirect("/dashboard?email_resent=1");
 }

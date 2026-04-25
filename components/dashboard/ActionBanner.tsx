@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ResendParentEmailButton } from "./ResendParentEmailButton";
 
 type Props = {
   /** When true, render the quiet "everything's set up, sit tight" variant. */
@@ -21,6 +22,9 @@ type Props = {
   /** Server action to call when the athlete clicks "Resend email".
    *  Optional — button is omitted if not provided. */
   resendParentConsentAction?: (formData: FormData) => Promise<void>;
+  /** True when the dashboard URL has ?email_resent=1 — flips the resend
+   *  button to a green "✓ Email sent" pill so the athlete sees it worked. */
+  parentEmailRecentlySent?: boolean;
   /** True when the athlete has an IG handle saved but it hasn't been
    *  verified yet. Shown ahead of the quiet "sit tight" state so new
    *  accounts know outreach is gated on verification. */
@@ -34,6 +38,7 @@ export function ActionBanner({
   parentEmail = null,
   parentApprovalCode = null,
   resendParentConsentAction,
+  parentEmailRecentlySent = false,
   verificationPending = false,
 }: Props) {
   // Priority order:
@@ -105,11 +110,10 @@ export function ActionBanner({
           </div>
         </div>
         {resendParentConsentAction && parentEmail ? (
-          <form action={resendParentConsentAction}>
-            <button type="submit" className="action-items__btn">
-              Resend email
-            </button>
-          </form>
+          <ResendParentEmailButton
+            resendAction={resendParentConsentAction}
+            recentlySent={parentEmailRecentlySent}
+          />
         ) : null}
       </div>
     );
