@@ -51,7 +51,7 @@ export default async function Dashboard() {
     supabase
       .from("deal_menus")
       .select(
-        "cash_per_post_enabled, cash_per_post_min, product_trade_enabled, appearance_enabled, appearance_min"
+        "cash_per_post_enabled, cash_per_post_min, gear_enabled, product_trade_enabled, appearance_enabled, appearance_min"
       )
       .eq("athlete_id", user.id)
       .maybeSingle(),
@@ -205,6 +205,7 @@ export default async function Dashboard() {
                 ? dealMenu.cash_per_post_min
                 : null
             }
+            gearEnabled={Boolean(dealMenu?.gear_enabled)}
             productEnabled={Boolean(dealMenu?.product_trade_enabled)}
             appearanceEnabled={Boolean(dealMenu?.appearance_enabled)}
             appearanceMin={

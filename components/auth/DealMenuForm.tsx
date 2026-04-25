@@ -7,6 +7,7 @@ import { saveDealMenuAction } from "@/app/signup/deal-menu/actions";
 type Defaults = {
   cashEnabled: boolean;
   cashMin: number | null;
+  gearEnabled: boolean;
   productEnabled: boolean;
   appearanceEnabled: boolean;
   appearanceMin: number | null;
@@ -51,13 +52,15 @@ export function DealMenuForm({
   const [cashMin, setCashMin] = useState<string>(
     defaults.cashMin !== null ? String(defaults.cashMin) : "50"
   );
+  const [gear, setGear] = useState(defaults.gearEnabled);
   const [product, setProduct] = useState(defaults.productEnabled);
   const [appearance, setAppearance] = useState(defaults.appearanceEnabled);
   const [appearanceMin, setAppearanceMin] = useState<string>(
     defaults.appearanceMin !== null ? String(defaults.appearanceMin) : "100"
   );
 
-  const onCount = Number(cash) + Number(product) + Number(appearance);
+  const onCount =
+    Number(cash) + Number(gear) + Number(product) + Number(appearance);
 
   return (
     <form action={action ?? saveDealMenuAction} className="auth-form">
@@ -109,7 +112,7 @@ export function DealMenuForm({
             fontWeight: 700,
           }}
         >
-          {onCount} OF 3 ON
+          {onCount} OF 4 ON
         </span>
       </div>
 
@@ -131,10 +134,18 @@ export function DealMenuForm({
       </DealRow>
 
       <DealRow
+        checked={gear}
+        onToggle={() => setGear((v) => !v)}
+        label="Free gear & products"
+        desc="Apparel, sports equipment, sneakers, gear from local sponsors"
+        inputName="gear_enabled"
+      />
+
+      <DealRow
         checked={product}
         onToggle={() => setProduct((v) => !v)}
-        label="Product / service trade"
-        desc="Meals, gym access, haircuts, gear — in exchange for posts"
+        label="Free services & meals"
+        desc="Meals, gym access, haircuts, recovery sessions, etc."
         inputName="product_trade_enabled"
       />
 

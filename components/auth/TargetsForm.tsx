@@ -266,7 +266,7 @@ export function TargetsForm({
                     {cat.label}
                   </div>
                   <div style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>
-                    {cat.searchTerms.join(" · ")}
+                    {cat.hook}
                   </div>
                 </div>
               </label>

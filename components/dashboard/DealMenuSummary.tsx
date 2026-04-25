@@ -3,6 +3,7 @@ import Link from "next/link";
 type Props = {
   cashEnabled: boolean;
   cashMin: number | null;
+  gearEnabled: boolean;
   productEnabled: boolean;
   appearanceEnabled: boolean;
   appearanceMin: number | null;
@@ -16,6 +17,7 @@ function fmtMoney(n: number | null): string {
 export function DealMenuSummary({
   cashEnabled,
   cashMin,
+  gearEnabled,
   productEnabled,
   appearanceEnabled,
   appearanceMin,
@@ -24,7 +26,8 @@ export function DealMenuSummary({
   if (cashEnabled) {
     accepted.push(cashMin ? `Cash (${fmtMoney(cashMin)}+ / post)` : "Cash per post");
   }
-  if (productEnabled) accepted.push("Product / trade");
+  if (gearEnabled) accepted.push("Gear");
+  if (productEnabled) accepted.push("Services & meals");
   if (appearanceEnabled) {
     accepted.push(
       appearanceMin ? `Appearances (${fmtMoney(appearanceMin)}+)` : "Appearances"
@@ -53,8 +56,8 @@ export function DealMenuSummary({
         <>
           <div className="snap-card__headline">No deal types set</div>
           <div className="snap-card__body">
-            Tell us what you&apos;ll accept — cash, product, appearances — and
-            set your minimums. Businesses see these in every pitch.
+            Tell us what you&apos;ll accept — cash, gear, services, appearances —
+            and set your minimums. Businesses see these in every pitch.
           </div>
         </>
       ) : (

@@ -34,13 +34,14 @@ export async function saveDealMenuSettingsAction(formData: FormData) {
   const cashMin = parseIntOrNull(
     String(formData.get("cash_per_post_min") ?? "")
   );
+  const gearEnabled = formData.get("gear_enabled") === "on";
   const productEnabled = formData.get("product_trade_enabled") === "on";
   const appearanceEnabled = formData.get("appearance_enabled") === "on";
   const appearanceMin = parseIntOrNull(
     String(formData.get("appearance_min") ?? "")
   );
 
-  if (!cashEnabled && !productEnabled && !appearanceEnabled) {
+  if (!cashEnabled && !gearEnabled && !productEnabled && !appearanceEnabled) {
     fail("Pick at least one deal type.");
   }
 
@@ -55,6 +56,7 @@ export async function saveDealMenuSettingsAction(formData: FormData) {
   const payload = {
     cash_per_post_enabled: cashEnabled,
     cash_per_post_min: cashEnabled ? cashMin : null,
+    gear_enabled: gearEnabled,
     product_trade_enabled: productEnabled,
     appearance_enabled: appearanceEnabled,
     appearance_min: appearanceEnabled ? appearanceMin : null,

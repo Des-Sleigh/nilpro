@@ -19,9 +19,30 @@ type AddAction = (
   categoryDefault?: string
 ) => Promise<AddActionResult>;
 
+/** Server action used when the search is in skip mode — accepts the
+ *  raw business name and persists it to the athlete's blacklist_terms. */
+type AddSkipAction = (
+  name: string
+) => Promise<AddActionResult>;
+
 type Props = {
-  /** Server action that persists the business to the target list. */
-  addAction: AddAction;
+  /**
+   * Mode controls the result-row CTA.
+   *  - "approve" (default): clicking "+ Add" calls `addAction` to upsert
+   *    the business and approve it onto the target list.
+   *  - "skip": clicking "+ Skip" calls `onAddSkip` (or `addSkipAction`)
+   *    with the result name to add it to the athlete's permanent skip
+   *    list. Used by the bottom-of-review "skip a business" affordance.
+   */
+  mode?: "approve" | "skip";
+  /** Required when mode="approve". Server action to add the business. */
+  addAction?: AddAction;
+  /** Optional server action used when mode="skip". Mirrors addAction
+   *  semantics but only needs the business name. */
+  addSkipAction?: AddSkipAction;
+  /** Optional in-component callback fired after a skip add succeeds —
+   *  hosts use it to mutate local state (e.g. add a chip). */
+  onAddSkip?: (name: string) => void;
   /** Optional default city to bias the search (first pitch city). */
   defaultCity?: string | null;
   /** Optional default state to bias the search. */
@@ -39,7 +60,10 @@ const DEBOUNCE_MS = 250;
 const MIN_CHARS = 2;
 
 export function AddBusinessSearch({
+  mode = "approve",
   addAction,
+  addSkipAction,
+  onAddSkip,
   defaultCity = null,
   defaultState = null,
   categoryDefault,
@@ -53,6 +77,14 @@ export function AddBusinessSearch({
   const [addingId, setAddingId] = useState<string | null>(null);
   const [addedId, setAddedId] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
+
+  const isSkipMode = mode === "skip";
+  const triggerLabelClosed = isSkipMode
+    ? "+ Skip a business"
+    : "+ Add a business";
+  const cellAddLabel = isSkipMode ? "+ Skip" : "+ Add";
+  const cellAddingLabel = isSkipMode ? "Skipping…" : "Adding…";
+  const cellAddedLabel = isSkipMode ? "Skipped ✓" : "Added ✓";
 
   // Track in-flight fetches so stale responses can be discarded.
   const reqSeq = useRef(0);
@@ -124,10 +156,34 @@ export function AddBusinessSearch({
     setAddingId(r.placeId);
     setAddError(null);
     try {
-      const res = await addAction(r.placeId, r, categoryDefault);
+      let res: AddActionResult;
+      if (isSkipMode) {
+        if (addSkipAction) {
+          res = await addSkipAction(r.name);
+        } else if (onAddSkip) {
+          // Pure client-side fallback — the host owns persistence.
+          onAddSkip(r.name);
+          res = { ok: true };
+        } else {
+          res = { ok: false, error: "Skip handler missing." };
+        }
+      } else {
+        if (!addAction) {
+          res = { ok: false, error: "Add handler missing." };
+        } else {
+          res = await addAction(r.placeId, r, categoryDefault);
+        }
+      }
+
       if (res.ok) {
         setAddedId(r.placeId);
-        onAdded?.(r);
+        if (isSkipMode) {
+          // Notify host for local-state UI updates regardless of which
+          // path persisted the term.
+          if (addSkipAction) onAddSkip?.(r.name);
+        } else {
+          onAdded?.(r);
+        }
         // Brief confirmation, then clear the search.
         if (addedTimer.current) clearTimeout(addedTimer.current);
         addedTimer.current = setTimeout(() => {
@@ -171,7 +227,7 @@ export function AddBusinessSearch({
           textTransform: "uppercase",
         }}
       >
-        {open ? "× Cancel" : "+ Add a business"}
+        {open ? "× Cancel" : triggerLabelClosed}
       </button>
 
       {open ? (
@@ -185,7 +241,7 @@ export function AddBusinessSearch({
         >
           <label className="auth-form__label">
             <span>
-              Search for a business
+              {isSkipMode ? "Find a business to skip" : "Search for a business"}
               {defaultCity ? ` in ${defaultCity}${defaultState ? `, ${defaultState}` : ""}` : ""}
             </span>
             <input
@@ -329,7 +385,7 @@ export function AddBusinessSearch({
                           whiteSpace: "nowrap",
                         }}
                       >
-                        Added ✓
+                        {cellAddedLabel}
                       </span>
                     ) : (
                       <button
@@ -339,7 +395,7 @@ export function AddBusinessSearch({
                         className="btn btn--ghost btn--sm"
                         style={{ whiteSpace: "nowrap" }}
                       >
-                        {isAdding ? "Adding…" : "+ Add"}
+                        {isAdding ? cellAddingLabel : cellAddLabel}
                       </button>
                     )}
                   </li>

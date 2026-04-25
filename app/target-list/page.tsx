@@ -52,11 +52,15 @@ export default async function TargetListPage({
 
   const { data: athlete } = await supabase
     .from("athletes")
-    .select("id")
+    .select("id, blacklist_terms")
     .eq("id", user.id)
     .maybeSingle();
 
   if (!athlete) redirect("/signup/profile");
+
+  const initialBlacklistTerms = Array.isArray(athlete.blacklist_terms)
+    ? (athlete.blacklist_terms as string[])
+    : [];
 
   const { data: firstCity } = await supabase
     .from("pitch_cities")
@@ -151,6 +155,7 @@ export default async function TargetListPage({
 
         <TargetListManager
           rows={rows}
+          initialBlacklistTerms={initialBlacklistTerms}
           defaultCity={(firstCity?.city as string | undefined) ?? null}
           defaultState={(firstCity?.state as string | undefined) ?? null}
         />

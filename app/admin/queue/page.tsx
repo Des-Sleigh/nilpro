@@ -6,6 +6,7 @@ import {
   approveParentAction,
   setSubscriptionAction,
 } from "@/app/admin/athletes/[id]/actions";
+import { CopyCodeButton } from "@/components/admin/CopyCodeButton";
 
 export const metadata: Metadata = {
   title: "Action queue — NILPro Admin",
@@ -47,20 +48,30 @@ export default async function AdminQueuePage() {
     handle: string;
     verified: boolean;
     verification_code: string | null;
+    created_at: string | null;
   }>;
   const targets = targetsRes.data ?? [];
 
   // 1. Awaiting IG verification
-  const verifiedSet = new Set(
-    socials
-      .filter((s) => s.platform === "instagram" && s.verified)
-      .map((s) => s.athlete_id)
-  );
   const igBy = new Map<string, (typeof socials)[number]>();
   for (const s of socials) {
     if (s.platform === "instagram") igBy.set(s.athlete_id, s);
   }
-  const awaitingVerify = athletes.filter((a) => !verifiedSet.has(a.id as string));
+  // Show only athletes who have an IG row at all — pre-IG athletes
+  // shouldn't clog this queue. Sort oldest pending first (FIFO).
+  const awaitingVerify = athletes
+    .filter((a) => {
+      const ig = igBy.get(a.id as string);
+      return ig && !ig.verified;
+    })
+    .sort((a, b) => {
+      const aIg = igBy.get(a.id as string);
+      const bIg = igBy.get(b.id as string);
+      const at = aIg?.created_at ?? "";
+      const bt = bIg?.created_at ?? "";
+      // oldest first
+      return at.localeCompare(bt);
+    });
 
   // 2. Awaiting parent approval
   const awaitingParent = athletes.filter(
@@ -134,7 +145,7 @@ export default async function AdminQueuePage() {
         <div className="admin-panel__body admin-panel__body--flush">
           {awaitingVerify.length === 0 ? (
             <div className="admin-empty" style={{ padding: "1rem" }}>
-              ✓ Nothing here
+              ✓ No athletes awaiting verification
             </div>
           ) : (
             <table className="admin-table">
@@ -149,6 +160,8 @@ export default async function AdminQueuePage() {
               <tbody>
                 {awaitingVerify.map((a) => {
                   const ig = igBy.get(a.id as string);
+                  const code = ig?.verification_code ?? null;
+                  const handle = ig?.handle ?? null;
                   return (
                     <tr key={a.id as string}>
                       <td>
@@ -162,31 +175,53 @@ export default async function AdminQueuePage() {
                           fontSize: "0.82rem",
                         }}
                       >
-                        {ig?.handle ? `@${ig.handle}` : "—"}
+                        {handle ? (
+                          <a
+                            href={`https://instagram.com/${handle}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            @{handle} ↗
+                          </a>
+                        ) : (
+                          "—"
+                        )}
                       </td>
                       <td
                         style={{
                           fontFamily: "var(--mono)",
-                          fontSize: "0.82rem",
+                          fontSize: "1.05rem",
+                          fontWeight: 700,
+                          letterSpacing: "0.12em",
                           color: "var(--gold)",
                         }}
                       >
-                        {ig?.verification_code ?? "—"}
+                        {code ?? "—"}
                       </td>
                       <td>
-                        <form action={verifyAthleteAction}>
-                          <input
-                            type="hidden"
-                            name="athlete_id"
-                            value={a.id as string}
-                          />
-                          <button
-                            type="submit"
-                            className="admin-btn admin-btn--gold admin-btn--sm"
-                          >
-                            Verify
-                          </button>
-                        </form>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "0.4rem",
+                            flexWrap: "wrap",
+                            alignItems: "center",
+                          }}
+                        >
+                          {code ? <CopyCodeButton code={code} /> : null}
+                          <form action={verifyAthleteAction}>
+                            <input
+                              type="hidden"
+                              name="athlete_id"
+                              value={a.id as string}
+                            />
+                            <button
+                              type="submit"
+                              className="admin-btn admin-btn--gold admin-btn--sm"
+                            >
+                              Verify ✓
+                            </button>
+                          </form>
+                        </div>
                       </td>
                     </tr>
                   );

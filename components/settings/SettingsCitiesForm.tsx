@@ -272,7 +272,7 @@ export function SettingsCitiesForm({
                       color: "var(--text-muted)",
                     }}
                   >
-                    {cat.searchTerms.join(" · ")}
+                    {cat.hook}
                   </div>
                 </div>
               </label>

@@ -126,6 +126,94 @@ export async function skipBusinessFromTargetListAction(formData: FormData) {
 }
 
 /**
+ * Remove a single term from the athlete's blacklist_terms array.
+ * Mirror of /signup/review's `unskipTermAction` — used by the chip ×
+ * button in the target-list manager's skip list.
+ */
+export async function unskipTermFromTargetListAction(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/signin?next=/target-list");
+
+  const term = normalizeTerm(String(formData.get("term") ?? ""));
+  if (!term) return;
+
+  const { data: athlete, error: readErr } = await supabase
+    .from("athletes")
+    .select("blacklist_terms")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (readErr) fail(readErr.message);
+
+  const existing = Array.isArray(athlete?.blacklist_terms)
+    ? (athlete?.blacklist_terms as string[])
+    : [];
+  const nextTerms = existing.filter((t) => t !== term);
+
+  const { error: updErr } = await supabase
+    .from("athletes")
+    .update({
+      blacklist_terms: nextTerms,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+  if (updErr) fail(updErr.message);
+
+  revalidatePath("/target-list");
+  revalidatePath("/dashboard");
+}
+
+/**
+ * Add a business to the athlete's permanent skip list **by name only**.
+ * Mirror of `skipBusinessByNameAction` in /signup/review — used by the
+ * Places-driven skip search at the bottom of the target-list manager.
+ * Doesn't require a businesses row or a target_lists row.
+ */
+export async function skipBusinessByNameFromTargetListAction(
+  name: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Not signed in." };
+
+  const term = normalizeTerm(name);
+  if (!term) return { ok: false, error: "Empty name." };
+
+  const { data: athlete, error: readErr } = await supabase
+    .from("athletes")
+    .select("blacklist_terms")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (readErr) return { ok: false, error: readErr.message };
+
+  const existing = Array.isArray(athlete?.blacklist_terms)
+    ? (athlete?.blacklist_terms as string[])
+    : [];
+  if (existing.map(normalizeTerm).includes(term)) {
+    return { ok: true };
+  }
+  const nextTerms = dedupe([...existing, term]);
+
+  const { error: updErr } = await supabase
+    .from("athletes")
+    .update({
+      blacklist_terms: nextTerms,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+  if (updErr) return { ok: false, error: updErr.message };
+
+  revalidatePath("/target-list");
+  revalidatePath("/signup/review");
+  revalidatePath("/dashboard");
+  return { ok: true };
+}
+
+/**
  * Same pattern as /signup/review — insert a brand-new business and
  * immediately approve it onto this athlete's list.
  */

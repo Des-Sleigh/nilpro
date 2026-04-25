@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import {
   setTargetStatusAction,
   skipBusinessFromTargetListAction,
+  skipBusinessByNameFromTargetListAction,
+  unskipTermFromTargetListAction,
   addPlacesBusinessToTargetListAction,
 } from "@/app/target-list/actions";
 import { CATEGORY_LABELS } from "@/lib/places/categories";
@@ -27,16 +29,21 @@ type Tab = "approved" | "pending" | "removed" | "all";
 
 export function TargetListManager({
   rows,
+  initialBlacklistTerms = [],
   defaultCity = null,
   defaultState = null,
 }: {
   rows: TargetRowView[];
+  initialBlacklistTerms?: string[];
   defaultCity?: string | null;
   defaultState?: string | null;
 }) {
   const [tab, setTab] = useState<Tab>("approved");
   const [pending, startTransition] = useTransition();
   const router = useRouter();
+  const [blacklistTerms, setBlacklistTerms] = useState<string[]>(
+    initialBlacklistTerms
+  );
 
   const filtered = useMemo(() => {
     if (tab === "all") return rows;
@@ -79,8 +86,43 @@ export function TargetListManager({
     const fd = new FormData();
     fd.set("business_id", row.business_id);
     fd.set("business_name", row.name);
+    // Optimistic — same pattern as the review screen.
+    const term = row.name.trim().toLowerCase();
+    setBlacklistTerms((prev) =>
+      prev.includes(term) ? prev : [...prev, term]
+    );
     startTransition(() => {
       void skipBusinessFromTargetListAction(fd).then(() => router.refresh());
+    });
+  }
+
+  function handleSkipByName(name: string) {
+    const term = name.trim().toLowerCase();
+    if (!term) return;
+    setBlacklistTerms((prev) =>
+      prev.includes(term) ? prev : [...prev, term]
+    );
+  }
+
+  // Used by the fallback plain-text input — Places search has its own
+  // `addSkipAction` wired in, which persists server-side. This handler
+  // covers the "Or type a name" path so manually typed names also hit
+  // the database.
+  function handleSkipByNamePersist(name: string) {
+    const term = name.trim().toLowerCase();
+    if (!term) return;
+    handleSkipByName(term);
+    startTransition(() => {
+      void skipBusinessByNameFromTargetListAction(term);
+    });
+  }
+
+  function handleRemoveTerm(term: string) {
+    setBlacklistTerms((prev) => prev.filter((t) => t !== term));
+    const fd = new FormData();
+    fd.set("term", term);
+    startTransition(() => {
+      void unskipTermFromTargetListAction(fd);
     });
   }
 
@@ -231,6 +273,184 @@ export function TargetListManager({
           );
         })
       )}
+
+      <SkipListSection
+        terms={blacklistTerms}
+        defaultCity={defaultCity}
+        defaultState={defaultState}
+        onPlacesAdd={handleSkipByName}
+        onTypedAdd={handleSkipByNamePersist}
+        onRemove={handleRemoveTerm}
+      />
+    </div>
+  );
+}
+
+function SkipListSection({
+  terms,
+  defaultCity,
+  defaultState,
+  onPlacesAdd,
+  onTypedAdd,
+  onRemove,
+}: {
+  terms: string[];
+  defaultCity: string | null;
+  defaultState: string | null;
+  /** Local-only chip-list update; persistence handled by AddBusinessSearch. */
+  onPlacesAdd: (name: string) => void;
+  /** Persists + chip-list update; used by the typed-name fallback. */
+  onTypedAdd: (name: string) => void;
+  onRemove: (term: string) => void;
+}) {
+  const [newTerm, setNewTerm] = useState("");
+
+  function submit() {
+    const t = newTerm.trim();
+    if (!t) return;
+    onTypedAdd(t);
+    setNewTerm("");
+  }
+
+  return (
+    <div
+      style={{
+        border: "1px solid var(--border)",
+        background: "var(--bg-soft)",
+        borderRadius: "var(--r-sm)",
+        padding: "1rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.75rem",
+      }}
+    >
+      <div>
+        <div
+          style={{
+            fontFamily: "var(--mono)",
+            fontSize: "0.72rem",
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            color: "var(--text-muted)",
+            marginBottom: "0.35rem",
+          }}
+        >
+          Skip list
+        </div>
+        <div
+          style={{
+            fontSize: "0.82rem",
+            color: "var(--text-muted)",
+            lineHeight: 1.5,
+          }}
+        >
+          We&apos;ll never pitch any business whose name matches one of these —
+          even brand new ones that pop up later.
+        </div>
+      </div>
+
+      {terms.length === 0 ? (
+        <div
+          style={{
+            fontSize: "0.85rem",
+            color: "var(--text-faint)",
+            fontStyle: "italic",
+          }}
+        >
+          No skipped businesses yet.
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+          {terms.map((t) => (
+            <span
+              key={t}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.45rem",
+                padding: "0.35rem 0.65rem",
+                border: "1px solid var(--border-strong)",
+                background: "var(--bg)",
+                color: "var(--text-dim)",
+                fontFamily: "var(--mono)",
+                fontSize: "0.78rem",
+                borderRadius: "var(--r-pill)",
+              }}
+            >
+              {t}
+              <button
+                type="button"
+                onClick={() => onRemove(t)}
+                aria-label={`Remove ${t} from skip list`}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--text-muted)",
+                  cursor: "pointer",
+                  padding: 0,
+                  fontFamily: "var(--mono)",
+                  fontSize: "0.85rem",
+                  lineHeight: 1,
+                }}
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      <AddBusinessSearch
+        mode="skip"
+        defaultCity={defaultCity}
+        defaultState={defaultState}
+        addSkipAction={skipBusinessByNameFromTargetListAction}
+        onAddSkip={onPlacesAdd}
+      />
+
+      <div>
+        <div
+          style={{
+            fontFamily: "var(--mono)",
+            fontSize: "0.68rem",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: "var(--text-muted)",
+            marginBottom: "0.4rem",
+          }}
+        >
+          Or type a name
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr auto",
+            gap: "0.5rem",
+          }}
+        >
+          <input
+            type="text"
+            value={newTerm}
+            onChange={(e) => setNewTerm(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                submit();
+              }
+            }}
+            placeholder="Add business name to skip…"
+            className="auth-form__input"
+            style={{ fontFamily: "var(--mono)" }}
+          />
+          <button
+            type="button"
+            onClick={submit}
+            className="btn btn--ghost btn--sm"
+          >
+            + Add
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

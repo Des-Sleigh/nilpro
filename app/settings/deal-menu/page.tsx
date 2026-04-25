@@ -32,7 +32,7 @@ export default async function SettingsDealMenuPage({
   const { data: existing } = await supabase
     .from("deal_menus")
     .select(
-      "cash_per_post_enabled, cash_per_post_min, product_trade_enabled, appearance_enabled, appearance_min"
+      "cash_per_post_enabled, cash_per_post_min, gear_enabled, product_trade_enabled, appearance_enabled, appearance_min"
     )
     .eq("athlete_id", user.id)
     .maybeSingle();
@@ -45,6 +45,7 @@ export default async function SettingsDealMenuPage({
       typeof existing.cash_per_post_min === "number"
         ? existing.cash_per_post_min
         : null,
+    gearEnabled: Boolean(existing.gear_enabled),
     productEnabled: Boolean(existing.product_trade_enabled),
     appearanceEnabled: Boolean(existing.appearance_enabled),
     appearanceMin:

@@ -6,6 +6,7 @@ import { useFormStatus } from "react-dom";
 import {
   submitReviewAction,
   skipBusinessAction,
+  skipBusinessByNameAction,
   unskipTermAction,
   addPlacesBusinessAction,
 } from "@/app/signup/review/actions";
@@ -531,6 +532,8 @@ export function TargetReviewList({
 
         <SkipListSection
           terms={blacklistTerms}
+          defaultCity={defaultCity}
+          defaultState={defaultState}
           onRemove={handleRemoveTerm}
           onAdd={handleAddTerm}
         />
@@ -547,10 +550,14 @@ export function TargetReviewList({
 
 function SkipListSection({
   terms,
+  defaultCity,
+  defaultState,
   onRemove,
   onAdd,
 }: {
   terms: string[];
+  defaultCity: string | null;
+  defaultState: string | null;
   onRemove: (term: string) => void;
   onAdd: (term: string) => void;
 }) {
@@ -561,6 +568,13 @@ function SkipListSection({
     if (!t) return;
     onAdd(t);
     setNewTerm("");
+  }
+
+  // The Places-driven skip search hits the server (which persists the
+  // term to athletes.blacklist_terms) and ALSO fires onAddSkip so this
+  // component can update the chip list without waiting for a refresh.
+  function handlePlacesSkip(name: string) {
+    onAdd(name);
   }
 
   return (
@@ -653,34 +667,59 @@ function SkipListSection({
         </div>
       )}
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr auto",
-          gap: "0.5rem",
-        }}
-      >
-        <input
-          type="text"
-          value={newTerm}
-          onChange={(e) => setNewTerm(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              submit();
-            }
+      {/* Primary path: Places-driven search. Reuses the same dropdown
+          pattern as "+ Add a business" at the top of the page. */}
+      <AddBusinessSearch
+        mode="skip"
+        defaultCity={defaultCity}
+        defaultState={defaultState}
+        addSkipAction={skipBusinessByNameAction}
+        onAddSkip={handlePlacesSkip}
+      />
+
+      {/* Fallback for businesses Google can't find — plain text input. */}
+      <div>
+        <div
+          style={{
+            fontFamily: "var(--mono)",
+            fontSize: "0.68rem",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: "var(--text-muted)",
+            marginBottom: "0.4rem",
           }}
-          placeholder="Add business name to skip…"
-          className="auth-form__input"
-          style={{ fontFamily: "var(--mono)" }}
-        />
-        <button
-          type="button"
-          onClick={submit}
-          className="btn btn--ghost btn--sm"
         >
-          + Add
-        </button>
+          Or type a name
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr auto",
+            gap: "0.5rem",
+          }}
+        >
+          <input
+            type="text"
+            value={newTerm}
+            onChange={(e) => setNewTerm(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                submit();
+              }
+            }}
+            placeholder="Add business name to skip…"
+            className="auth-form__input"
+            style={{ fontFamily: "var(--mono)" }}
+          />
+          <button
+            type="button"
+            onClick={submit}
+            className="btn btn--ghost btn--sm"
+          >
+            + Add
+          </button>
+        </div>
       </div>
     </div>
   );

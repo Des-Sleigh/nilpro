@@ -152,6 +152,61 @@ export async function skipBusinessAction(formData: FormData) {
 }
 
 /**
+ * Add a business to the athlete's permanent skip list **by name only**.
+ *
+ * This differs from `skipBusinessAction` in that it doesn't require an
+ * existing `businesses` row or a `target_lists` row — it just appends
+ * the normalized name to `athletes.blacklist_terms`. Used by the new
+ * Places-driven skip-list search (review screen + target-list manager)
+ * so athletes can pre-emptively skip businesses Google knows about
+ * before our cache ever sees them.
+ *
+ * Returns `{ ok }` instead of redirecting so the AddBusinessSearch
+ * client component can show inline confirmation and stay put.
+ */
+export async function skipBusinessByNameAction(
+  name: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Not signed in." };
+
+  const term = normalizeTerm(name);
+  if (!term) return { ok: false, error: "Empty name." };
+
+  const { data: athlete, error: readErr } = await supabase
+    .from("athletes")
+    .select("blacklist_terms")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (readErr) return { ok: false, error: readErr.message };
+
+  const existing = Array.isArray(athlete?.blacklist_terms)
+    ? (athlete?.blacklist_terms as string[])
+    : [];
+  if (existing.map(normalizeTerm).includes(term)) {
+    // Already on the list — treat as success so the UI shows ✓.
+    return { ok: true };
+  }
+  const nextTerms = dedupe([...existing, term]);
+
+  const { error: updErr } = await supabase
+    .from("athletes")
+    .update({
+      blacklist_terms: nextTerms,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+  if (updErr) return { ok: false, error: updErr.message };
+
+  revalidatePath("/signup/review");
+  revalidatePath("/target-list");
+  return { ok: true };
+}
+
+/**
  * Remove a single term from the athlete's blacklist_terms array.
  */
 export async function unskipTermAction(formData: FormData) {
