@@ -8,6 +8,7 @@ import {
   unverifyAthleteAction,
   approveParentAction,
   revokeParentAction,
+  adminResendParentConsentAction,
   setSubscriptionAction,
   saveAthleteNotesAction,
 } from "./actions";
@@ -235,6 +236,20 @@ export default async function AdminAthleteDetailPage({
                   >
                     {athlete.parent_approved_at ? "Y" : "N"}
                   </span>
+                  {athlete.parent_approved_at ? (
+                    <span
+                      style={{
+                        marginLeft: "0.5rem",
+                        fontFamily: "var(--mono)",
+                        fontSize: "0.78rem",
+                        color: "var(--text-muted)",
+                      }}
+                    >
+                      {new Date(athlete.parent_approved_at as string)
+                        .toISOString()
+                        .slice(0, 10)}
+                    </span>
+                  ) : null}
                 </dd>
                 <dt>Parent</dt>
                 <dd>
@@ -251,6 +266,54 @@ export default async function AdminAthleteDetailPage({
                     </span>
                   ) : null}
                 </dd>
+                {!athlete.parent_approved_at ? (
+                  <>
+                    <dt>Approval email</dt>
+                    <dd>
+                      <span
+                        className={
+                          "admin-pill-tag" +
+                          (athlete.parent_approval_email_status === "sent"
+                            ? " admin-pill-tag--green"
+                            : athlete.parent_approval_email_status === "failed"
+                            ? " admin-pill-tag--red"
+                            : "")
+                        }
+                      >
+                        {(athlete.parent_approval_email_status as
+                          | string
+                          | null) ?? "—"}
+                      </span>
+                      {athlete.parent_approval_token_sent_at ? (
+                        <span
+                          style={{
+                            marginLeft: "0.5rem",
+                            fontFamily: "var(--mono)",
+                            fontSize: "0.78rem",
+                            color: "var(--text-muted)",
+                          }}
+                        >
+                          last sent{" "}
+                          {new Date(
+                            athlete.parent_approval_token_sent_at as string
+                          )
+                            .toISOString()
+                            .slice(0, 16)
+                            .replace("T", " ")}
+                        </span>
+                      ) : null}
+                    </dd>
+                    <dt>Fallback code</dt>
+                    <dd
+                      style={{
+                        fontFamily: "var(--mono)",
+                        letterSpacing: "0.14em",
+                      }}
+                    >
+                      {(athlete.parent_approval_code as string | null) ?? "—"}
+                    </dd>
+                  </>
+                ) : null}
               </>
             ) : null}
           </dl>
@@ -276,28 +339,38 @@ export default async function AdminAthleteDetailPage({
             </form>
 
             {athlete.is_minor ? (
-              <form
-                action={
-                  athlete.parent_approved_at
-                    ? revokeParentAction
-                    : approveParentAction
-                }
-              >
-                <input type="hidden" name="athlete_id" value={athleteId} />
-                <button
-                  type="submit"
-                  className={
-                    "admin-btn" +
-                    (athlete.parent_approved_at
-                      ? " admin-btn--danger"
-                      : " admin-btn--gold")
+              <>
+                <form
+                  action={
+                    athlete.parent_approved_at
+                      ? revokeParentAction
+                      : approveParentAction
                   }
                 >
-                  {athlete.parent_approved_at
-                    ? "Revoke parent approval"
-                    : "Mark parent approved"}
-                </button>
-              </form>
+                  <input type="hidden" name="athlete_id" value={athleteId} />
+                  <button
+                    type="submit"
+                    className={
+                      "admin-btn" +
+                      (athlete.parent_approved_at
+                        ? " admin-btn--danger"
+                        : " admin-btn--gold")
+                    }
+                  >
+                    {athlete.parent_approved_at
+                      ? "Revoke parent approval"
+                      : "Mark parent approved"}
+                  </button>
+                </form>
+                {!athlete.parent_approved_at ? (
+                  <form action={adminResendParentConsentAction}>
+                    <input type="hidden" name="athlete_id" value={athleteId} />
+                    <button type="submit" className="admin-btn">
+                      Resend parent email
+                    </button>
+                  </form>
+                ) : null}
+              </>
             ) : null}
 
             <form action={setSubscriptionAction} className="admin-inline-form">

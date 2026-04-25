@@ -5,6 +5,7 @@ import {
   verifyAthleteAction,
   approveParentAction,
   setSubscriptionAction,
+  adminResendParentConsentAction,
 } from "@/app/admin/athletes/[id]/actions";
 import { CopyCodeButton } from "@/components/admin/CopyCodeButton";
 
@@ -22,7 +23,7 @@ export default async function AdminQueuePage() {
       sb
         .from("athletes")
         .select(
-          "id, first_name, last_name, is_minor, parent_first_name, parent_email, parent_approved_at, subscription_status, subscription_tier"
+          "id, first_name, last_name, is_minor, parent_first_name, parent_email, parent_approved_at, parent_approval_email_status, subscription_status, subscription_tier"
         ),
       sb.from("social_accounts").select("*"),
       sb
@@ -250,43 +251,81 @@ export default async function AdminQueuePage() {
                   <th>Athlete</th>
                   <th>Parent</th>
                   <th>Parent email</th>
+                  <th>Email status</th>
                   <th style={{ width: "1%" }}>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {awaitingParent.map((a) => (
-                  <tr key={a.id as string}>
-                    <td>
-                      <Link href={`/admin/athletes/${a.id}`}>
-                        {a.first_name} {a.last_name}
-                      </Link>
-                    </td>
-                    <td>{(a.parent_first_name as string | null) ?? "—"}</td>
-                    <td
-                      style={{
-                        fontFamily: "var(--mono)",
-                        fontSize: "0.82rem",
-                      }}
-                    >
-                      {(a.parent_email as string | null) ?? "—"}
-                    </td>
-                    <td>
-                      <form action={approveParentAction}>
-                        <input
-                          type="hidden"
-                          name="athlete_id"
-                          value={a.id as string}
-                        />
-                        <button
-                          type="submit"
-                          className="admin-btn admin-btn--gold admin-btn--sm"
+                {awaitingParent.map((a) => {
+                  const emailStatus =
+                    (a.parent_approval_email_status as string | null) ?? null;
+                  const statusModifier =
+                    emailStatus === "sent"
+                      ? " admin-pill-tag--green"
+                      : emailStatus === "failed"
+                      ? " admin-pill-tag--red"
+                      : "";
+                  return (
+                    <tr key={a.id as string}>
+                      <td>
+                        <Link href={`/admin/athletes/${a.id}`}>
+                          {a.first_name} {a.last_name}
+                        </Link>
+                      </td>
+                      <td>{(a.parent_first_name as string | null) ?? "—"}</td>
+                      <td
+                        style={{
+                          fontFamily: "var(--mono)",
+                          fontSize: "0.82rem",
+                        }}
+                      >
+                        {(a.parent_email as string | null) ?? "—"}
+                      </td>
+                      <td>
+                        <span className={"admin-pill-tag" + statusModifier}>
+                          {emailStatus ?? "—"}
+                        </span>
+                      </td>
+                      <td>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "0.4rem",
+                            flexWrap: "wrap",
+                            alignItems: "center",
+                          }}
                         >
-                          Approve parent
-                        </button>
-                      </form>
-                    </td>
-                  </tr>
-                ))}
+                          <form action={adminResendParentConsentAction}>
+                            <input
+                              type="hidden"
+                              name="athlete_id"
+                              value={a.id as string}
+                            />
+                            <button
+                              type="submit"
+                              className="admin-btn admin-btn--sm"
+                            >
+                              Resend email
+                            </button>
+                          </form>
+                          <form action={approveParentAction}>
+                            <input
+                              type="hidden"
+                              name="athlete_id"
+                              value={a.id as string}
+                            />
+                            <button
+                              type="submit"
+                              className="admin-btn admin-btn--gold admin-btn--sm"
+                            >
+                              Approve parent
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}

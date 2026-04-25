@@ -2,7 +2,13 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { newParentToken, newParentCode } from "@/lib/email/parentTokens";
+import {
+  sendParentConsentEmail,
+  consentResultSent,
+} from "@/lib/email/parentConsent";
 
 const VALID_LEVELS = ["D1", "D2", "D3", "NAIA", "JUCO", "HS", "Club"] as const;
 type Level = (typeof VALID_LEVELS)[number];
@@ -94,6 +100,13 @@ export async function saveProfileAction(formData: FormData) {
   const referredBy =
     (user.user_metadata?.referred_by_code as string | undefined) ?? null;
 
+  // For minors, generate the approval token + fallback code up front so
+  // both go in on the initial INSERT (single round-trip, no race window
+  // where a row exists without its consent state).
+  const parentToken = isMinor ? newParentToken() : null;
+  const parentCode = isMinor ? newParentCode() : null;
+  const parentSentAt = isMinor ? new Date().toISOString() : null;
+
   const { error } = await supabase.from("athletes").insert({
     id: user.id,
     first_name: firstName,
@@ -109,11 +122,48 @@ export async function saveProfileAction(formData: FormData) {
     is_minor: isMinor,
     parent_first_name: isMinor ? parentFirstName : null,
     parent_email: isMinor ? parentEmail : null,
+    parent_approval_token: parentToken,
+    parent_approval_code: parentCode,
+    parent_approval_token_sent_at: parentSentAt,
     referral_code: referralCode,
     referred_by_code: referredBy,
   });
 
   if (error) fail(error.message);
+
+  // Fire the consent email if this athlete is a minor. We never block the
+  // signup on email delivery — if Resend is misconfigured or the send
+  // fails, the athlete still gets the fallback code in their dashboard
+  // banner. We do record the outcome on the row so admins can see it.
+  if (isMinor && parentEmail && parentFirstName && parentToken && parentCode) {
+    const hdrs = await headers();
+    const origin =
+      hdrs.get("origin") ??
+      (process.env.NEXT_PUBLIC_SITE_URL ?? "https://thenilpro.com");
+    const approveUrl = `${origin}/parent/approve?token=${parentToken}`;
+
+    const result = await sendParentConsentEmail({
+      athleteFirstName: firstName,
+      athleteLastName: lastName,
+      parentFirstName,
+      parentEmail,
+      approveUrl,
+      fallbackCode: parentCode,
+    });
+
+    const status = result.skipped
+      ? "skipped"
+      : consentResultSent(result)
+      ? "sent"
+      : "failed";
+
+    // Best-effort status write — if this fails the athlete still gets
+    // the code on their dashboard, so we don't surface the error.
+    await supabase
+      .from("athletes")
+      .update({ parent_approval_email_status: status })
+      .eq("id", user.id);
+  }
 
   revalidatePath("/", "layout");
   redirect("/signup/verify");

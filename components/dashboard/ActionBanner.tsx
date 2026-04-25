@@ -15,6 +15,12 @@ type Props = {
   parentApprovalPending?: boolean;
   /** Parent's email — shown in the parent approval copy. */
   parentEmail?: string | null;
+  /** Fallback 6-digit code for parents who can't / didn't get the email.
+   *  Optional — banner gracefully omits the line if missing. */
+  parentApprovalCode?: string | null;
+  /** Server action to call when the athlete clicks "Resend email".
+   *  Optional — button is omitted if not provided. */
+  resendParentConsentAction?: (formData: FormData) => Promise<void>;
   /** True when the athlete has an IG handle saved but it hasn't been
    *  verified yet. Shown ahead of the quiet "sit tight" state so new
    *  accounts know outreach is gated on verification. */
@@ -26,6 +32,8 @@ export function ActionBanner({
   missingStep,
   parentApprovalPending = false,
   parentEmail = null,
+  parentApprovalCode = null,
+  resendParentConsentAction,
   verificationPending = false,
 }: Props) {
   // Priority order:
@@ -60,19 +68,49 @@ export function ActionBanner({
             <small>
               {parentEmail ? (
                 <>
-                  Your parent will get an email at{" "}
-                  <strong style={{ color: "var(--text)" }}>{parentEmail}</strong>{" "}
-                  — pitches don&apos;t start until they approve.
+                  Email sent to{" "}
+                  <strong style={{ color: "var(--text)" }}>{parentEmail}</strong>
+                  . They&apos;ll click the link to approve. Pitches don&apos;t
+                  start until then.
                 </>
               ) : (
                 <>
-                  Your parent will get an email — pitches don&apos;t start until
+                  Your parent will get an email. Pitches don&apos;t start until
                   they approve.
                 </>
               )}
             </small>
+            {parentApprovalCode ? (
+              <small
+                style={{
+                  display: "block",
+                  marginTop: "0.35rem",
+                  fontFamily: "var(--mono)",
+                  fontSize: "0.78rem",
+                  color: "var(--text-muted)",
+                }}
+              >
+                If they didn&apos;t get it: send code{" "}
+                <strong
+                  style={{
+                    color: "var(--text)",
+                    letterSpacing: "0.16em",
+                  }}
+                >
+                  {parentApprovalCode}
+                </strong>{" "}
+                — they can enter it at thenilpro.com/parent
+              </small>
+            ) : null}
           </div>
         </div>
+        {resendParentConsentAction && parentEmail ? (
+          <form action={resendParentConsentAction}>
+            <button type="submit" className="action-items__btn">
+              Resend email
+            </button>
+          </form>
+        ) : null}
       </div>
     );
   }

@@ -1,8 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { requireAdmin } from "@/lib/auth/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { newParentToken, newParentCode } from "@/lib/email/parentTokens";
+import {
+  sendParentConsentEmail,
+  consentResultSent,
+} from "@/lib/email/parentConsent";
 
 const VALID_TIERS = ["starter", "pro", "champion"] as const;
 const VALID_SUB_STATUSES = ["trial", "active", "canceled", "past_due"] as const;
@@ -80,6 +86,76 @@ export async function approveParentAction(formData: FormData) {
     .from("athletes")
     .update({ parent_approved_at: new Date().toISOString() })
     .eq("id", athleteId);
+  refresh(athleteId);
+}
+
+/** Admin-triggered re-send of the parent-consent email. Rotates the token
+ *  and (if missing) backfills a fallback code so the dashboard share-line
+ *  works for athletes whose row pre-dates migration 0008. */
+export async function adminResendParentConsentAction(formData: FormData) {
+  await requireAdmin();
+  const athleteId = String(formData.get("athlete_id") ?? "");
+  if (!athleteId) return;
+
+  const sb = createAdminClient();
+  const { data: athlete } = await sb
+    .from("athletes")
+    .select(
+      "id, first_name, last_name, is_minor, parent_email, parent_first_name, parent_approval_code, parent_approved_at"
+    )
+    .eq("id", athleteId)
+    .maybeSingle();
+
+  if (
+    !athlete ||
+    !athlete.is_minor ||
+    !athlete.parent_email ||
+    !athlete.parent_first_name ||
+    athlete.parent_approved_at
+  ) {
+    refresh(athleteId);
+    return;
+  }
+
+  const code =
+    (athlete.parent_approval_code as string | null) ?? newParentCode();
+  const newToken = newParentToken();
+
+  await sb
+    .from("athletes")
+    .update({
+      parent_approval_token: newToken,
+      parent_approval_code: code,
+      parent_approval_token_sent_at: new Date().toISOString(),
+    })
+    .eq("id", athleteId);
+
+  const hdrs = await headers();
+  const origin =
+    hdrs.get("origin") ??
+    (process.env.NEXT_PUBLIC_SITE_URL ?? "https://thenilpro.com");
+  const approveUrl = `${origin}/parent/approve?token=${newToken}`;
+
+  const result = await sendParentConsentEmail({
+    athleteFirstName: athlete.first_name as string,
+    athleteLastName: (athlete.last_name as string | null) ?? "",
+    parentFirstName: athlete.parent_first_name as string,
+    parentEmail: athlete.parent_email as string,
+    approveUrl,
+    fallbackCode: code,
+  });
+
+  const status = result.skipped
+    ? "skipped"
+    : consentResultSent(result)
+    ? "sent"
+    : "failed";
+
+  await sb
+    .from("athletes")
+    .update({ parent_approval_email_status: status })
+    .eq("id", athleteId);
+
   refresh(athleteId);
 }
 

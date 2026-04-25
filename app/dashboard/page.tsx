@@ -12,6 +12,7 @@ import { TargetListSummary } from "@/components/dashboard/TargetListSummary";
 import { DealMenuSummary } from "@/components/dashboard/DealMenuSummary";
 import { SocialLinkSummary } from "@/components/dashboard/SocialLinkSummary";
 import { activeLabel } from "@/lib/time/activeLabel";
+import { resendParentConsentAction } from "./actions";
 
 export const metadata: Metadata = {
   title: "Dashboard — NILPro",
@@ -31,7 +32,7 @@ export default async function Dashboard() {
   const { data: athlete } = await supabase
     .from("athletes")
     .select(
-      "first_name, last_name, sport, school, level, referral_code, business_categories, created_at, profile_photo_url, is_minor, parent_approved_at, parent_email, parent_first_name"
+      "first_name, last_name, sport, school, level, referral_code, business_categories, created_at, profile_photo_url, is_minor, parent_approved_at, parent_email, parent_first_name, parent_approval_token, parent_approval_code, parent_approval_token_sent_at, parent_approval_email_status"
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -170,6 +171,10 @@ export default async function Dashboard() {
             athlete.is_minor && !athlete.parent_approved_at
           )}
           parentEmail={(athlete.parent_email as string | null) ?? null}
+          parentApprovalCode={
+            (athlete.parent_approval_code as string | null) ?? null
+          }
+          resendParentConsentAction={resendParentConsentAction}
           verificationPending={Boolean(social && !social.verified)}
         />
 
