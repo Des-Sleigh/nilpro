@@ -38,10 +38,11 @@ export function Footer() {
           <div className="footer__brand">
             <Link href="/" aria-label="NILPro home" style={{ display: "inline-block", marginBottom: "1rem" }}>
               <Image
-                src="/logo.png"
+                src="/logo.svg"
                 alt="NILPro"
-                width={160}
-                height={54}
+                width={127}
+                height={44}
+                unoptimized
                 style={{ height: "44px", width: "auto", display: "block" }}
               />
             </Link>
