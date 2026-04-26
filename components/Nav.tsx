@@ -59,12 +59,13 @@ export function Nav({ isSignedIn = false }: { isSignedIn?: boolean }) {
       <div className="nav__inner">
         <Link href="/" className="logo" onClick={close} aria-label="NILPro home">
           <Image
-            src="/logo.png"
+            src="/logo.svg"
             alt="NILPro"
-            width={56}
-            height={56}
+            width={132}
+            height={48}
             priority
-            style={{ height: "56px", width: "56px", display: "block" }}
+            unoptimized
+            style={{ height: "48px", width: "auto", display: "block" }}
           />
         </Link>
 
