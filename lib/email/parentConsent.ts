@@ -64,7 +64,7 @@ function buildHtml(p: ParentConsentParams): string {
             <td style="padding:28px 32px 8px 32px;">
               <a href="https://thenilpro.com" style="display:inline-block;text-decoration:none;line-height:0;">
                 <img
-                  src="https://thenilpro.com/logo.png"
+                  src="https://thenilpro.com/wordmark.png"
                   alt="NILPro"
                   width="160"
                   height="54"
