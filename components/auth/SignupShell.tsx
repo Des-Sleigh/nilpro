@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ScrollToTopOnMount } from "@/components/util/ScrollToTopOnMount";
+import { SignupBackButton } from "@/components/auth/SignupBackButton";
 
 type Props = {
   step: number;
@@ -55,14 +56,18 @@ export async function SignupShell({
             letterSpacing: "0.14em",
             textTransform: "uppercase",
             color: "var(--text-muted)",
+            gap: "1rem",
           }}
         >
-          <span>
-            Step{" "}
-            <strong style={{ color: "var(--green)" }}>
-              {String(step).padStart(2, "0")}
-            </strong>{" "}
-            of {String(total).padStart(2, "0")}
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "1.25rem" }}>
+            {step > 1 ? <SignupBackButton /> : null}
+            <span>
+              Step{" "}
+              <strong style={{ color: "var(--green)" }}>
+                {String(step).padStart(2, "0")}
+              </strong>{" "}
+              of {String(total).padStart(2, "0")}
+            </span>
           </span>
           <Link href={exitHref} style={{ color: "var(--text-faint)" }}>
             Exit

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type Props = {
   firstName: string;
   lastName: string;
@@ -48,18 +50,51 @@ export function DashboardHero({
       </div>
 
       <div className="dash-hero__right">
-        {profilePhotoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={profilePhotoUrl}
-            alt={`${firstName}'s profile photo`}
-            className="dash-avatar dash-avatar--photo"
-          />
-        ) : (
-          <div className="dash-avatar" aria-hidden>
-            {initials(firstName, lastName)}
-          </div>
-        )}
+        <Link
+          href="/settings/profile"
+          aria-label={
+            profilePhotoUrl ? "Change your profile photo" : "Upload a profile photo"
+          }
+          className="dash-avatar-link"
+          style={{
+            position: "relative",
+            display: "inline-block",
+            cursor: "pointer",
+          }}
+        >
+          {profilePhotoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={profilePhotoUrl}
+              alt={`${firstName}'s profile photo`}
+              className="dash-avatar dash-avatar--photo"
+            />
+          ) : (
+            <div className="dash-avatar" aria-hidden>
+              {initials(firstName, lastName)}
+            </div>
+          )}
+          <span
+            aria-hidden
+            style={{
+              position: "absolute",
+              bottom: "-4px",
+              right: "-4px",
+              width: "32px",
+              height: "32px",
+              borderRadius: "9999px",
+              background: "var(--bg)",
+              border: "2px solid var(--green)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "1rem",
+              boxShadow: "0 0 12px var(--green-glow)",
+            }}
+          >
+            📷
+          </span>
+        </Link>
       </div>
     </header>
   );
