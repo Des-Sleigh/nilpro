@@ -9,10 +9,17 @@ type Props = {
   profilePhotoUrl?: string | null;
 };
 
-function initials(first: string, last: string) {
-  const f = (first ?? "").trim().charAt(0).toUpperCase();
-  const l = (last ?? "").trim().charAt(0).toUpperCase();
-  return `${f}${l}` || "NP";
+function PersonIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+      style={{ width: "60%", height: "60%" }}
+    >
+      <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4.42 0-8 2.13-8 4.75V21h16v-2.25C20 16.13 16.42 14 12 14z" />
+    </svg>
+  );
 }
 
 export function DashboardHero({
@@ -30,7 +37,7 @@ export function DashboardHero({
 
   return (
     <header className="dash-hero">
-      <div>
+      <div style={{ minWidth: 0, flex: 1 }}>
         <div className="dash-hero__welcome">Welcome back</div>
         <h1 className="dash-hero__name">
           {firstName}
@@ -56,11 +63,7 @@ export function DashboardHero({
             profilePhotoUrl ? "Change your profile photo" : "Upload a profile photo"
           }
           className="dash-avatar-link"
-          style={{
-            position: "relative",
-            display: "inline-block",
-            cursor: "pointer",
-          }}
+          title={profilePhotoUrl ? "Change photo" : "Upload a photo"}
         >
           {profilePhotoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -70,30 +73,10 @@ export function DashboardHero({
               className="dash-avatar dash-avatar--photo"
             />
           ) : (
-            <div className="dash-avatar" aria-hidden>
-              {initials(firstName, lastName)}
+            <div className="dash-avatar dash-avatar--placeholder" aria-hidden>
+              <PersonIcon />
             </div>
           )}
-          <span
-            aria-hidden
-            style={{
-              position: "absolute",
-              bottom: "-4px",
-              right: "-4px",
-              width: "32px",
-              height: "32px",
-              borderRadius: "9999px",
-              background: "var(--bg)",
-              border: "2px solid var(--green)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "1rem",
-              boxShadow: "0 0 12px var(--green-glow)",
-            }}
-          >
-            📷
-          </span>
         </Link>
       </div>
     </header>

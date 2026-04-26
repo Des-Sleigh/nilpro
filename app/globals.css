@@ -713,6 +713,7 @@
   padding: 0;
   object-fit: cover;
   background: var(--bg);
+  border: 1px solid var(--border-strong);
 }
 
 /* Two-column form row that collapses to one column on narrow mobile.
@@ -3139,18 +3140,34 @@
 }
 
 .dash-avatar {
-  width: 48px; height: 48px;
-  background: linear-gradient(135deg, #006633, var(--green));
-  border: 1px solid var(--green);
-  color: var(--bg);
-  font-family: var(--display);
+  width: 64px;
+  height: 64px;
+  border-radius: var(--r-pill);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.3rem;
-  border-radius: var(--r-pill);
-  box-shadow: 0 0 14px var(--green-glow);
-  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+/* Empty-state placeholder — quiet grey circle with a person silhouette,
+   clearly tappable to upload. No green glow so it doesn't compete with
+   the rest of the dashboard. */
+.dash-avatar--placeholder {
+  background: var(--bg-elev);
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.dash-avatar-link:hover .dash-avatar--placeholder {
+  background: var(--bg-card);
+  border-color: var(--text-muted);
+  color: var(--text-dim);
+}
+
+.dash-avatar-link {
+  display: inline-block;
+  cursor: pointer;
 }
 
 /* ---------- status bar ---------- */
