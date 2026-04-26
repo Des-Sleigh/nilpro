@@ -445,92 +445,68 @@
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  padding: 0.9rem 1.5rem;
+  padding: 0.95rem 1.6rem;
   font-family: var(--cond);
   font-size: 0.92rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   transition: all 0.2s ease;
   white-space: nowrap;
   cursor: pointer;
   border: 2px solid transparent;
   position: relative;
-  overflow: hidden;
-  border-radius: var(--r-sm);
+  border-radius: var(--r-md);
 }
 
+/* Outlined neon-glow primary — green border, dark interior, soft halo. */
 .btn--primary {
-  background: var(--green);
-  color: var(--bg);
-  border: 2px solid #000;
+  background: var(--bg-elev);
+  color: var(--green);
+  border: 2px solid var(--green);
   box-shadow:
-    0 0 0 1px rgba(0, 230, 118, 0.35),
-    0 4px 0 #000,
-    0 0 24px var(--green-glow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.15);
-}
-
-.btn--primary::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transform: translateX(-120%);
-  transition: transform 0.5s;
+    0 0 0 1px rgba(0, 230, 118, 0.6),
+    0 0 28px rgba(0, 230, 118, 0.45),
+    0 0 80px rgba(0, 230, 118, 0.18),
+    inset 0 0 28px rgba(0, 230, 118, 0.06);
 }
 
 .btn--primary:hover {
-  background: var(--green-hot);
-  transform: translateY(-2px);
+  color: var(--green-hot);
+  border-color: var(--green-hot);
+  background: rgba(0, 230, 118, 0.08);
   box-shadow:
-    0 0 0 1px rgba(0, 230, 118, 0.5),
-    0 6px 0 #000,
-    0 4px 28px var(--green-glow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+    0 0 0 1px rgba(0, 255, 136, 0.8),
+    0 0 36px rgba(0, 230, 118, 0.6),
+    0 0 100px rgba(0, 230, 118, 0.28),
+    inset 0 0 32px rgba(0, 230, 118, 0.1);
 }
-
-.btn--primary:hover::after { transform: translateX(120%); }
 
 .btn--primary:active {
   transform: translateY(1px);
   box-shadow:
-    0 0 0 1px rgba(0, 230, 118, 0.35),
-    0 2px 0 #000,
-    0 0 16px var(--green-glow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+    0 0 0 1px rgba(0, 230, 118, 0.5),
+    0 0 18px rgba(0, 230, 118, 0.35),
+    0 0 60px rgba(0, 230, 118, 0.12),
+    inset 0 0 24px rgba(0, 230, 118, 0.06);
 }
 
+/* Ghost — dark interior, subtle border, no glow. */
 .btn--ghost {
   background: var(--bg-elev);
   color: var(--text);
-  border: 2px solid #000;
-  box-shadow:
-    0 0 0 1px var(--border-strong),
-    0 4px 0 #000,
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border: 2px solid var(--border-strong);
+  box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.4);
 }
 
 .btn--ghost:hover {
   background: var(--bg-card);
-  border-color: #000;
+  border-color: var(--text-muted);
   color: var(--green);
-  box-shadow:
-    0 0 0 1px var(--green),
-    0 6px 0 #000,
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transform: translateY(-2px);
 }
 
 .btn--ghost:active {
   transform: translateY(1px);
-  box-shadow:
-    0 0 0 1px var(--green),
-    0 2px 0 #000,
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .btn--dark {

@@ -9,6 +9,7 @@ import {
   sendParentConsentEmail,
   consentResultSent,
 } from "@/lib/email/parentConsent";
+import { hsNilStatusFor, stateName } from "@/lib/states/nilStatus";
 
 const VALID_LEVELS = ["D1", "D2", "D3", "NAIA", "JUCO", "HS", "Club"] as const;
 type Level = (typeof VALID_LEVELS)[number];
@@ -81,6 +82,19 @@ export async function saveProfileAction(formData: FormData) {
     fail("Pick a valid graduation year.");
   }
 
+  // HS NIL state gating: block hard-banned states; flag partial states.
+  // College NIL is legal in all 50 states + DC, so this only matters for
+  // level === "HS".
+  const hsStatus = hsNilStatusFor(hometownState);
+  if (level === "HS" && hsStatus === "off") {
+    fail(
+      `Sorry — high-school NIL isn't permitted in ${stateName(
+        hometownState
+      )} yet. Once your state allows it, you'll be welcome here.`
+    );
+  }
+  const hsStateRestricted = level === "HS" && hsStatus === "partial";
+
   // Generate a referral code; retry a few times if we hit a collision.
   let referralCode = "";
   for (let attempt = 0; attempt < 5; attempt++) {
@@ -113,6 +127,8 @@ export async function saveProfileAction(formData: FormData) {
     last_name: lastName,
     sport,
     position,
+    sports: sport ? [sport] : null,
+    positions: position ? [position] : null,
     level,
     school,
     graduation_year: gradYear,
@@ -125,6 +141,7 @@ export async function saveProfileAction(formData: FormData) {
     parent_approval_token: parentToken,
     parent_approval_code: parentCode,
     parent_approval_token_sent_at: parentSentAt,
+    hs_state_restricted: hsStateRestricted,
     referral_code: referralCode,
     referred_by_code: referredBy,
   });

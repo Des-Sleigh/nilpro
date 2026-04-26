@@ -29,6 +29,12 @@ type Props = {
    *  verified yet. Shown ahead of the quiet "sit tight" state so new
    *  accounts know outreach is gated on verification. */
   verificationPending?: boolean;
+  /** True when this is a HS athlete in a state that allows HS NIL with
+   *  restrictions. Shows alongside the other state — informational. */
+  hsStateRestricted?: boolean;
+  /** State code (e.g. "TX") + the body of the restriction notice. */
+  hsStateCode?: string | null;
+  hsStateNote?: string | null;
 };
 
 export function ActionBanner({
@@ -40,6 +46,9 @@ export function ActionBanner({
   resendParentConsentAction,
   parentEmailRecentlySent = false,
   verificationPending = false,
+  hsStateRestricted = false,
+  hsStateCode = null,
+  hsStateNote = null,
 }: Props) {
   // Priority order:
   //   1. missingStep  (athlete is blocked on their own data)
@@ -130,6 +139,20 @@ export function ActionBanner({
               We&apos;re confirming your Instagram. Outreach starts the moment
               you&apos;re verified (usually within 24 hours).
             </small>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (hsStateRestricted && hsStateNote) {
+    return (
+      <div className="action-items">
+        <div className="action-items__left">
+          <div className="action-items__icon">⚑</div>
+          <div className="action-items__text">
+            Restrictions in {hsStateCode ?? "your state"}
+            <small>{hsStateNote}</small>
           </div>
         </div>
       </div>

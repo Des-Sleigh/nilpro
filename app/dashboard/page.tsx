@@ -13,6 +13,7 @@ import { DealMenuSummary } from "@/components/dashboard/DealMenuSummary";
 import { SocialLinkSummary } from "@/components/dashboard/SocialLinkSummary";
 import { activeLabel } from "@/lib/time/activeLabel";
 import { resendParentConsentAction } from "./actions";
+import { HS_NIL_PARTIAL_NOTES } from "@/lib/states/nilStatus";
 
 export const metadata: Metadata = {
   title: "Dashboard — NILPro",
@@ -37,7 +38,7 @@ export default async function Dashboard({
   const { data: athlete } = await supabase
     .from("athletes")
     .select(
-      "first_name, last_name, sport, school, level, referral_code, business_categories, created_at, profile_photo_url, is_minor, parent_approved_at, parent_email, parent_first_name, parent_approval_token, parent_approval_code, parent_approval_token_sent_at, parent_approval_email_status"
+      "first_name, last_name, sport, school, level, referral_code, business_categories, created_at, profile_photo_url, is_minor, parent_approved_at, parent_email, parent_first_name, parent_approval_token, parent_approval_code, parent_approval_token_sent_at, parent_approval_email_status, hometown_state, hs_state_restricted"
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -182,6 +183,15 @@ export default async function Dashboard({
           resendParentConsentAction={resendParentConsentAction}
           parentEmailRecentlySent={email_resent === "1"}
           verificationPending={Boolean(social && !social.verified)}
+          hsStateRestricted={Boolean(athlete.hs_state_restricted)}
+          hsStateCode={(athlete.hometown_state as string | null) ?? null}
+          hsStateNote={
+            athlete.hometown_state
+              ? HS_NIL_PARTIAL_NOTES[
+                  (athlete.hometown_state as string).toUpperCase()
+                ] ?? null
+              : null
+          }
         />
 
         <StatsRow
