@@ -389,6 +389,10 @@
   border-radius: var(--r-sm);
 }
 
+/* Drawer-only CTAs render only inside the open mobile drawer; hidden on
+   desktop where .nav__cta on the right handles them. */
+.nav__drawer-cta { display: none; }
+
 @media (max-width: 900px) {
   .nav__links { display: none; }
   .nav__menu-btn { display: block; }
@@ -412,6 +416,25 @@
     font-size: 1.05rem;
   }
   .nav__links--open .nav__link:last-child { border-bottom: none; }
+
+  /* Surface auth CTAs at the bottom of the open drawer so signed-out
+     mobile users have a Sign in path (the top-right ghost button is
+     hidden by .nav__cta .btn--ghost above). */
+  .nav__links--open .nav__drawer-cta {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    margin-top: 0.25rem;
+    padding-top: 0.25rem;
+    border-top: 2px solid var(--border-strong);
+  }
+  .nav__link--cta {
+    color: var(--text);
+  }
+  .nav__link--primary {
+    color: var(--green);
+  }
 }
 
 /* ============================================================

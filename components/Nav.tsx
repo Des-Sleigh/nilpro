@@ -92,6 +92,26 @@ export function Nav({ isSignedIn = false }: { isSignedIn?: boolean }) {
               </Link>
             );
           })}
+
+          {/* Mobile-drawer auth CTAs. Hidden on desktop (the .nav__cta
+              block on the right shows them there); only rendered inside
+              the drawer on mobile widths. */}
+          <div className="nav__drawer-cta">
+            {isSignedIn ? (
+              <Link href="/dashboard" onClick={close} className="nav__link nav__link--cta">
+                Dashboard →
+              </Link>
+            ) : (
+              <>
+                <Link href="/signin" onClick={close} className="nav__link nav__link--cta">
+                  Sign in
+                </Link>
+                <Link href="/signup" onClick={close} className="nav__link nav__link--cta nav__link--primary">
+                  Get started →
+                </Link>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="nav__cta">
