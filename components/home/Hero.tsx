@@ -8,6 +8,48 @@ function ArrowIcon() {
   );
 }
 
+function CheckIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 6L9 17l-5-5" />
+    </svg>
+  );
+}
+
+function CalendarIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4M8 2v4M3 10h18" />
+    </svg>
+  );
+}
+
+function UtensilsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 2v7c0 1.1.9 2 2 2h0a2 2 0 002-2V2M5 11v11M14 2c-1.1 0-2 1-2 2v6c0 1.1.9 2 2 2h0V2zM18 2v20" />
+    </svg>
+  );
+}
+
+function DumbbellIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 5v14M2 9v6M18 5v14M22 9v6M6 12h12" />
+    </svg>
+  );
+}
+
+function ShoeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 18h18a0 0 0 010 0v0a2 2 0 01-2 2H5a2 2 0 01-2-2v0z" />
+      <path d="M3 18l1-7c.2-1.4 1.4-2.4 2.8-2.4h2.5l1.5 2.5L13 12h5l3 3v3" />
+    </svg>
+  );
+}
+
 export function Hero({ isSignedIn = false }: { isSignedIn?: boolean }) {
   return (
     <section className="hero">
@@ -68,9 +110,9 @@ export function Hero({ isSignedIn = false }: { isSignedIn?: boolean }) {
             <div className="slip slip--1">
               <div className="slip__head">
                 <div className="slip__badge">
-                  <span className="dot"></span> CLOSED
+                  <CheckIcon /> CLOSED
                 </div>
-                <div className="slip__date">MAR 14 · 9:42A</div>
+                <div className="slip__date">MAR 14, 2025 · 9:42 AM</div>
               </div>
               <div className="slip__athlete">
                 <div className="slip__avatar">MR</div>
@@ -80,9 +122,15 @@ export function Hero({ isSignedIn = false }: { isSignedIn?: boolean }) {
                 </div>
               </div>
               <div className="slip__deal">
-                <div className="slip__deal-biz">La Cocina de Abuela</div>
-                <div className="slip__deal-desc">
-                  Monthly meals + 2 posts/mo — 6 month term
+                <div className="slip__deal-icon">
+                  <UtensilsIcon />
+                </div>
+                <div className="slip__deal-body">
+                  <div className="slip__deal-biz">La Cocina de Abuela</div>
+                  <div className="slip__deal-desc">Monthly meals + 2 posts/mo</div>
+                  <div className="slip__deal-term">
+                    <CalendarIcon /> 6 month term
+                  </div>
                 </div>
               </div>
               <div className="slip__amt">
@@ -94,25 +142,33 @@ export function Hero({ isSignedIn = false }: { isSignedIn?: boolean }) {
             <div className="slip slip--2">
               <div className="slip__head">
                 <div className="slip__badge">
-                  <span className="dot"></span> PENDING
+                  <CheckIcon /> CLOSED
                 </div>
-                <div className="slip__date">MAR 14 · 11:18A</div>
+                <div className="slip__date">MAR 14, 2025 · 11:18 AM</div>
               </div>
               <div className="slip__athlete">
-                <div className="slip__avatar">JT</div>
+                <div className="slip__avatar">JP</div>
                 <div>
-                  <div className="slip__name">Jordan T.</div>
-                  <div className="slip__meta">JUCO BASEBALL · TOLEDO OH</div>
+                  <div className="slip__name">Jordan P.</div>
+                  <div className="slip__meta">D2 BASKETBALL · AUSTIN TX</div>
                 </div>
               </div>
               <div className="slip__deal">
-                <div className="slip__deal-biz">Revolution Fitness</div>
-                <div className="slip__deal-desc">
-                  Seasonal membership + posts during season
+                <div className="slip__deal-icon">
+                  <DumbbellIcon />
+                </div>
+                <div className="slip__deal-body">
+                  <div className="slip__deal-biz">Revolution Fitness</div>
+                  <div className="slip__deal-desc">
+                    Seasonal membership + posts during season
+                  </div>
+                  <div className="slip__deal-term">
+                    <CalendarIcon /> 6 month term
+                  </div>
                 </div>
               </div>
               <div className="slip__amt">
-                <span className="slip__amt-label">Est. value</span>
+                <span className="slip__amt-label">Deal value</span>
                 <span className="slip__amt-val">$450</span>
               </div>
             </div>
@@ -120,24 +176,32 @@ export function Hero({ isSignedIn = false }: { isSignedIn?: boolean }) {
             <div className="slip slip--3">
               <div className="slip__head">
                 <div className="slip__badge">
-                  <span className="dot"></span> NEW
+                  <CheckIcon /> CLOSED
                 </div>
-                <div className="slip__date">MAR 14 · 1:05P</div>
+                <div className="slip__date">MAR 14, 2025 · 1:05 PM</div>
               </div>
               <div className="slip__athlete">
-                <div className="slip__avatar">SK</div>
+                <div className="slip__avatar">AC</div>
                 <div>
-                  <div className="slip__name">Sam K.</div>
-                  <div className="slip__meta">D1 TRACK · EUGENE OR</div>
+                  <div className="slip__name">Alex C.</div>
+                  <div className="slip__meta">TRACK & FIELD · COLLEGE STATION TX</div>
                 </div>
               </div>
               <div className="slip__deal">
-                <div className="slip__deal-biz">Tracktown Running</div>
-                <div className="slip__deal-desc">Gear package + 3 posts this season</div>
+                <div className="slip__deal-icon">
+                  <ShoeIcon />
+                </div>
+                <div className="slip__deal-body">
+                  <div className="slip__deal-biz">Stride Performance</div>
+                  <div className="slip__deal-desc">Training package + 1 post/mo</div>
+                  <div className="slip__deal-term">
+                    <CalendarIcon /> 3 month term
+                  </div>
+                </div>
               </div>
               <div className="slip__amt">
                 <span className="slip__amt-label">Deal value</span>
-                <span className="slip__amt-val">$250</span>
+                <span className="slip__amt-val">$300</span>
               </div>
             </div>
           </div>
