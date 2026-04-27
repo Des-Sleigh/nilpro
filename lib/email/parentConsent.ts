@@ -1,4 +1,5 @@
 import { getResend, getFromEmail } from "./resend";
+import { emailButton } from "./emailButton";
 
 export type ParentConsentParams = {
   athleteFirstName: string;
@@ -38,7 +39,6 @@ function buildHtml(p: ParentConsentParams): string {
   const al = esc(p.athleteLastName);
   const pf = esc(p.parentFirstName);
   const code = esc(p.fallbackCode);
-  const url = esc(p.approveUrl);
 
   // Inline-CSS only. ~600px wide. Dark bg, white text, green CTA.
   // No images, no external CSS, no web fonts — maximum inbox compatibility.
@@ -90,15 +90,10 @@ function buildHtml(p: ParentConsentParams): string {
           <!-- CTA button -->
           <tr>
             <td align="center" style="padding:6px 32px 26px 32px;">
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td bgcolor="#00e676" style="border-radius:10px;">
-                    <a href="${url}" style="display:inline-block;padding:16px 28px;font-family:Impact,'Arial Black',sans-serif;font-size:16px;letter-spacing:0.06em;color:#07090f;text-transform:uppercase;text-decoration:none;font-weight:700;">
-                      &#10003; Approve ${af}&rsquo;s NILPro account
-                    </a>
-                  </td>
-                </tr>
-              </table>
+              ${emailButton({
+                href: p.approveUrl,
+                label: `✓ Approve ${p.athleteFirstName}'s NILPro account`,
+              })}
             </td>
           </tr>
 

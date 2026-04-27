@@ -148,7 +148,11 @@ export default async function AdminAthleteDetailPage({
         {athlete.first_name} <em>{athlete.last_name}</em>
       </h1>
       <div className="admin-sub">
-        {athlete.level} · {athlete.sport} · {athlete.school}
+        {athlete.level} ·{" "}
+        {Array.isArray(athlete.sports) && athlete.sports.length > 0
+          ? (athlete.sports as string[]).join(" · ")
+          : athlete.sport}
+        {" "}· {athlete.school}
       </div>
 
       <div className="admin-grid-2">
@@ -173,7 +177,15 @@ export default async function AdminAthleteDetailPage({
             <dt>Grad year</dt>
             <dd>{(athlete.graduation_year as number | null) ?? "—"}</dd>
             <dt>Position</dt>
-            <dd>{(athlete.position as string | null) ?? "—"}</dd>
+            <dd>
+              {Array.isArray(athlete.positions) &&
+              (athlete.positions as string[]).filter((p) => p && p.length > 0)
+                .length > 0
+                ? (athlete.positions as string[])
+                    .filter((p) => p && p.length > 0)
+                    .join(" · ")
+                : (athlete.position as string | null) ?? "—"}
+            </dd>
             <dt>Referral code</dt>
             <dd style={{ fontFamily: "var(--mono)" }}>
               {(athlete.referral_code as string | null) ?? "—"}

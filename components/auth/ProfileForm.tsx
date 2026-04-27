@@ -33,6 +33,121 @@ function computeAge(dob: string): number | null {
   return age;
 }
 
+/**
+ * Dynamic Sport / Position rows. The first row is required; athletes
+ * can add more sport+position pairs and remove any row that isn't the
+ * only one. Each row submits as repeated `sports` / `positions` fields,
+ * which the action reads with `formData.getAll(...)`.
+ */
+function SportRowsField({
+  defaults,
+}: {
+  defaults?: { sport: string; position: string }[];
+}) {
+  const seed =
+    defaults && defaults.length > 0
+      ? defaults
+      : [{ sport: "", position: "" }];
+  const [rows, setRows] = useState(seed);
+
+  function update(i: number, field: "sport" | "position", value: string) {
+    setRows((prev) =>
+      prev.map((r, idx) => (idx === i ? { ...r, [field]: value } : r))
+    );
+  }
+  function addRow() {
+    setRows((prev) => [...prev, { sport: "", position: "" }]);
+  }
+  function removeRow(i: number) {
+    setRows((prev) => (prev.length <= 1 ? prev : prev.filter((_, idx) => idx !== i)));
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.65rem" }}>
+      {rows.map((r, i) => {
+        const onlyRow = rows.length === 1;
+        return (
+          <div
+            key={i}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr auto",
+              gap: "0.85rem",
+              alignItems: "end",
+            }}
+          >
+            <label className="auth-form__label">
+              <span>{i === 0 ? "Sport" : `Sport ${i + 1}`}</span>
+              <input
+                type="text"
+                name="sports"
+                required={i === 0}
+                value={r.sport}
+                onChange={(e) => update(i, "sport", e.target.value)}
+                placeholder="Soccer, football, track…"
+                className="auth-form__input"
+              />
+            </label>
+            <label className="auth-form__label">
+              <span>Position (optional)</span>
+              <input
+                type="text"
+                name="positions"
+                value={r.position}
+                onChange={(e) => update(i, "position", e.target.value)}
+                placeholder="Midfielder, QB…"
+                className="auth-form__input"
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => removeRow(i)}
+              disabled={onlyRow}
+              aria-label={`Remove sport ${i + 1}`}
+              style={{
+                padding: "0.55rem 0.7rem",
+                border: "1px solid var(--border-strong)",
+                background: "var(--bg-soft)",
+                color: onlyRow ? "var(--text-muted)" : "var(--text-dim)",
+                fontFamily: "var(--mono)",
+                fontSize: "1rem",
+                lineHeight: 1,
+                borderRadius: "var(--r-sm)",
+                cursor: onlyRow ? "not-allowed" : "pointer",
+                opacity: onlyRow ? 0.4 : 1,
+                height: "2.45rem",
+              }}
+            >
+              ×
+            </button>
+          </div>
+        );
+      })}
+      <div>
+        <button
+          type="button"
+          onClick={addRow}
+          style={{
+            padding: "0.45rem 0.85rem",
+            border: "1px dashed var(--border-strong)",
+            background: "transparent",
+            color: "var(--text-dim)",
+            fontFamily: "var(--cond)",
+            fontSize: "0.82rem",
+            fontWeight: 700,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            borderRadius: "var(--r-sm)",
+            cursor: "pointer",
+          }}
+        >
+          + Add another sport
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
@@ -133,27 +248,7 @@ export function ProfileForm({ error }: { error?: string }) {
         <input type="hidden" name="level" value={level} required />
       </label>
 
-      <div className="form-grid-2">
-        <label className="auth-form__label">
-          <span>Sport</span>
-          <input
-            type="text"
-            name="sport"
-            required
-            placeholder="Soccer, football, track…"
-            className="auth-form__input"
-          />
-        </label>
-        <label className="auth-form__label">
-          <span>Position (optional)</span>
-          <input
-            type="text"
-            name="position"
-            placeholder="Midfielder, QB…"
-            className="auth-form__input"
-          />
-        </label>
-      </div>
+      <SportRowsField />
 
       <label className="auth-form__label">
         <span>School</span>

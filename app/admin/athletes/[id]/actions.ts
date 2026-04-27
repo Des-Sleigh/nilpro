@@ -9,6 +9,7 @@ import {
   sendParentConsentEmail,
   consentResultSent,
 } from "@/lib/email/parentConsent";
+import { sendVerificationApprovedEmail } from "@/lib/email/verificationApproved";
 
 const VALID_TIERS = ["starter", "pro", "champion"] as const;
 const VALID_SUB_STATUSES = ["trial", "active", "canceled", "past_due"] as const;
@@ -45,12 +46,50 @@ export async function verifyAthleteAction(formData: FormData) {
     .eq("platform", "instagram")
     .maybeSingle();
 
+  // Was the row previously unverified? Track this so we only send the
+  // "you're verified" email on the actual false → true transition. If
+  // an admin clicks the button on an already-verified row, we skip the
+  // email so we don't spam.
+  const wasUnverified = Boolean(existing && !existing.verified);
+
   if (existing) {
     await sb
       .from("social_accounts")
       .update({ verified: true, verified_at: new Date().toISOString() })
       .eq("id", existing.id);
   }
+
+  if (wasUnverified) {
+    try {
+      const [athleteRes, userRes] = await Promise.all([
+        sb
+          .from("athletes")
+          .select("first_name")
+          .eq("id", athleteId)
+          .maybeSingle(),
+        sb.auth.admin.getUserById(athleteId),
+      ]);
+      const firstName =
+        (athleteRes.data?.first_name as string | undefined) ?? "";
+      const athleteEmail = userRes.data?.user?.email ?? null;
+      if (firstName && athleteEmail) {
+        await sendVerificationApprovedEmail({
+          athleteFirstName: firstName,
+          athleteEmail,
+          dashboardUrl: `${
+            process.env.NEXT_PUBLIC_SITE_URL ?? "https://thenilpro.com"
+          }/dashboard`,
+        });
+      }
+    } catch (err) {
+      console.error(
+        `[verify] verification email failed: ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
+    }
+  }
+
   refresh(athleteId);
 }
 

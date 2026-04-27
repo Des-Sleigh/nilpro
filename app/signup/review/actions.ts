@@ -2,9 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CATEGORIES, categoryFromPlaceType } from "@/lib/places/categories";
+import { sendWelcomeEmail } from "@/lib/email/welcome";
 
 function fail(msg: string): never {
   redirect(`/signup/review?error=${encodeURIComponent(msg)}`);
@@ -89,6 +91,46 @@ export async function submitReviewAction(formData: FormData) {
       .update({ status: "removed", removed_at: now })
       .in("id", removedIds);
     if (error) fail(error.message);
+  }
+
+  // Welcome email — only when this submit actually approved at least
+  // one business. Never block the redirect on email outcome. We use the
+  // admin client to read auth.users for the email; athletes table only
+  // stores first_name, not the auth-side email.
+  if (approvedIds.length > 0) {
+    try {
+      const admin = createAdminClient();
+      const [athleteRes, userRes] = await Promise.all([
+        admin
+          .from("athletes")
+          .select("first_name")
+          .eq("id", user.id)
+          .maybeSingle(),
+        admin.auth.admin.getUserById(user.id),
+      ]);
+
+      const firstName = (athleteRes.data?.first_name as string | undefined) ?? "";
+      const athleteEmail = userRes.data?.user?.email ?? null;
+
+      if (firstName && athleteEmail) {
+        const hdrs = await headers();
+        const origin =
+          hdrs.get("origin") ??
+          (process.env.NEXT_PUBLIC_SITE_URL ?? "https://thenilpro.com");
+        await sendWelcomeEmail({
+          athleteFirstName: firstName,
+          athleteEmail,
+          dashboardUrl: `${origin}/dashboard`,
+        });
+      }
+    } catch (err) {
+      // Never fail the action on email — just log.
+      console.error(
+        `[review/submit] welcome email failed: ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
+    }
   }
 
   // Per founder decision: the /signup/photo and /signup/done pages are

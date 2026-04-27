@@ -48,8 +48,29 @@ export async function saveProfileAction(formData: FormData) {
 
   const firstName = String(formData.get("first_name") ?? "").trim();
   const lastName = String(formData.get("last_name") ?? "").trim();
-  const sport = String(formData.get("sport") ?? "").trim();
-  const position = String(formData.get("position") ?? "").trim() || null;
+
+  // Multi-sport: read paired arrays from repeated form fields. The
+  // length of `sports[]` and `positions[]` matches because the UI
+  // always submits both inputs per row (position can be empty).
+  const sportsRaw = formData.getAll("sports").map((v) => String(v).trim());
+  const positionsRaw = formData
+    .getAll("positions")
+    .map((v) => String(v).trim());
+  const sports: string[] = [];
+  const positions: string[] = [];
+  for (let i = 0; i < sportsRaw.length; i++) {
+    const s = sportsRaw[i];
+    if (!s) continue; // drop rows without a sport — position alone is meaningless
+    sports.push(s);
+    positions.push(positionsRaw[i] ?? "");
+  }
+  // Singular columns mirror the first non-empty entry — backwards
+  // compat for admin views and the dashboard hero. Falls back to the
+  // legacy single-input form if the new array fields aren't sent.
+  const legacySport = String(formData.get("sport") ?? "").trim();
+  const legacyPosition = String(formData.get("position") ?? "").trim();
+  const sport = sports[0] ?? legacySport;
+  const position = (positions[0] ?? legacyPosition) || null;
   const level = String(formData.get("level") ?? "") as Level;
   const dob = String(formData.get("date_of_birth") ?? "");
   const gradYearRaw = String(formData.get("graduation_year") ?? "");
@@ -127,8 +148,13 @@ export async function saveProfileAction(formData: FormData) {
     last_name: lastName,
     sport,
     position,
-    sports: sport ? [sport] : null,
-    positions: position ? [position] : null,
+    sports: sports.length > 0 ? sports : sport ? [sport] : null,
+    positions:
+      sports.length > 0
+        ? positions
+        : position
+        ? [position]
+        : null,
     level,
     school,
     graduation_year: gradYear,

@@ -29,6 +29,10 @@ export type SettingsProfileDefaults = {
   level: string;
   sport: string;
   position: string | null;
+  /** Optional — full ordered arrays for multi-sport athletes. If absent
+   *  or empty, falls back to the singular sport/position pair above. */
+  sports?: string[] | null;
+  positions?: string[] | null;
   school: string;
   graduationYear: number | null;
   hometownCity: string | null;
@@ -38,6 +42,132 @@ export type SettingsProfileDefaults = {
   profilePhotoUrl: string | null;
   userId: string;
 };
+
+function buildSportRowDefaults(
+  d: SettingsProfileDefaults
+): { sport: string; position: string }[] {
+  const sports = Array.isArray(d.sports) ? d.sports : [];
+  const positions = Array.isArray(d.positions) ? d.positions : [];
+  if (sports.length > 0) {
+    return sports.map((s, i) => ({
+      sport: s ?? "",
+      position: positions[i] ?? "",
+    }));
+  }
+  // Fallback to the singular columns.
+  return [{ sport: d.sport ?? "", position: d.position ?? "" }];
+}
+
+/**
+ * Dynamic Sport / Position rows. Mirrors the signup ProfileForm version
+ * but seeded with the athlete's saved values. First row required, others
+ * removable. Submits as repeated `sports` / `positions` fields.
+ */
+function SportRowsField({
+  defaults,
+}: {
+  defaults: { sport: string; position: string }[];
+}) {
+  const seed = defaults.length > 0 ? defaults : [{ sport: "", position: "" }];
+  const [rows, setRows] = useState(seed);
+
+  function update(i: number, field: "sport" | "position", value: string) {
+    setRows((prev) =>
+      prev.map((r, idx) => (idx === i ? { ...r, [field]: value } : r))
+    );
+  }
+  function addRow() {
+    setRows((prev) => [...prev, { sport: "", position: "" }]);
+  }
+  function removeRow(i: number) {
+    setRows((prev) =>
+      prev.length <= 1 ? prev : prev.filter((_, idx) => idx !== i)
+    );
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.65rem" }}>
+      {rows.map((r, i) => {
+        const onlyRow = rows.length === 1;
+        return (
+          <div
+            key={i}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr auto",
+              gap: "0.85rem",
+              alignItems: "end",
+            }}
+          >
+            <label className="auth-form__label">
+              <span>{i === 0 ? "Sport" : `Sport ${i + 1}`}</span>
+              <input
+                type="text"
+                name="sports"
+                required={i === 0}
+                value={r.sport}
+                onChange={(e) => update(i, "sport", e.target.value)}
+                className="auth-form__input"
+              />
+            </label>
+            <label className="auth-form__label">
+              <span>Position (optional)</span>
+              <input
+                type="text"
+                name="positions"
+                value={r.position}
+                onChange={(e) => update(i, "position", e.target.value)}
+                className="auth-form__input"
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => removeRow(i)}
+              disabled={onlyRow}
+              aria-label={`Remove sport ${i + 1}`}
+              style={{
+                padding: "0.55rem 0.7rem",
+                border: "1px solid var(--border-strong)",
+                background: "var(--bg-soft)",
+                color: onlyRow ? "var(--text-muted)" : "var(--text-dim)",
+                fontFamily: "var(--mono)",
+                fontSize: "1rem",
+                lineHeight: 1,
+                borderRadius: "var(--r-sm)",
+                cursor: onlyRow ? "not-allowed" : "pointer",
+                opacity: onlyRow ? 0.4 : 1,
+                height: "2.45rem",
+              }}
+            >
+              ×
+            </button>
+          </div>
+        );
+      })}
+      <div>
+        <button
+          type="button"
+          onClick={addRow}
+          style={{
+            padding: "0.45rem 0.85rem",
+            border: "1px dashed var(--border-strong)",
+            background: "transparent",
+            color: "var(--text-dim)",
+            fontFamily: "var(--cond)",
+            fontSize: "0.82rem",
+            fontWeight: 700,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            borderRadius: "var(--r-sm)",
+            cursor: "pointer",
+          }}
+        >
+          + Add another sport
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -187,27 +317,9 @@ export function SettingsProfileForm({
           <input type="hidden" name="level" value={level} required />
         </label>
 
-        <div className="form-grid-2">
-          <label className="auth-form__label">
-            <span>Sport</span>
-            <input
-              type="text"
-              name="sport"
-              required
-              defaultValue={defaults.sport}
-              className="auth-form__input"
-            />
-          </label>
-          <label className="auth-form__label">
-            <span>Position (optional)</span>
-            <input
-              type="text"
-              name="position"
-              defaultValue={defaults.position ?? ""}
-              className="auth-form__input"
-            />
-          </label>
-        </div>
+        <SportRowsField
+          defaults={buildSportRowDefaults(defaults)}
+        />
 
         <label className="auth-form__label">
           <span>School</span>

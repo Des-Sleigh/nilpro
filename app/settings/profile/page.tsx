@@ -26,7 +26,7 @@ export default async function SettingsProfilePage({
   const { data: athlete } = await supabase
     .from("athletes")
     .select(
-      "first_name, last_name, sport, position, level, school, graduation_year, hometown_city, hometown_state, profile_photo_url"
+      "first_name, last_name, sport, position, sports, positions, level, school, graduation_year, hometown_city, hometown_state, profile_photo_url"
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -47,6 +47,12 @@ export default async function SettingsProfilePage({
     level: athlete.level,
     sport: athlete.sport,
     position: athlete.position ?? null,
+    sports: Array.isArray(athlete.sports)
+      ? (athlete.sports as string[])
+      : null,
+    positions: Array.isArray(athlete.positions)
+      ? (athlete.positions as string[])
+      : null,
     school: athlete.school,
     graduationYear:
       typeof athlete.graduation_year === "number"

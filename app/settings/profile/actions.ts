@@ -24,8 +24,25 @@ export async function saveProfileSettingsAction(formData: FormData) {
 
   const firstName = String(formData.get("first_name") ?? "").trim();
   const lastName = String(formData.get("last_name") ?? "").trim();
-  const sport = String(formData.get("sport") ?? "").trim();
-  const position = String(formData.get("position") ?? "").trim() || null;
+
+  // Multi-sport. See app/signup/profile/actions.ts for the contract:
+  // repeated `sports` + `positions` form fields, paired by index.
+  const sportsRaw = formData.getAll("sports").map((v) => String(v).trim());
+  const positionsRaw = formData
+    .getAll("positions")
+    .map((v) => String(v).trim());
+  const sports: string[] = [];
+  const positions: string[] = [];
+  for (let i = 0; i < sportsRaw.length; i++) {
+    const s = sportsRaw[i];
+    if (!s) continue;
+    sports.push(s);
+    positions.push(positionsRaw[i] ?? "");
+  }
+  const legacySport = String(formData.get("sport") ?? "").trim();
+  const legacyPosition = String(formData.get("position") ?? "").trim();
+  const sport = sports[0] ?? legacySport;
+  const position = (positions[0] ?? legacyPosition) || null;
   const level = String(formData.get("level") ?? "") as Level;
   const school = String(formData.get("school") ?? "").trim();
   const gradYearRaw = String(formData.get("graduation_year") ?? "");
@@ -58,6 +75,13 @@ export async function saveProfileSettingsAction(formData: FormData) {
       last_name: lastName,
       sport,
       position,
+      sports: sports.length > 0 ? sports : sport ? [sport] : null,
+      positions:
+        sports.length > 0
+          ? positions
+          : position
+          ? [position]
+          : null,
       level,
       school,
       graduation_year: gradYear,

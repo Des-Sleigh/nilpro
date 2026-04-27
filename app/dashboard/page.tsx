@@ -38,7 +38,7 @@ export default async function Dashboard({
   const { data: athlete } = await supabase
     .from("athletes")
     .select(
-      "first_name, last_name, sport, school, level, referral_code, business_categories, created_at, profile_photo_url, is_minor, parent_approved_at, parent_email, parent_first_name, parent_approval_token, parent_approval_code, parent_approval_token_sent_at, parent_approval_email_status, hometown_state, hs_state_restricted"
+      "first_name, last_name, sport, sports, school, level, referral_code, business_categories, created_at, profile_photo_url, is_minor, parent_approved_at, parent_email, parent_first_name, parent_approval_token, parent_approval_code, parent_approval_token_sent_at, parent_approval_email_status, hometown_state, hs_state_restricted"
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -158,6 +158,11 @@ export default async function Dashboard({
           lastName={athlete.last_name}
           level={athlete.level}
           sport={athlete.sport}
+          sports={
+            Array.isArray(athlete.sports)
+              ? (athlete.sports as string[])
+              : null
+          }
           school={athlete.school}
           profilePhotoUrl={athlete.profile_photo_url as string | null}
         />

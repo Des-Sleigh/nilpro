@@ -5,6 +5,9 @@ type Props = {
   lastName: string;
   level: string | null;
   sport: string | null;
+  /** Multi-sport array. If provided and non-empty, takes precedence over
+   *  the singular `sport` prop and joins entries with " · ". */
+  sports?: string[] | null;
   school: string | null;
   profilePhotoUrl?: string | null;
 };
@@ -27,12 +30,20 @@ export function DashboardHero({
   lastName,
   level,
   sport,
+  sports,
   school,
   profilePhotoUrl,
 }: Props) {
   const metaParts: string[] = [];
   if (level) metaParts.push(level);
-  if (sport) metaParts.push(sport);
+  const sportsList = Array.isArray(sports)
+    ? sports.filter((s): s is string => typeof s === "string" && s.length > 0)
+    : [];
+  if (sportsList.length > 0) {
+    metaParts.push(sportsList.join(" · "));
+  } else if (sport) {
+    metaParts.push(sport);
+  }
   if (school) metaParts.push(school);
 
   return (

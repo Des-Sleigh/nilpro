@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendParentApprovedAthleteEmail } from "@/lib/email/parentApprovedAthlete";
 
 // ---- In-memory token bucket, keyed by client IP. Best-effort only.
 // Code entry is the brute-forceable surface; the link path uses a UUID
@@ -61,7 +62,7 @@ export async function approveByTokenAction(formData: FormData): Promise<void> {
   const sb = createAdminClient();
   const { data: athlete, error } = await sb
     .from("athletes")
-    .select("id, parent_approved_at")
+    .select("id, parent_approved_at, first_name, parent_first_name")
     .eq("parent_approval_token", tokenRaw)
     .maybeSingle();
 
@@ -86,6 +87,33 @@ export async function approveByTokenAction(formData: FormData): Promise<void> {
   if (updErr) {
     console.error(`[parent/approve] update failed: ${updErr.message}`);
     redirect("/parent/approve?error=server");
+  }
+
+  // Best-effort: notify the athlete that their parent approved. Never
+  // block the parent's redirect on email outcome.
+  try {
+    const userRes = await sb.auth.admin.getUserById(athlete.id as string);
+    const athleteEmail = userRes.data?.user?.email ?? null;
+    const firstName =
+      (athlete.first_name as string | null | undefined) ?? "";
+    const parentFirstName =
+      (athlete.parent_first_name as string | null | undefined) ?? "your parent";
+    if (athleteEmail && firstName) {
+      await sendParentApprovedAthleteEmail({
+        athleteFirstName: firstName,
+        athleteEmail,
+        parentFirstName,
+        dashboardUrl: `${
+          process.env.NEXT_PUBLIC_SITE_URL ?? "https://thenilpro.com"
+        }/dashboard`,
+      });
+    }
+  } catch (err) {
+    console.error(
+      `[parent/approve] athlete-notify email failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
   }
 
   revalidatePath("/dashboard");
