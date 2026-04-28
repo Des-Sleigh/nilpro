@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 type Status = "on" | "partial" | "off";
@@ -306,6 +307,14 @@ export function NilMap() {
                 not permit NIL.
               </p>
             </div>
+
+            <Link
+              href="/state-rules"
+              className="btn btn--primary btn--lg"
+              style={{ marginTop: "1rem" }}
+            >
+              See full rules for your state →
+            </Link>
           </div>
         </div>
       </div>
