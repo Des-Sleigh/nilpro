@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { saveProfileAction } from "@/app/signup/profile/actions";
+import { StateRulesPreview } from "./StateRulesPreview";
 
 const LEVELS = [
   { v: "HS", label: "High school" },
@@ -165,6 +166,7 @@ function SubmitButton() {
 export function ProfileForm({ error }: { error?: string }) {
   const [level, setLevel] = useState<string>("");
   const [dob, setDob] = useState<string>("");
+  const [hometownState, setHometownState] = useState<string>("");
 
   const age = useMemo(() => computeAge(dob), [dob]);
   const isMinor = age !== null && age < 18 && age >= 13;
@@ -309,7 +311,8 @@ export function ProfileForm({ error }: { error?: string }) {
           <select
             name="hometown_state"
             required
-            defaultValue=""
+            value={hometownState}
+            onChange={(e) => setHometownState(e.target.value)}
             className="auth-form__input auth-form__select"
           >
             <option value="" disabled>
@@ -323,6 +326,10 @@ export function ProfileForm({ error }: { error?: string }) {
           </select>
         </label>
       </div>
+
+      {hometownState && level === "HS" ? (
+        <StateRulesPreview stateCode={hometownState} />
+      ) : null}
 
       {isMinor ? (
         <div
