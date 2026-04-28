@@ -11,6 +11,7 @@ import { QuickActions } from "@/components/dashboard/QuickActions";
 import { TargetListSummary } from "@/components/dashboard/TargetListSummary";
 import { DealMenuSummary } from "@/components/dashboard/DealMenuSummary";
 import { SocialLinkSummary } from "@/components/dashboard/SocialLinkSummary";
+import { StateRulesCard } from "@/components/dashboard/StateRulesCard";
 import { activeLabel } from "@/lib/time/activeLabel";
 import { resendParentConsentAction } from "./actions";
 import { HS_NIL_PARTIAL_NOTES } from "@/lib/states/nilStatus";
@@ -248,6 +249,9 @@ export default async function Dashboard({
               city: c.city as string,
               state: c.state as string,
             }))}
+          />
+          <StateRulesCard
+            hometownState={(athlete.hometown_state as string | null) ?? null}
           />
         </div>
 

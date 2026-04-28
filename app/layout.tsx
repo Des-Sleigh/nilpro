@@ -4,6 +4,7 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { TickerBar } from "@/components/TickerBar";
 import { RevealOnScroll } from "@/components/RevealOnScroll";
+import { PostHogTracker } from "@/components/providers/PostHogTracker";
 import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
@@ -58,6 +59,7 @@ export default async function RootLayout({
       className={`${bebas.variable} ${barlow.variable} ${barlowCond.variable} ${jetbrains.variable}`}
     >
       <body className="antialiased">
+        <PostHogTracker />
         <RevealOnScroll />
         <TickerBar />
         <Nav isSignedIn={isSignedIn} />

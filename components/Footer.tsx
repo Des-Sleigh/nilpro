@@ -16,7 +16,7 @@ const AUDIENCE = [
 ];
 
 const RESOURCES = [
-  { href: "/resources/state-nil-rules", label: "State NIL rules" },
+  { href: "/state-rules", label: "State NIL rules" },
   { href: "/resources/parent-guide", label: "Parent guide" },
   { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
