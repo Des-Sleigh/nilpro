@@ -1,88 +1,103 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { BillingToggle, type BillingPeriod } from "@/components/pricing/BillingToggle";
+
+const TIERS = [
+  {
+    name: "Starter",
+    monthly: 19,
+    yearly: 99,
+    desc: "Everything you need to land real deals.",
+    features: [
+      "Up to 100 local businesses pitched / year",
+      "Your terms pitched to every business",
+      "Full response dashboard (Yes / No / Counter)",
+      "Contract templates at your terms",
+      "Pause & resume outreach anytime",
+      "Standard referral rewards",
+    ],
+    cta: "Start starter",
+    href: "/signup?tier=starter",
+    btnClass: "btn--ghost",
+    featured: false,
+  },
+  {
+    name: "Pro",
+    monthly: 39,
+    yearly: 199,
+    desc: "More reach. Better tools. Bigger network.",
+    features: [
+      "Everything in Starter",
+      "Up to 500 businesses pitched / year",
+      "AI follow-up automation",
+      "Priority response monitoring",
+      "Advanced deal analytics",
+      "Enhanced referral rewards",
+    ],
+    cta: "Go pro",
+    href: "/signup?tier=pro",
+    btnClass: "btn--primary",
+    featured: true,
+  },
+  {
+    name: "Champion",
+    monthly: 79,
+    yearly: 399,
+    desc: "Full suite for athletes building a real brand.",
+    features: [
+      "Everything in Pro",
+      "Unlimited businesses pitched",
+      "Pro bio & press-kit generation",
+      "Quarterly 1-on-1 strategy calls",
+      "First access to new features",
+      "Maximum referral multipliers",
+    ],
+    cta: "Go champion",
+    href: "/signup?tier=champion",
+    btnClass: "btn--dark",
+    featured: false,
+  },
+];
 
 export function PricingTiers() {
+  const [period, setPeriod] = useState<BillingPeriod>("yearly");
+
   return (
     <section className="section" style={{ paddingTop: "2rem" }}>
       <div className="container-page">
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "2.5rem" }}>
+          <BillingToggle value={period} onChange={setPeriod} />
+        </div>
+
         <div className="pricing-grid">
-          <div className="tier">
-            <div className="tier__name">Starter</div>
-            <div className="tier__price">
-              <span className="tier__amt">$99</span>
-              <span className="tier__per">/YR</span>
-            </div>
-            <div className="tier__price-alt">or $19/month</div>
-            <div className="tier__desc">
-              Everything you need to land real deals.
-            </div>
-            <ul className="tier__features">
-              <li>Up to 100 local businesses pitched / year</li>
-              <li>Your terms pitched to every business</li>
-              <li>Full response dashboard (Yes / No / Counter)</li>
-              <li>Contract templates at your terms</li>
-              <li>Pause &amp; resume outreach anytime</li>
-              <li>Standard referral rewards</li>
-            </ul>
-            <Link
-              href="/signup?tier=starter"
-              className="btn btn--ghost tier__cta"
-            >
-              Start starter
-            </Link>
-          </div>
-
-          <div className="tier tier--featured">
-            <div className="tier__badge">MOST CHOSEN</div>
-            <div className="tier__name">Pro</div>
-            <div className="tier__price">
-              <span className="tier__amt">$199</span>
-              <span className="tier__per">/YR</span>
-            </div>
-            <div className="tier__price-alt">or $39/month</div>
-            <div className="tier__desc">
-              More reach. Better tools. Bigger network.
-            </div>
-            <ul className="tier__features">
-              <li>Everything in Starter</li>
-              <li>Up to 500 businesses pitched / year</li>
-              <li>AI follow-up automation</li>
-              <li>Priority response monitoring</li>
-              <li>Advanced deal analytics</li>
-              <li>Enhanced referral rewards</li>
-            </ul>
-            <Link
-              href="/signup?tier=pro"
-              className="btn btn--primary tier__cta"
-            >
-              Go pro
-            </Link>
-          </div>
-
-          <div className="tier">
-            <div className="tier__name">Champion</div>
-            <div className="tier__price">
-              <span className="tier__amt">$399</span>
-              <span className="tier__per">/YR</span>
-            </div>
-            <div className="tier__price-alt">or $79/month</div>
-            <div className="tier__desc">
-              Full suite for athletes building a real brand.
-            </div>
-            <ul className="tier__features">
-              <li>Everything in Pro</li>
-              <li>Unlimited businesses pitched</li>
-              <li>Pro bio &amp; press-kit generation</li>
-              <li>Quarterly 1-on-1 strategy calls</li>
-              <li>First access to new features</li>
-              <li>Maximum referral multipliers</li>
-            </ul>
-            <Link
-              href="/signup?tier=champion"
-              className="btn btn--dark tier__cta"
-            >
-              Go champion
-            </Link>
-          </div>
+          {TIERS.map((t) => {
+            const amt = period === "yearly" ? t.yearly : t.monthly;
+            const per = period === "yearly" ? "/YR" : "/MO";
+            return (
+              <div
+                key={t.name}
+                className={t.featured ? "tier tier--featured" : "tier"}
+              >
+                {t.featured && <div className="tier__badge">MOST CHOSEN</div>}
+                <div className="tier__name">{t.name}</div>
+                <div className="tier__price">
+                  <span className="tier__amt">${amt}</span>
+                  <span className="tier__per">{per}</span>
+                </div>
+                <div className="tier__desc">{t.desc}</div>
+                <ul className="tier__features">
+                  {t.features.map((f) => (
+                    <li key={f}>{f}</li>
+                  ))}
+                </ul>
+                <Link href={t.href} className={`btn ${t.btnClass} tier__cta`}>
+                  {t.cta}
+                </Link>
+              </div>
+            );
+          })}
         </div>
 
         <div

@@ -40,9 +40,10 @@ const ITEMS: Item[] = [
     q: "How do you make money if you don't take commission?",
     a: (
       <p>
-        Subscription only — annual plans start at $99/year (or $19/month) for Starter, with Pro and Champion
-        tiers above. No commission by design — it protects you legally (we&apos;re not an agent), keeps our
-        incentives aligned, and lets you keep 100% of everything you earn.
+        Sign up is free — you only pay when you&apos;re ready to send pitches. From there it&apos;s a subscription
+        (Starter from $99/year or $19/month, with Pro and Champion tiers above). No commission by design —
+        it protects you legally (we&apos;re not an agent), keeps our incentives aligned, and lets you keep
+        100% of everything you earn.
       </p>
     ),
   },
