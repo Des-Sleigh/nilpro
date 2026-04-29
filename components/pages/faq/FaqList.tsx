@@ -25,7 +25,7 @@ const CATEGORIES: Category[] = [
         q: "What do I actually need on hand?",
         a: (
           <p>
-            Credit card for the $19 subscription, your school and hometown
+            Credit card for your subscription (Starter is $99/yr or $19/mo), your school and hometown
             info, and an <strong>Instagram handle</strong> (required for
             verification — we confirm you&apos;re a real athlete before
             contacting businesses in your name). TikTok is optional. Profile
@@ -189,9 +189,9 @@ const CATEGORIES: Category[] = [
         q: "Do you take a cut of my deals?",
         a: (
           <p>
-            Absolutely not. You keep 100%. We charge the $19/yr subscription
-            and that&apos;s it. We never touch payment, never hold money, and
-            have no claim to anything you earn.
+            Absolutely not. You keep 100%. We charge the subscription
+            (Starter from $99/yr or $19/mo) and that&apos;s it. We never touch payment,
+            never hold money, and have no claim to anything you earn.
           </p>
         ),
       },

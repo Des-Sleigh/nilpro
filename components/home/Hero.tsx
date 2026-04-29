@@ -89,8 +89,8 @@ export function Hero({ isSignedIn = false }: { isSignedIn?: boolean }) {
 
             <div className="hero__stats">
               <div className="hero__stat">
-                <div className="hero__stat-num">$19</div>
-                <div className="hero__stat-label">Per year · Flat</div>
+                <div className="hero__stat-num">$99</div>
+                <div className="hero__stat-label">Per year · Starter</div>
               </div>
               <div className="hero__stat">
                 <div className="hero__stat-num">0%</div>

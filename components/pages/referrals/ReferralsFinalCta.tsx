@@ -10,7 +10,7 @@ export function ReferralsFinalCta() {
           </h2>
           <p>
             Your referral link is waiting in your dashboard. Not signed up yet?
-            $19 gets you started — and every teammate you refer adds 50 more
+            Starter is $99/year ($19/month) — and every teammate you refer adds 50 more
             pitches to your year.
           </p>
           <div

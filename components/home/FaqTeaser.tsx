@@ -40,9 +40,9 @@ const ITEMS: Item[] = [
     q: "How do you make money if you don't take commission?",
     a: (
       <p>
-        The $19/year subscription. That&apos;s it. No commission by design — it protects you
-        legally (we&apos;re not an agent), keeps our incentives aligned, and lets you keep 100%
-        of everything you earn.
+        Subscription only — annual plans start at $99/year (or $19/month) for Starter, with Pro and Champion
+        tiers above. No commission by design — it protects you legally (we&apos;re not an agent), keeps our
+        incentives aligned, and lets you keep 100% of everything you earn.
       </p>
     ),
   },

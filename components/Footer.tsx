@@ -48,7 +48,7 @@ export function Footer() {
             </Link>
             <div className="footer__tagline">
               Local NIL deals for every high school and college athlete. Every sport. Every level.
-              $19/year. Zero commission.
+              From $99/year. Zero commission.
             </div>
           </div>
 

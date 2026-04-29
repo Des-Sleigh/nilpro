@@ -39,7 +39,7 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "NILPro — Local NIL deals for every high school + college athlete",
   description:
-    "NILPro pitches local businesses on your behalf — so every high school and college athlete can land real hometown deals. Free meals, gear, cash for posts, and more. $19/year. Zero commission.",
+    "NILPro pitches local businesses on your behalf — so every high school and college athlete can land real hometown deals. Free meals, gear, cash for posts, and more. From $99/year. Zero commission.",
 };
 
 export default async function RootLayout({

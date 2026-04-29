@@ -7,12 +7,12 @@ export function PricingHero() {
           className="page-hero__title"
           style={{ marginTop: "1.25rem" }}
         >
-          One flat price. <em>Zero commission.</em> Ever.
+          Annual or monthly. <em>Zero commission.</em> Ever.
         </h1>
         <p className="page-hero__lede lede">
-          $19/year gets you everything you need. Tier up only if you want
-          extras. Cancel future renewals anytime. Full refund available before
-          outreach starts.
+          Starter is $99/year ($19/month) and gets you everything you need to
+          land real deals. Tier up only if you want more reach. Cancel future
+          renewals anytime. Full refund available before outreach starts.
         </p>
       </div>
     </section>

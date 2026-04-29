@@ -25,7 +25,7 @@ export function PricingTeaser() {
             className="section-head__lede"
             style={{ marginLeft: "auto", marginRight: "auto" }}
           >
-            One flat price. No commission. Cancel anytime. Upgrade if you want more firepower.
+            Annual or monthly. No commission. Cancel anytime. Upgrade if you want more firepower.
           </p>
         </div>
 
@@ -33,9 +33,10 @@ export function PricingTeaser() {
           <div className="tier">
             <div className="tier__name">Starter</div>
             <div className="tier__price">
-              <span className="tier__amt">$19</span>
+              <span className="tier__amt">$99</span>
               <span className="tier__per">/YR</span>
             </div>
+            <div className="tier__price-alt">or $19/month</div>
             <div className="tier__desc">Everything you need to land real deals.</div>
             <ul className="tier__features">
               <li>Up to 100 local businesses pitched / year</li>
@@ -54,9 +55,10 @@ export function PricingTeaser() {
             <div className="tier__badge">MOST CHOSEN</div>
             <div className="tier__name">Pro</div>
             <div className="tier__price">
-              <span className="tier__amt">$39</span>
+              <span className="tier__amt">$199</span>
               <span className="tier__per">/YR</span>
             </div>
+            <div className="tier__price-alt">or $39/month</div>
             <div className="tier__desc">More reach. Better tools. Bigger network.</div>
             <ul className="tier__features">
               <li>Everything in Starter</li>
@@ -74,15 +76,16 @@ export function PricingTeaser() {
           <div className="tier">
             <div className="tier__name">Champion</div>
             <div className="tier__price">
-              <span className="tier__amt">$79</span>
+              <span className="tier__amt">$399</span>
               <span className="tier__per">/YR</span>
             </div>
+            <div className="tier__price-alt">or $79/month</div>
             <div className="tier__desc">
               Full suite for athletes building a real brand.
             </div>
             <ul className="tier__features">
               <li>Everything in Pro</li>
-              <li>Up to 1,000 businesses pitched / year</li>
+              <li>Unlimited businesses pitched</li>
               <li>Pro bio &amp; press-kit generation</li>
               <li>Quarterly 1-on-1 strategy calls</li>
               <li>First access to new features</li>

@@ -32,8 +32,8 @@ export function CoachesContent() {
             <h3>What&apos;s included</h3>
             <ul>
               <li>
-                Bulk team rate — <strong>$12/athlete/year</strong> at 10+
-                signups
+                Bulk team rate — <strong>discounted pricing</strong> at 10+
+                signups (contact us for a quote)
               </li>
               <li>
                 Team-level compliance dashboard (participation &amp; disclosure
@@ -54,9 +54,10 @@ export function CoachesContent() {
 
             <h3>What it costs</h3>
             <p>
-              Nothing to set up. Athletes subscribe at the team rate ($12/yr at
-              10+, down from $19). Want to sponsor subscriptions out of athletic
-              department funds? We invoice the school directly.
+              Nothing to set up. Athletes subscribe at a discounted team rate
+              (10+ signups required — contact us for a quote). Want to sponsor
+              subscriptions out of athletic department funds? We invoice the
+              school directly.
             </p>
           </div>
 
