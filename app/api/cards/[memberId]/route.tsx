@@ -108,7 +108,11 @@ export async function GET(
         style: f.style,
       })),
       headers: {
-        "Cache-Control": "public, max-age=3600, s-maxage=3600",
+        // Short browser cache so photo updates propagate within the
+        // refresh after upload. The dashboard appends a ?v=<photo-ts>
+        // cache-buster too, so a new photo upload immediately busts
+        // the cache regardless of these headers.
+        "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=600",
         "Content-Disposition": `inline; filename="nilpro-${memberId}-${format}.png"`,
       },
     }

@@ -78,7 +78,13 @@ export function VerifiedCardSection({
     );
   }
 
-  const cardSrc = `/api/cards/${memberId}?format=${format}`;
+  // Cache-buster keyed to the photo URL so the card refreshes the instant
+  // a new photo is uploaded. PhotoForm appends `?t=<timestamp>` to the
+  // photo URL on save; we mirror that timestamp into the card URL so
+  // the browser treats it as a new resource and re-fetches.
+  const photoVersion =
+    profilePhotoUrl?.match(/[?&]t=(\d+)/)?.[1] ?? "default";
+  const cardSrc = `/api/cards/${memberId}?format=${format}&v=${photoVersion}`;
   const downloadName = `nilpro-${memberId}-${format}.png`;
   const profileUrl = `/a/${memberId}`;
 
