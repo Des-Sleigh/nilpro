@@ -26,6 +26,39 @@ function fail(msg: string): never {
   redirect(`/target-list?error=${encodeURIComponent(msg)}`);
 }
 
+/** Generic error redirect for DB failures. Logs underlying PG error
+ *  server-side and surfaces a generic message to the user. Audit Cat 5. */
+function dbFail(err: { message?: string } | null, where: string): never {
+  if (err) console.error(`[target-list/${where}] db error:`, err.message);
+  fail("Couldn't save — try again.");
+}
+
+/** Cap string to maxLen characters and strip control chars. Audit Cat 5
+ *  (input length caps). */
+function cap(raw: string | null | undefined, maxLen: number): string {
+  if (!raw) return "";
+  const cleaned = String(raw).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+  return cleaned.length > maxLen ? cleaned.slice(0, maxLen) : cleaned;
+}
+
+/** Validate and normalize a website URL. Returns the canonical http(s)
+ *  URL string or null. Rejects javascript:/data:/file:/etc. so a user
+ *  can't store a URL that, if rendered as a link, would execute JS. */
+function safeWebsite(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  const trimmed = cap(raw.trim(), 256);
+  if (!trimmed) return null;
+  // Allow plain domains like "example.com" by adding scheme.
+  const candidate = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  try {
+    const u = new URL(candidate);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return null;
+    return u.toString();
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Flip a single target_lists row to approved / pending / removed.
  * 'blacklisted' is reserved for global (admin) blacklisting — not
@@ -67,7 +100,7 @@ export async function setTargetStatusAction(formData: FormData) {
     .eq("id", targetId)
     .eq("athlete_id", user.id);
 
-  if (error) fail(error.message);
+  if (error) dbFail(error, "setStatus");
 
   revalidatePath("/target-list");
   revalidatePath("/dashboard");
@@ -98,7 +131,7 @@ export async function skipBusinessFromTargetListAction(formData: FormData) {
     .select("blacklist_terms")
     .eq("id", user.id)
     .maybeSingle();
-  if (readErr) fail(readErr.message);
+  if (readErr) dbFail(readErr, "read");
 
   const existing = Array.isArray(athlete?.blacklist_terms)
     ? (athlete?.blacklist_terms as string[])
@@ -112,14 +145,14 @@ export async function skipBusinessFromTargetListAction(formData: FormData) {
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);
-  if (updErr) fail(updErr.message);
+  if (updErr) dbFail(updErr, "update");
 
   const { error: tlErr } = await supabase
     .from("target_lists")
     .update({ status: "removed", removed_at: new Date().toISOString() })
     .eq("athlete_id", user.id)
     .eq("business_id", businessId);
-  if (tlErr) fail(tlErr.message);
+  if (tlErr) dbFail(tlErr, "targetList");
 
   revalidatePath("/target-list");
   revalidatePath("/dashboard");
@@ -145,7 +178,7 @@ export async function unskipTermFromTargetListAction(formData: FormData) {
     .select("blacklist_terms")
     .eq("id", user.id)
     .maybeSingle();
-  if (readErr) fail(readErr.message);
+  if (readErr) dbFail(readErr, "read");
 
   const existing = Array.isArray(athlete?.blacklist_terms)
     ? (athlete?.blacklist_terms as string[])
@@ -159,7 +192,7 @@ export async function unskipTermFromTargetListAction(formData: FormData) {
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);
-  if (updErr) fail(updErr.message);
+  if (updErr) dbFail(updErr, "update");
 
   revalidatePath("/target-list");
   revalidatePath("/dashboard");
@@ -224,12 +257,11 @@ export async function addManualBusinessToTargetListAction(formData: FormData) {
   } = await supabase.auth.getUser();
   if (!user) redirect("/signin?next=/target-list");
 
-  const name = String(formData.get("name") ?? "").trim();
-  const city = String(formData.get("city") ?? "").trim();
-  const state = String(formData.get("state") ?? "").trim().toUpperCase();
-  const websiteRaw = String(formData.get("website") ?? "").trim();
-  const website = websiteRaw.length > 0 ? websiteRaw : null;
-  const category = String(formData.get("primary_category") ?? "").trim();
+  const name = cap(String(formData.get("name") ?? "").trim(), 120);
+  const city = cap(String(formData.get("city") ?? "").trim(), 80);
+  const state = cap(String(formData.get("state") ?? "").trim().toUpperCase(), 2);
+  const website = safeWebsite(String(formData.get("website") ?? ""));
+  const category = cap(String(formData.get("primary_category") ?? "").trim(), 40);
 
   if (!name || !city || !state || !category) {
     fail("Business name, city, state, and category are required.");
@@ -256,7 +288,7 @@ export async function addManualBusinessToTargetListAction(formData: FormData) {
     .maybeSingle();
 
   if (insErr || !inserted) {
-    fail(insErr?.message ?? "Couldn't add that business.");
+    dbFail(insErr ?? null, "addManualBusiness");
   }
 
   const { error: tlErr } = await admin.from("target_lists").insert({
@@ -268,7 +300,7 @@ export async function addManualBusinessToTargetListAction(formData: FormData) {
     approved_at: new Date().toISOString(),
   });
 
-  if (tlErr) fail(tlErr.message);
+  if (tlErr) dbFail(tlErr, "targetList");
 
   revalidatePath("/target-list");
   revalidatePath("/dashboard");

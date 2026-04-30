@@ -1,3 +1,4 @@
+import "server-only";
 import { createClient } from "@supabase/supabase-js";
 
 /**
@@ -7,6 +8,10 @@ import { createClient } from "@supabase/supabase-js";
  *
  * NEVER import this from a Client Component or from code that runs
  * anywhere near the browser — the service_role key has full DB access.
+ *
+ * The `import "server-only"` above causes a build error if this module
+ * is ever imported into a client bundle, so the service-role key can't
+ * be accidentally inlined into the browser.
  */
 export function createAdminClient() {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {

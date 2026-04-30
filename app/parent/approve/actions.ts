@@ -62,7 +62,9 @@ export async function approveByTokenAction(formData: FormData): Promise<void> {
   const sb = createAdminClient();
   const { data: athlete, error } = await sb
     .from("athletes")
-    .select("id, parent_approved_at, first_name, parent_first_name")
+    .select(
+      "id, parent_approved_at, first_name, parent_first_name, parent_approval_token_sent_at"
+    )
     .eq("parent_approval_token", tokenRaw)
     .maybeSingle();
 
@@ -73,6 +75,18 @@ export async function approveByTokenAction(formData: FormData): Promise<void> {
   // Already approved? Just bounce to the success state.
   if (athlete.parent_approved_at) {
     redirect("/parent/approve?approved=1");
+  }
+
+  // Reject tokens older than 30 days. If a parent's email is later
+  // compromised, the consent link can't be replayed against an old token.
+  // Admins can re-issue via adminResendParentConsentAction.
+  const sentAt = athlete.parent_approval_token_sent_at as string | null;
+  if (sentAt) {
+    const ageMs = Date.now() - new Date(sentAt).getTime();
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+    if (ageMs > THIRTY_DAYS_MS) {
+      redirect("/parent/approve?error=expired");
+    }
   }
 
   const { error: updErr } = await sb

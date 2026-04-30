@@ -19,14 +19,27 @@ import { createClient } from "@/lib/supabase/server";
  * dashboard, except for password recovery where we send the athlete to
  * /update-password so they can set a new one.
  */
+/**
+ * Whitelist a `next` redirect target to a same-origin path.
+ * Blocks open-redirect via `//evil.com`, `/\evil.com`, full URLs, etc.
+ * Returns null if the input is not a safe `/`-relative path.
+ */
+function safeRedirectPath(next: string | null): string | null {
+  if (!next || typeof next !== "string") return null;
+  if (!next.startsWith("/") || next.startsWith("//") || next.startsWith("/\\")) {
+    return null;
+  }
+  return next;
+}
+
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
-  const explicitNext = searchParams.get("next");
+  const explicitNext = safeRedirectPath(searchParams.get("next"));
 
-  // Pick a sensible landing page if `next` wasn't passed.
+  // Pick a sensible landing page if `next` wasn't passed (or was unsafe).
   const fallbackNext =
     type === "recovery" ? "/update-password" : "/dashboard";
   const next = explicitNext ?? fallbackNext;

@@ -8,6 +8,15 @@ function fail(msg: string): never {
   redirect(`/settings/deal-menu?error=${encodeURIComponent(msg)}`);
 }
 
+/** Generic error redirect for DB failures. Logs the underlying error
+ *  server-side (Sentry/Vercel logs pick it up) and shows the user a
+ *  generic message — never leaks PG error text / column names / SQL
+ *  fragments via the URL. Audit Cat 5 (low). */
+function dbFail(err: { message?: string } | null, where: string): never {
+  if (err) console.error(`[deal-menu/${where}] db error:`, err.message);
+  fail("Couldn't save — try again.");
+}
+
 function parseIntOrNull(raw: string | null): number | null {
   if (!raw) return null;
   const n = Number(raw.replace(/[^0-9]/g, ""));
@@ -67,7 +76,7 @@ export async function saveDealMenuSettingsAction(formData: FormData) {
     .from("deal_menus")
     .update(payload)
     .eq("athlete_id", user.id);
-  if (error) fail(error.message);
+  if (error) dbFail(error, "save");
 
   revalidatePath("/settings/deal-menu");
   revalidatePath("/dashboard");

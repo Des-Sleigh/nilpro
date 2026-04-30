@@ -9,7 +9,12 @@ export function newParentToken(): string {
 /** 6-digit numeric code for parents who can't (or won't) use the email link.
  *  Shown to the athlete on the dashboard so they can read it to a parent
  *  out-of-band. Stable across email re-sends — only rotates if we explicitly
- *  rotate it. */
+ *  rotate it.
+ *
+ *  Uses crypto.randomInt() (CSPRNG) instead of Math.random() — the latter is
+ *  not cryptographically secure and its output is recoverable from observed
+ *  samples in the same V8 process, which would let an attacker narrow guesses
+ *  against the 1M-combination code space. */
 export function newParentCode(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return crypto.randomInt(100000, 1000000).toString();
 }

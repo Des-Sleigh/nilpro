@@ -13,6 +13,21 @@ function fail(msg: string): never {
   redirect(`/settings/cities?error=${encodeURIComponent(msg)}`);
 }
 
+/** Generic error redirect for DB failures. Logs underlying PG error
+ *  server-side and surfaces a generic message to the user. Audit Cat 5. */
+function dbFail(err: { message?: string } | null, where: string): never {
+  if (err) console.error(`[cities/${where}] db error:`, err.message);
+  fail("Couldn't save — try again.");
+}
+
+/** Cap string to maxLen characters and strip control chars. Audit Cat 5
+ *  (input length caps). */
+function cap(raw: string | null | undefined, maxLen: number): string {
+  if (!raw) return "";
+  const cleaned = String(raw).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+  return cleaned.length > maxLen ? cleaned.slice(0, maxLen) : cleaned;
+}
+
 export async function saveCitiesSettingsAction(formData: FormData) {
   const supabase = await createClient();
   const {
@@ -30,8 +45,8 @@ export async function saveCitiesSettingsAction(formData: FormData) {
   if (!athlete) redirect("/signup/profile");
 
   // ---- Cities ---------------------------------------------------------
-  const cityValues = formData.getAll("city").map((v) => String(v).trim());
-  const stateValues = formData.getAll("state").map((v) => String(v).trim());
+  const cityValues = formData.getAll("city").map((v) => cap(String(v).trim(), 80));
+  const stateValues = formData.getAll("state").map((v) => cap(String(v).trim(), 2));
 
   if (cityValues.length === 0 || cityValues.length !== stateValues.length) {
     fail("Add at least one location.");
@@ -87,7 +102,7 @@ export async function saveCitiesSettingsAction(formData: FormData) {
     .from("pitch_cities")
     .delete()
     .eq("athlete_id", user.id);
-  if (delErr) fail(delErr.message);
+  if (delErr) dbFail(delErr, "deleteCities");
 
   const pitchRows = cities.map(({ city, state }) => {
     const isHometown =
@@ -108,7 +123,7 @@ export async function saveCitiesSettingsAction(formData: FormData) {
   const { error: insErr } = await supabase
     .from("pitch_cities")
     .insert(pitchRows);
-  if (insErr) fail(insErr.message);
+  if (insErr) dbFail(insErr, "insertCities");
 
   // ---- Persist athlete.business_categories ----------------------------
   const { error: updErr } = await supabase
@@ -118,7 +133,7 @@ export async function saveCitiesSettingsAction(formData: FormData) {
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);
-  if (updErr) fail(updErr.message);
+  if (updErr) dbFail(updErr, "updateCategories");
 
   // ---- Compute deltas for Places search -------------------------------
   // Only run Places for NEW (city,state × category) pairs so we don't
