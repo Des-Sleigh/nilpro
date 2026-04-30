@@ -12,6 +12,7 @@ import { TargetListSummary } from "@/components/dashboard/TargetListSummary";
 import { DealMenuSummary } from "@/components/dashboard/DealMenuSummary";
 import { SocialLinkSummary } from "@/components/dashboard/SocialLinkSummary";
 import { StateRulesCard } from "@/components/dashboard/StateRulesCard";
+import { VerifiedCardSection } from "@/components/dashboard/VerifiedCardSection";
 import { activeLabel } from "@/lib/time/activeLabel";
 import { resendParentConsentAction } from "./actions";
 import { HS_NIL_PARTIAL_NOTES } from "@/lib/states/nilStatus";
@@ -39,7 +40,7 @@ export default async function Dashboard({
   const { data: athlete } = await supabase
     .from("athletes")
     .select(
-      "first_name, last_name, sport, sports, school, level, referral_code, business_categories, created_at, profile_photo_url, is_minor, parent_approved_at, parent_email, parent_first_name, parent_approval_token, parent_approval_code, parent_approval_token_sent_at, parent_approval_email_status, hometown_state, hs_state_restricted"
+      "first_name, last_name, sport, sports, school, level, referral_code, business_categories, created_at, profile_photo_url, is_minor, parent_approved_at, parent_email, parent_first_name, parent_approval_token, parent_approval_code, parent_approval_token_sent_at, parent_approval_email_status, hometown_state, hs_state_restricted, member_id"
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -254,6 +255,11 @@ export default async function Dashboard({
             hometownState={(athlete.hometown_state as string | null) ?? null}
           />
         </div>
+
+        <VerifiedCardSection
+          memberId={(athlete.member_id as string | null) ?? null}
+          isVerified={Boolean(social?.verified)}
+        />
 
         <div className="dash-sign-out">
           <form action="/auth/signout" method="POST">

@@ -4885,3 +4885,282 @@
   font-weight: 800;
 }
 .state-guidelines__ack strong { color: var(--green); font-weight: 600; }
+
+/* ============================================================
+ * VERIFIED ATHLETE CARD section on dashboard
+ * Preview + format toggle + download + public-profile copy
+ * ============================================================ */
+
+.vcard-section {
+  margin-top: 1.5rem;
+  padding: 1.5rem 1.6rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.vcard-section__head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.vcard-section__head h2 {
+  font-family: var(--cond);
+  font-size: clamp(1.4rem, 3vw, 1.85rem);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+}
+.vcard-section__lede {
+  font-size: 0.92rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+  max-width: 56rem;
+}
+
+.vcard-section__body {
+  display: grid;
+  grid-template-columns: minmax(0, 320px) 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 800px) {
+  .vcard-section__body { grid-template-columns: 1fr; }
+}
+
+.vcard-section__preview {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 0.85rem;
+}
+.vcard-preview {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+}
+.vcard-preview--story { aspect-ratio: 9 / 16; }
+.vcard-preview--post { aspect-ratio: 4 / 5; }
+
+.vcard-section__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.vcard-section__toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+.vcard-section__toggle-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: 0.85rem 1rem;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  transition: all 0.15s;
+}
+.vcard-section__toggle-btn:hover {
+  border-color: var(--green);
+  color: var(--text);
+}
+.vcard-section__toggle-btn--active {
+  border-color: var(--green);
+  background: var(--green-dim);
+  color: var(--text);
+}
+.vcard-section__toggle-meta {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.vcard-section__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.vcard-section__copy-row {
+  margin-top: 0.4rem;
+}
+.vcard-section__copy {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  padding: 0.7rem 0.95rem;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: border-color 0.15s;
+  font-family: var(--mono);
+}
+.vcard-section__copy:hover { border-color: var(--green); }
+.vcard-section__copy-url {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vcard-section__copy-cta {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--green);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Public profile page */
+.public-profile {
+  background: var(--bg);
+  min-height: 100vh;
+  padding: clamp(1rem, 4vw, 3rem) 0;
+}
+.pp-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 2rem 2.2rem;
+  max-width: 56rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+.pp-card__head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+}
+@media (max-width: 600px) {
+  .pp-card__head {
+    grid-template-columns: auto 1fr;
+  }
+  .pp-card__badge { grid-column: 1 / -1; justify-self: flex-start; }
+}
+.pp-card__avatar {
+  width: 160px;
+  height: 160px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 3px solid var(--green);
+}
+.pp-card__avatar--initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--green-dim);
+  font-family: var(--display);
+  font-size: 5rem;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 0.02em;
+}
+.pp-card__name-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.pp-card__name {
+  font-family: var(--display);
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+.pp-card__sub {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.pp-card__sub--dim {
+  color: var(--text-dim);
+  font-weight: 500;
+}
+.pp-card__badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--green);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--r-pill);
+}
+
+.pp-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px dashed var(--border);
+  padding-top: 1.2rem;
+}
+.pp-meta__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 0.95rem;
+}
+.pp-meta__row:last-child { border-bottom: none; }
+.pp-meta__row dt {
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.pp-meta__row dd { color: var(--text); }
+
+.pp-card__cta {
+  display: flex;
+  justify-content: flex-start;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--border);
+}
+
+.pp-disclaimer {
+  margin-top: 2rem;
+  max-width: 56rem;
+  padding: 1rem 1.2rem;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
