@@ -34,8 +34,7 @@ export function VerifiedCardSection({ memberId, isVerified }: Props) {
         </div>
         <p className="vcard-section__lede">
           Once your Instagram is verified, your Verified Athlete Card unlocks
-          here — downloadable for your IG Story or feed post. Athletes who post
-          their card see ~3× more business response on cold outreach.
+          here — downloadable for your IG Story or feed post.
         </p>
       </div>
     );

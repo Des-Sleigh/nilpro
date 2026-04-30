@@ -11,26 +11,25 @@ type Props = {
     href: string;
     cta: string;
   };
-  /** True when the athlete is a minor and their parent hasn't approved yet.
-   *  Takes priority over verificationPending since it's a longer blocker. */
+  /** True when the athlete is a minor and their parent hasn't approved yet. */
   parentApprovalPending?: boolean;
   /** Parent's email — shown in the parent approval copy. */
   parentEmail?: string | null;
-  /** Fallback 6-digit code for parents who can't / didn't get the email.
-   *  Optional — banner gracefully omits the line if missing. */
+  /** Fallback 6-digit code for parents who can't / didn't get the email. */
   parentApprovalCode?: string | null;
-  /** Server action to call when the athlete clicks "Resend email".
-   *  Optional — button is omitted if not provided. */
+  /** Server action to call when the athlete clicks "Resend email". */
   resendParentConsentAction?: (formData: FormData) => Promise<void>;
-  /** True when the dashboard URL has ?email_resent=1 — flips the resend
-   *  button to a green "✓ Email sent" pill so the athlete sees it worked. */
+  /** True when the dashboard URL has ?email_resent=1. */
   parentEmailRecentlySent?: boolean;
   /** True when the athlete has an IG handle saved but it hasn't been
-   *  verified yet. Shown ahead of the quiet "sit tight" state so new
-   *  accounts know outreach is gated on verification. */
+   *  verified yet. */
   verificationPending?: boolean;
+  /** The athlete's IG handle (without @) — shown in the IG verification box. */
+  igHandle?: string | null;
+  /** The 6-digit verification code the athlete needs to DM to @nilpro. */
+  verificationCode?: string | null;
   /** True when this is a HS athlete in a state that allows HS NIL with
-   *  restrictions. Shows alongside the other state — informational. */
+   *  restrictions. */
   hsStateRestricted?: boolean;
   /** State code (e.g. "TX") + the body of the restriction notice. */
   hsStateCode?: string | null;
@@ -46,15 +45,17 @@ export function ActionBanner({
   resendParentConsentAction,
   parentEmailRecentlySent = false,
   verificationPending = false,
+  igHandle = null,
+  verificationCode = null,
   hsStateRestricted = false,
   hsStateCode = null,
   hsStateNote = null,
 }: Props) {
-  // Priority order:
-  //   1. missingStep  (athlete is blocked on their own data)
-  //   2. parentApprovalPending  (longest blocker: out-of-band approval)
-  //   3. verificationPending    (admin-side IG verification)
-  //   4. quiet ✓
+  // Priority:
+  //   1. missingStep  (athlete is blocked on their own data — single banner,
+  //                    everything else hides until they fix it)
+  //   2. Otherwise: render every applicable alert stacked. Parent approval,
+  //      IG verification, and state-restriction notices can all coexist.
   if (missingStep) {
     return (
       <div className="action-items">
@@ -72,9 +73,11 @@ export function ActionBanner({
     );
   }
 
+  const banners: React.ReactNode[] = [];
+
   if (parentApprovalPending) {
-    return (
-      <div className="action-items">
+    banners.push(
+      <div key="parent" className="action-items">
         <div className="action-items__left">
           <div className="action-items__icon">⏳</div>
           <div className="action-items__text">
@@ -129,25 +132,94 @@ export function ActionBanner({
   }
 
   if (verificationPending) {
-    return (
-      <div className="action-items">
+    const igUrl = igHandle
+      ? `https://instagram.com/${igHandle.replace(/^@+/, "")}`
+      : null;
+    const nilProIgUrl = "https://instagram.com/nilpro";
+    banners.push(
+      <div key="ig" className="action-items">
         <div className="action-items__left">
-          <div className="action-items__icon">⏳</div>
+          <div className="action-items__icon">📸</div>
           <div className="action-items__text">
-            Verification pending
+            Instagram verification needed
             <small>
-              We&apos;re confirming your Instagram. Outreach starts the moment
-              you&apos;re verified (usually within 24 hours).
+              DM your code to{" "}
+              <a
+                href={nilProIgUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "var(--green)", textDecoration: "underline" }}
+              >
+                @nilpro on Instagram
+              </a>
+              {igHandle ? (
+                <>
+                  {" "}
+                  from your account{" "}
+                  {igUrl ? (
+                    <a
+                      href={igUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "var(--green)", textDecoration: "underline" }}
+                    >
+                      @{igHandle.replace(/^@+/, "")}
+                    </a>
+                  ) : (
+                    <strong>@{igHandle.replace(/^@+/, "")}</strong>
+                  )}
+                </>
+              ) : null}
+              . We confirm you&apos;re a real athlete before pitches go out
+              under your name (usually within 24 hours).
             </small>
+            {verificationCode ? (
+              <small
+                style={{
+                  display: "block",
+                  marginTop: "0.35rem",
+                  fontFamily: "var(--mono)",
+                  fontSize: "0.78rem",
+                  color: "var(--text-muted)",
+                }}
+              >
+                Your code:{" "}
+                <strong
+                  style={{
+                    color: "var(--text)",
+                    letterSpacing: "0.16em",
+                  }}
+                >
+                  {verificationCode}
+                </strong>{" "}
+                — DM exactly this to{" "}
+                <a
+                  href={nilProIgUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "var(--green)" }}
+                >
+                  @nilpro
+                </a>
+              </small>
+            ) : null}
           </div>
         </div>
+        <a
+          href={nilProIgUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="action-items__btn"
+        >
+          Open Instagram →
+        </a>
       </div>
     );
   }
 
   if (hsStateRestricted && hsStateNote) {
-    return (
-      <div className="action-items">
+    banners.push(
+      <div key="state" className="action-items">
         <div className="action-items__left">
           <div className="action-items__icon">⚑</div>
           <div className="action-items__text">
@@ -155,6 +227,14 @@ export function ActionBanner({
             <small>{hsStateNote}</small>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (banners.length > 0) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+        {banners}
       </div>
     );
   }

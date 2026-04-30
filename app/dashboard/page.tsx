@@ -54,7 +54,7 @@ export default async function Dashboard({
   const [socialRes, dealMenuRes, targetsRes, citiesRes] = await Promise.all([
     supabase
       .from("social_accounts")
-      .select("platform, handle, verified")
+      .select("platform, handle, verified, verification_code")
       .eq("athlete_id", user.id)
       .maybeSingle(),
     supabase
@@ -190,6 +190,8 @@ export default async function Dashboard({
           resendParentConsentAction={resendParentConsentAction}
           parentEmailRecentlySent={email_resent === "1"}
           verificationPending={Boolean(social && !social.verified)}
+          igHandle={(social?.handle as string | null) ?? null}
+          verificationCode={(social?.verification_code as string | null) ?? null}
           hsStateRestricted={Boolean(athlete.hs_state_restricted)}
           hsStateCode={(athlete.hometown_state as string | null) ?? null}
           hsStateNote={
