@@ -19,6 +19,23 @@ import { HS_NIL_STATUS, type HsNilStatus } from "./nilStatus";
 
 export type NotarizationRule = "none" | "minor-only" | "required";
 
+/**
+ * Whether perks (class-wide membership discounts from the perk network)
+ * should be treated as NIL deals or as membership benefits in this state.
+ *
+ * - "nil-deal":  state has broad NIL language ("any compensation in
+ *                connection with athletic status"), so perks may count.
+ *                Treat as NIL → surface disclosure UI.
+ * - "membership": state's NIL definition is narrow (focused on
+ *                 endorsement / use of name-image-likeness for
+ *                 commercial purposes). Perks are treated as discount
+ *                 benefits, no disclosure required.
+ *
+ * PRELIMINARY classifications pending lawyer review — see
+ * project_pre_launch_tasks.md for the targeted-review scope.
+ */
+export type PerksClassification = "nil-deal" | "membership";
+
 export type StateRules = {
   code: string;
   name: string;
@@ -34,6 +51,7 @@ export type StateRules = {
   sourceUrl?: string;
   lastUpdated: string;
   documented: boolean;
+  perksClassification: PerksClassification;
 };
 
 const STANDARD_BANNED = [
@@ -62,6 +80,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://asaa.org/resources/handbook/",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   AL: {
     code: "AL",
@@ -78,6 +97,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://new.ahsaa.com/Portals/0/Publications/2025-2026/Handbook%202025-2026.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   AR: {
     code: "AR",
@@ -94,6 +114,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://ahsaa.org/handbook",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   AZ: {
     code: "AZ",
@@ -110,6 +131,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://aiaonline.org/files/65/article-15-student-eligibility-rules.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   CA: {
     code: "CA",
@@ -126,6 +148,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.cifstate.org/governance/constitution/index",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "nil-deal",
   },
   CO: {
     code: "CO",
@@ -142,6 +165,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://chsaanow.com/news/2025/7/8/chsaa-bylaw-changes-for-2025-26-have-gone-into-effect.aspx",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   CT: {
     code: "CT",
@@ -158,6 +182,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.casciac.org/pdfs/eligibility_brochure.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   DC: {
     code: "DC",
@@ -174,6 +199,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.dcsaasports.com/nil/",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   DE: {
     code: "DE",
@@ -190,6 +216,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://education.delaware.gov/diaa/diaa_for/parents/",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   FL: {
     code: "FL",
@@ -206,6 +233,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://fhsaa.com/sports/2024/8/12/ABOUT_NILResources.aspx",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "nil-deal",
   },
   GA: {
     code: "GA",
@@ -222,6 +250,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.ghsa.net/constitution-section-2025-2026-appendix-n-guidelines-regarding-name-image-and-likeness",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "nil-deal",
   },
   HI: {
     code: "HI",
@@ -238,6 +267,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://hhsaa.org/assets/content/resources/governing_documents/Administrative-Regulations.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   IA: {
     code: "IA",
@@ -254,6 +284,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.iahsaa.org/handbook/name-image-likeness-guidance/",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   ID: {
     code: "ID",
@@ -270,6 +301,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://idhsaa.org/asset/Rules%20&%20Regs/RULE%208%2025-26.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   IL: {
     code: "IL",
@@ -286,6 +318,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.ihsa.org/documents/forms/2025-26/25-26%20School%20Term%201%20Column.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   IN: {
     code: "IN",
@@ -302,6 +335,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.inkfreenews.com/2026/04/27/is-nil-coming-to-indiana-high-school-sports-ihsaa-will-consider-proposal/",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   KS: {
     code: "KS",
@@ -318,6 +352,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.kshsaa.org/Public/PDF/AmateurStatusNov2021.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   KY: {
     code: "KY",
@@ -334,6 +369,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://khsaa.org/common_documents/handbook/2024-2025/2024-25%20Handbook-02-Bylaws.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   LA: {
     code: "LA",
@@ -350,6 +386,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.lhsaa.org/siteuploads/lhsaa/22065_pdf_lhsaa-_-nil-club-press-release-final.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   MA: {
     code: "MA",
@@ -366,6 +403,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.miaa.net/sites/default/files/2024-04/miaa-handbook-23-25.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "nil-deal",
   },
   MD: {
     code: "MD",
@@ -382,6 +420,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.mpssaa.org/assets/1/6/NIL_Guidance.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   ME: {
     code: "ME",
@@ -398,6 +437,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://mpaprof.org/wp-content/uploads/2025/07/MPA-Handbook.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   MI: {
     code: "MI",
@@ -414,6 +454,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.mhsaa.com/students/name-image-likeness",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "nil-deal",
   },
   MN: {
     code: "MN",
@@ -430,6 +471,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.mshsl.org/sites/default/files/2022-06/9.D_NIL%20Statement%20Draft.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "nil-deal",
   },
   MO: {
     code: "MO",
@@ -446,6 +488,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.mshsaa.org/resources/pdf/Official%20Handbook.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   MS: {
     code: "MS",
@@ -462,6 +505,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.athleticbusiness.com/operations/governing-bodies/article/15817027/bill-that-would-allow-nil-opportunities-for-mississippi-high-school-studentathletes-dies-in-committee",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   MT: {
     code: "MT",
@@ -478,6 +522,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.mhsa.org/handbook/",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   NC: {
     code: "NC",
@@ -494,6 +539,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.nchsaa.org/name-image-and-likeness/",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "nil-deal",
   },
   ND: {
     code: "ND",
@@ -510,6 +556,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://ndhsaa.com/",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   NE: {
     code: "NE",
@@ -526,6 +573,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://nsaa-static.s3.amazonaws.com/textfile/yb/NIL.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   NH: {
     code: "NH",
@@ -542,6 +590,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.nhiaa.org/about-nhiaa/handbook",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   NJ: {
     code: "NJ",
@@ -558,6 +607,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.njsiaa.org/sites/default/files/documents/2022-01/njsiaa-nil-faqs-final.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   NM: {
     code: "NM",
@@ -574,6 +624,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.nmact.org/",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   NV: {
     code: "NV",
@@ -590,6 +641,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://ecckersports.com/industry-insights/nevada-is-now-the-28th-state-to-allow-for-name-image-and-likeness-as-the-high-school-level/",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   NY: {
     code: "NY",
@@ -606,6 +658,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://nysphsaa.org/documents/2023/8/21/NYSPHSAA_Handbook_Aug_2025.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "nil-deal",
   },
   OH: {
     code: "OH",
@@ -622,6 +675,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.ohsaa.org/Eligibility/NIL-Resource-Center",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "nil-deal",
   },
   OK: {
     code: "OK",
@@ -638,6 +692,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "http://www.ossaa.net/docs/2022-23/MiscForms/MF_2022-23_NILGuidelines.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   OR: {
     code: "OR",
@@ -654,6 +709,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.osaa.org/docs/handbooks/osaahandbook.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "nil-deal",
   },
   PA: {
     code: "PA",
@@ -670,6 +726,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.piaa.org/resources/handbook/default.aspx",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "nil-deal",
   },
   RI: {
     code: "RI",
@@ -686,6 +743,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.riil.org/index.php/resources/rules-and-regulations",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   SC: {
     code: "SC",
@@ -702,6 +760,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.athleticbusiness.com/operations/governing-bodies/article/15749065/south-carolina-moves-to-ban-nil-deals-for-high-school-athletes",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   SD: {
     code: "SD",
@@ -718,6 +777,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.dakotanewsnow.com/2024/06/12/sdhsaa-approves-new-nil-guidelines-high-school-athletes/",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   TN: {
     code: "TN",
@@ -734,6 +794,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://tssaa.org/name-image-likeness",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   TX: {
     code: "TX",
@@ -750,6 +811,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.uiltexas.org/policy/2024-25-policy-info/nil-information",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   UT: {
     code: "UT",
@@ -766,6 +828,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://uhsaa.org/Publications/Handbook/Handbook.pdf",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   VA: {
     code: "VA",
@@ -782,6 +845,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.williamsmullen.com/insights/news/legal-news/virginia-high-school-league-adopts-name-image-and-likeness-guidelines",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   VT: {
     code: "VT",
@@ -798,6 +862,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://ecckersports.com/vermont/",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   WA: {
     code: "WA",
@@ -814,6 +879,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.union-bulletin.com/sports/college_sports/university_of_washington/nil-officially-reaches-high-schools-in-wa-two-tacoma-football-stars-ink-deals/article_1a591678-f17b-573c-8a06-3fcd02a9340d.html",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "nil-deal",
   },
   WI: {
     code: "WI",
@@ -830,6 +896,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.boardmanclark.com/publications/school-law-fyi/wiaa-approves-nil-rule",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "nil-deal",
   },
   WV: {
     code: "WV",
@@ -846,6 +913,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://www.wtrf.com/west-virginia/west-virginia-approves-policy-for-high-school-middle-school-athletes-to-make-money/",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
   WY: {
     code: "WY",
@@ -862,6 +930,7 @@ const SEEDED: Record<string, StateRules> = {
     sourceUrl: "https://cowboystatedaily.com/2026/03/03/gordon-signs-bill-to-keep-nil-money-out-of-wyoming-high-school-sports/",
     lastUpdated: "2026-04-29",
     documented: true,
+    perksClassification: "membership",
   },
 };
 
@@ -895,6 +964,7 @@ function stubFor(code: string): StateRules {
       "Documentation in progress. Detailed rules for this state have not yet been verified. Treat parental co-signature as required and consult your school's athletic director before signing any deal.",
     lastUpdated: "2026-04-27",
     documented: false,
+    perksClassification: "nil-deal",
   };
 }
 

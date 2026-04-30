@@ -4667,3 +4667,221 @@
 
 /* additional snap-card label-right variant */
 .snap-card__label-right--red { color: var(--red); }
+
+/* ============================================================
+ * STATE GUIDELINES PANEL — used at signup state-pick + deal-sign
+ * Long-form readout of state-specific HS NIL guidelines, with
+ * an acknowledgment checkbox that gates form submission.
+ * ============================================================ */
+
+.state-guidelines {
+  margin-top: 0.85rem;
+  padding: 1.2rem 1.35rem;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  border-radius: var(--r-md);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.state-guidelines__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px dashed var(--border);
+  flex-wrap: wrap;
+}
+
+.state-guidelines__head .label {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.state-guidelines__title {
+  font-family: var(--cond);
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.state-guidelines__badge {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.state-guidelines__body.markdown-body {
+  color: var(--text-dim);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.markdown-body h1 {
+  display: none; /* state name already in head */
+}
+.markdown-body h2 {
+  font-family: var(--cond);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  margin: 1.2rem 0 0.5rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--border);
+}
+.markdown-body h2:first-child { border-top: none; padding-top: 0; }
+.markdown-body h3 {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0.85rem 0 0.4rem;
+}
+.markdown-body p {
+  margin: 0.5rem 0;
+  color: var(--text-dim);
+}
+.markdown-body strong { color: var(--text); font-weight: 600; }
+.markdown-body em { color: var(--green); font-style: normal; }
+.markdown-body ul, .markdown-body ol {
+  margin: 0.5rem 0 0.85rem 1.4rem;
+  padding: 0;
+}
+.markdown-body li {
+  margin: 0.3rem 0;
+  color: var(--text-dim);
+}
+.markdown-body a {
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.markdown-body a:hover { color: var(--green-hot); }
+.markdown-body blockquote {
+  border-left: 3px solid var(--green);
+  padding: 0.4rem 0 0.4rem 1rem;
+  margin: 0.6rem 0;
+  color: var(--text-dim);
+  background: rgba(0, 230, 118, 0.04);
+}
+.markdown-body code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  background: var(--bg-card);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  color: var(--text);
+}
+
+.state-guidelines__fallback h4 {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.55rem;
+}
+.state-guidelines__fallback ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.state-guidelines__fallback li {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+.state-guidelines__fallback li strong { color: var(--text); font-weight: 600; }
+.state-guidelines__fallback p {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-top: 0.6rem;
+}
+.state-guidelines__source {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 0.85rem;
+}
+.state-guidelines__source a { color: var(--green); }
+
+.state-guidelines__stub {
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  border-radius: var(--r-md);
+  padding: 1rem 1.2rem;
+  font-size: 0.92rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+.state-guidelines__stub strong {
+  display: block;
+  color: var(--gold);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+/* acknowledgment checkbox row */
+.state-guidelines__ack {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.85rem 1rem;
+  background: var(--bg);
+  border: 1px solid var(--green);
+  border-radius: var(--r-sm);
+  font-size: 0.88rem;
+  color: var(--text);
+  cursor: pointer;
+  line-height: 1.5;
+}
+.state-guidelines__ack-input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--text-muted);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+  position: relative;
+  transition: all 0.15s;
+}
+.state-guidelines__ack-input:hover { border-color: var(--green); }
+.state-guidelines__ack-input:checked {
+  background: var(--green);
+  border-color: var(--green);
+}
+.state-guidelines__ack-input:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 800;
+}
+.state-guidelines__ack strong { color: var(--green); font-weight: 600; }

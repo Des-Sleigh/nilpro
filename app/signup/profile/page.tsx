@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SignupShell } from "@/components/auth/SignupShell";
 import { ProfileForm } from "@/components/auth/ProfileForm";
+import { getAllGuidelinesMd } from "@/lib/states/guidelines";
 
 export const metadata: Metadata = {
   title: "Profile basics — NILPro",
@@ -45,7 +46,10 @@ export default async function ProfileStep({
         </>
       }
     >
-      <ProfileForm error={params.error} />
+      <ProfileForm
+        error={params.error}
+        allGuidelines={getAllGuidelinesMd()}
+      />
     </SignupShell>
   );
 }

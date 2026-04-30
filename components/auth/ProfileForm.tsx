@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { saveProfileAction } from "@/app/signup/profile/actions";
-import { StateRulesPreview } from "./StateRulesPreview";
+import { StateGuidelinesPanel } from "./StateGuidelinesPanel";
+import { rulesFor } from "@/lib/states/stateRules";
 
 const LEVELS = [
   { v: "HS", label: "High school" },
@@ -163,13 +164,21 @@ function SubmitButton() {
   );
 }
 
-export function ProfileForm({ error }: { error?: string }) {
+export function ProfileForm({
+  error,
+  allGuidelines = {},
+}: {
+  error?: string;
+  allGuidelines?: Record<string, string>;
+}) {
   const [level, setLevel] = useState<string>("");
   const [dob, setDob] = useState<string>("");
   const [hometownState, setHometownState] = useState<string>("");
+  const [rulesAcknowledged, setRulesAcknowledged] = useState<boolean>(false);
 
   const age = useMemo(() => computeAge(dob), [dob]);
   const isMinor = age !== null && age < 18 && age >= 13;
+  const isHsLevel = level === "HS";
 
   const thisYear = new Date().getFullYear();
   const gradYears = Array.from({ length: 10 }, (_, i) => thisYear + i - 2);
@@ -327,9 +336,22 @@ export function ProfileForm({ error }: { error?: string }) {
         </label>
       </div>
 
-      {hometownState && level === "HS" ? (
-        <StateRulesPreview stateCode={hometownState} />
-      ) : null}
+      {hometownState && isHsLevel
+        ? (() => {
+            const stateRules = rulesFor(hometownState);
+            if (!stateRules) return null;
+            return (
+              <StateGuidelinesPanel
+                rules={stateRules}
+                markdown={allGuidelines[hometownState.toUpperCase()] ?? null}
+                showAcknowledgeCheckbox
+                acknowledged={rulesAcknowledged}
+                onAcknowledgeChange={setRulesAcknowledged}
+                acknowledgeFieldName="state_rules_acknowledged"
+              />
+            );
+          })()
+        : null}
 
       {isMinor ? (
         <div
