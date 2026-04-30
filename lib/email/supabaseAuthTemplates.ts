@@ -51,8 +51,8 @@ export const SUPABASE_TEMPLATE_CONFIRM_SIGNUP = `<!doctype html>
             <td align="center" style="padding:6px 32px 26px 32px;">
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
                 <tr>
-                  <td align="center" bgcolor="#0d1118" style="background:#0d1118;border:2px solid #00e676;border-radius:10px;box-shadow:0 0 24px rgba(0, 230, 118, 0.4), 0 0 0 1px rgba(0, 230, 118, 0.5);">
-                    <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email&next=/signup/profile" style="display:inline-block;padding:14px 28px;font-family:Impact,'Arial Black',sans-serif;font-size:15px;letter-spacing:0.06em;color:#00e676;text-transform:uppercase;text-decoration:none;font-weight:700;line-height:1;">
+                  <td align="center" bgcolor="#141923" style="background:#141923;border:2px solid #00e676;border-radius:14px;box-shadow:0 0 0 1px rgba(0, 230, 118, 0.6), 0 0 28px rgba(0, 230, 118, 0.45), 0 0 80px rgba(0, 230, 118, 0.18), inset 0 0 28px rgba(0, 230, 118, 0.06);mso-padding-alt:0;">
+                    <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email&next=/signup/profile" style="display:inline-block;padding:18px 32px;font-family:'Arial Narrow Bold',Impact,'Arial Black',Arial,sans-serif;font-size:16px;letter-spacing:0.12em;color:#00e676;text-transform:uppercase;text-decoration:none;font-weight:800;line-height:1;">
                       Confirm my account
                     </a>
                   </td>
@@ -110,8 +110,8 @@ export const SUPABASE_TEMPLATE_RESET_PASSWORD = `<!doctype html>
             <td align="center" style="padding:6px 32px 26px 32px;">
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
                 <tr>
-                  <td align="center" bgcolor="#0d1118" style="background:#0d1118;border:2px solid #00e676;border-radius:10px;box-shadow:0 0 24px rgba(0, 230, 118, 0.4), 0 0 0 1px rgba(0, 230, 118, 0.5);">
-                    <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=recovery&next=/auth/update-password" style="display:inline-block;padding:14px 28px;font-family:Impact,'Arial Black',sans-serif;font-size:15px;letter-spacing:0.06em;color:#00e676;text-transform:uppercase;text-decoration:none;font-weight:700;line-height:1;">
+                  <td align="center" bgcolor="#141923" style="background:#141923;border:2px solid #00e676;border-radius:14px;box-shadow:0 0 0 1px rgba(0, 230, 118, 0.6), 0 0 28px rgba(0, 230, 118, 0.45), 0 0 80px rgba(0, 230, 118, 0.18), inset 0 0 28px rgba(0, 230, 118, 0.06);mso-padding-alt:0;">
+                    <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=recovery&next=/auth/update-password" style="display:inline-block;padding:18px 32px;font-family:'Arial Narrow Bold',Impact,'Arial Black',Arial,sans-serif;font-size:16px;letter-spacing:0.12em;color:#00e676;text-transform:uppercase;text-decoration:none;font-weight:800;line-height:1;">
                       Reset my password
                     </a>
                   </td>
@@ -169,8 +169,8 @@ export const SUPABASE_TEMPLATE_MAGIC_LINK = `<!doctype html>
             <td align="center" style="padding:6px 32px 26px 32px;">
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
                 <tr>
-                  <td align="center" bgcolor="#0d1118" style="background:#0d1118;border:2px solid #00e676;border-radius:10px;box-shadow:0 0 24px rgba(0, 230, 118, 0.4), 0 0 0 1px rgba(0, 230, 118, 0.5);">
-                    <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=magiclink&next=/dashboard" style="display:inline-block;padding:14px 28px;font-family:Impact,'Arial Black',sans-serif;font-size:15px;letter-spacing:0.06em;color:#00e676;text-transform:uppercase;text-decoration:none;font-weight:700;line-height:1;">
+                  <td align="center" bgcolor="#141923" style="background:#141923;border:2px solid #00e676;border-radius:14px;box-shadow:0 0 0 1px rgba(0, 230, 118, 0.6), 0 0 28px rgba(0, 230, 118, 0.45), 0 0 80px rgba(0, 230, 118, 0.18), inset 0 0 28px rgba(0, 230, 118, 0.06);mso-padding-alt:0;">
+                    <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=magiclink&next=/dashboard" style="display:inline-block;padding:18px 32px;font-family:'Arial Narrow Bold',Impact,'Arial Black',Arial,sans-serif;font-size:16px;letter-spacing:0.12em;color:#00e676;text-transform:uppercase;text-decoration:none;font-weight:800;line-height:1;">
                       Sign in to NILPro
                     </a>
                   </td>
