@@ -105,7 +105,7 @@ function buildHtml(p: ParentConsentParams): string {
                   What you&rsquo;re saying yes to
                 </div>
                 <ul style="margin:0 0 14px 0;padding:0 0 0 20px;color:#aeb8cc;font-size:15px;line-height:1.55;">
-                  <li style="margin-bottom:8px;">NILPro can pitch local businesses on ${af}&rsquo;s behalf.</li>
+                  <li style="margin-bottom:8px;">${af} can use NILPro&rsquo;s tools and templates to pitch local businesses themselves.</li>
                   <li style="margin-bottom:8px;">${af} approves every business before any pitch goes out.</li>
                   <li style="margin-bottom:8px;">You&rsquo;ll review every actual deal before it&rsquo;s signed.</li>
                   <li style="margin-bottom:8px;">NILPro is software, not an agent &mdash; we never represent ${af} and we never touch any money.</li>
@@ -164,7 +164,7 @@ function buildText(p: ParentConsentParams): string {
     p.approveUrl,
     ``,
     `What you're saying yes to:`,
-    `  • NILPro can pitch local businesses on ${p.athleteFirstName}'s behalf.`,
+    `  • ${p.athleteFirstName} can use NILPro's tools and templates to pitch local businesses themselves.`,
     `  • ${p.athleteFirstName} approves every business before any pitch goes out.`,
     `  • You'll review every actual deal before it's signed.`,
     `  • NILPro is software, not an agent — we never represent ${p.athleteFirstName} and we never touch any money.`,

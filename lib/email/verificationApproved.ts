@@ -60,7 +60,7 @@ function buildHtml(
             <td style="padding:8px 32px 8px 32px;color:#ffffff;font-size:16px;line-height:1.55;">
               <p style="margin:18px 0 14px 0;color:#ffffff;font-size:18px;font-weight:700;">You&rsquo;re verified, ${af}.</p>
               <p style="margin:0 0 22px 0;color:#aeb8cc;font-size:16px;">
-                Your Instagram is verified. We&rsquo;re kicking off outreach to local businesses on your list today. Replies will surface in your dashboard.
+                Your Instagram is verified. Your queue of pitches goes live today &mdash; drafted by NILPro, sent from your inbox under your name. Replies will surface in your dashboard.
               </p>
             </td>
           </tr>
@@ -97,7 +97,7 @@ function buildText(
   return [
     `You're verified, ${p.athleteFirstName}.`,
     ``,
-    `Your Instagram is verified. We're kicking off outreach to local businesses on your list today. Replies will surface in your dashboard.`,
+    `Your Instagram is verified. Your queue of pitches goes live today — drafted by NILPro, sent from your inbox under your name. Replies will surface in your dashboard.`,
     ``,
     `See your dashboard: ${dashboardUrl}`,
     ``,
@@ -119,7 +119,7 @@ export async function sendVerificationApprovedEmail(
   }
 
   const dashboardUrl = p.dashboardUrl ?? "https://thenilpro.com/dashboard";
-  const subject = `You're verified — NILPro outreach starts today`;
+  const subject = `You're verified — your NILPro outreach queue is live`;
   const html = buildHtml(p, dashboardUrl);
   const text = buildText(p, dashboardUrl);
 

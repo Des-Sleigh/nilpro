@@ -52,12 +52,14 @@ export function YourCall() {
               <li>
                 <span className="control__points-num">04</span>
                 <div className="control__points-text">
-                  <strong>You build the menu. We deliver the pitches.</strong>
+                  <strong>You build the menu. NILPro drafts the pitches; you send them.</strong>
                   At signup, you check the boxes for deal types you&apos;ll accept — cash per
-                  post, product deals, appearances. We pitch your menu to local businesses.
-                  Yes-responses become contracts with your original terms. Counter-offers come
-                  back to you to accept, reject, or counter back. You never negotiate — we
-                  just deliver the messages.
+                  post, product deals, appearances. NILPro drafts pitches for your menu, queued
+                  up for local businesses; you send them under your own name. Yes-responses
+                  become contracts with your original terms. Counter-offers come back to you to
+                  accept, reject, or counter back. You never negotiate — and NILPro doesn&apos;t
+                  either. We give you the templates and the queue; you send and reply from your
+                  own inbox.
                 </div>
               </li>
             </ul>

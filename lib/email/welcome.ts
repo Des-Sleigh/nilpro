@@ -64,7 +64,7 @@ function buildHtml(p: WelcomeEmailParams, dashboardUrl: string): string {
               </p>
               <ul style="margin:0 0 22px 0;padding:0 0 0 20px;color:#aeb8cc;font-size:15px;line-height:1.6;">
                 <li style="margin-bottom:8px;">We verify your account within 24 hours.</li>
-                <li style="margin-bottom:8px;">Once verified, outreach to local businesses on your list begins.</li>
+                <li style="margin-bottom:8px;">Once verified, your queue of pitches goes live &mdash; drafted by NILPro, sent from your inbox under your name.</li>
                 <li style="margin-bottom:0;">Every reply lands in your dashboard — you don&rsquo;t miss anything.</li>
               </ul>
             </td>
@@ -104,7 +104,7 @@ function buildText(p: WelcomeEmailParams, dashboardUrl: string): string {
     `Your profile, target list, and deal menu are saved. Here's what happens next:`,
     ``,
     `  • We verify your account within 24 hours.`,
-    `  • Once verified, outreach to local businesses on your list begins.`,
+    `  • Once verified, your queue of pitches goes live — drafted by NILPro, sent from your inbox under your name.`,
     `  • Every reply lands in your dashboard — you don't miss anything.`,
     ``,
     `Open your dashboard: ${dashboardUrl}`,

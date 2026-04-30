@@ -22,7 +22,9 @@ These features depend on each other and should be built as a unit, not in isolat
 
 Before any code: there is one piece of product discipline that must hold across this entire system.
 
-**Local perks are NOT sponsorships.** They are real, NILPro-negotiated discounts from local businesses, but they are categorically different from brand sponsorship deals. The dashboard, notifications, and emails must visually and verbally distinguish them.
+**Local perks are NOT sponsorships.** They are real discounts that local businesses make available to NILPro's verified athlete community at large — but they are categorically different from brand sponsorship deals. The dashboard, notifications, and emails must visually and verbally distinguish them.
+
+**Legal posture (locked):** Avoid the phrase "NILPro-negotiated" anywhere in user-facing copy or partner outreach. Frame perks as "discounts NILPro lined up" or "NILPro's perk network" — never as deals NILPro brokered for an individual athlete. Perks are class-wide membership benefits to the verified athlete community; they are not NIL deals between an athlete and a business. (See `project_pre_launch_tasks.md` for the lawyer-review item that finalizes this classification per state.)
 
 - ✅ "Congrats! You just received 20% off at Tony's Pizza."
 - ✅ "Local deal added: 15% off Joe's Sporting Goods."

@@ -75,7 +75,7 @@ export default async function VerifyStep({
       {!sent ? (
         <>
           <p className="lede" style={{ marginTop: "0.25rem" }}>
-            We verify every athlete before contacting businesses on your behalf.
+            We verify every athlete before any pitches go out under your name.
             Gives local businesses confidence they&apos;re talking to the real
             you.
           </p>

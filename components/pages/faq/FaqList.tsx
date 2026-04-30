@@ -123,12 +123,12 @@ const CATEGORIES: Category[] = [
     heading: "Outreach & control",
     items: [
       {
-        q: "How many emails do you send per day?",
+        q: "How many pitches go out per day from my account?",
         a: (
           <p>
             Paced deliberately to stay out of spam filters, give you time to
             handle replies, and avoid overwhelming businesses in your area.
-            A full round of hundreds of businesses takes a few weeks,
+            A full round of hundreds of businesses queues up over a few weeks,
             depending on your tier.
           </p>
         ),
@@ -152,10 +152,12 @@ const CATEGORIES: Category[] = [
         q: "Do emails look like they're from me or NILPro?",
         a: (
           <p>
-            Clearly from you — signed with your name, your school, your sport —
-            with a small disclosure at the bottom noting the platform. Replies
-            route to a unique address that forwards to you, so you see
-            everything in your dashboard.
+            They <em>are</em> from you — sent through your own connected email
+            account (Gmail, Outlook), with your address on the From: line,
+            signed with your name, your school, and your sport. NILPro drafts
+            the message; you send it. A small disclosure at the bottom notes
+            you&apos;re using NILPro tooling. Replies go to your inbox; we
+            mirror them to your dashboard so nothing slips.
           </p>
         ),
       },

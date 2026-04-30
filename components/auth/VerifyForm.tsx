@@ -103,7 +103,7 @@ export function VerifyForm({ error }: { error?: string }) {
           lineHeight: 1.5,
         }}
       >
-        We verify every athlete via Instagram DM before pitching on your behalf.
+        We verify every athlete via Instagram DM before any pitches go out under your name.
         Takes about 30 seconds. You can link TikTok from your profile later.
       </p>
 

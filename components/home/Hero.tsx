@@ -69,7 +69,7 @@ export function Hero({ isSignedIn = false }: { isSignedIn?: boolean }) {
             </h1>
 
             <p className="hero__sub">
-              NILPro pitches hometown businesses on your behalf. You sign real deals —{" "}
+              NILPro powers your outreach to hometown businesses — pitches written for you, sent from your inbox, controlled by you. You sign real deals —{" "}
               <strong>free meals, gear, cash for posts, and more</strong>. Built for every high
               school and college athlete. Every sport. Every level.
             </p>

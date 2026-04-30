@@ -42,7 +42,7 @@ export function ReferralCard({ referralCode, paidReferrals }: Props) {
     `Hey — sign up for NILPro with my link and I get 50 more pitches added to my year: ${url}`
   );
   const shareText = encodeURIComponent(
-    `NILPro pitches local businesses for NIL deals on my behalf. Join with my link: ${url}`
+    `NILPro is software that helps me pitch local businesses for NIL deals — drafts written for me, sent from my own inbox. Join with my link: ${url}`
   );
 
   return (

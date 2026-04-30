@@ -43,8 +43,8 @@ export function FourPlays() {
             <span className="play-card__num">04</span>
             <h3>Game on</h3>
             <p>
-              We pitch <em>your deal menu</em> to local businesses. Yes-responses come back as
-              contracts. Counter-offers come back to you to decide.
+              Pitches go out from you — drafted by NILPro, sent under your name. Yes-responses
+              come back as ready-to-sign contracts. Counter-offers come back to you to decide.
             </p>
           </div>
         </div>

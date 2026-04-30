@@ -36,11 +36,12 @@ export function Worries() {
               </div>
               <div className="worry__a">
                 NIL is permitted at every NCAA level and in ~40 states at the HS
-                level, but each school has its own disclosure rules. We build
-                compliance disclosures into every contract (FTC #ad, state NIL
-                rules, school notification reminders). Your student still files
-                with their athletic department — we make it easy with a
-                pre-filled disclosure packet.
+                level, but each school has its own disclosure rules. NILPro&apos;s
+                contract templates include the right boilerplate (FTC #ad, state
+                NIL rules, school notification reminders) — but your student is
+                the one who files with their athletic department. We give them
+                the pre-filled disclosure packet and the deadline reminders;
+                they send it from their own email.
               </div>
             </div>
             <div className="worry">

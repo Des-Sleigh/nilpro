@@ -65,12 +65,14 @@ const STEPS: { num: string; title: string; body: React.ReactNode }[] = [
   },
   {
     num: "06",
-    title: "Outreach fires — paced to stay effective",
+    title: "Outreach goes out — from you, paced to stay effective",
     body: (
       <>
-        Steady, personalized outreach paced to stay out of spam filters. Every
-        email written for that specific business — their location, their
-        reviews, why you&apos;d be a good fit. Pause anytime in one click.
+        NILPro writes each pitch to the specific business — their location,
+        their reviews, why you&apos;d be a good fit — and queues it in your
+        dashboard. You hit send (or have NILPro relay it from your connected
+        inbox) so the From line is always you. Paced to stay out of spam
+        filters. Pause anytime in one click.
       </>
     ),
   },
@@ -91,12 +93,11 @@ const STEPS: { num: string; title: string; body: React.ReactNode }[] = [
     title: "Yes-responses come back ready to sign",
     body: (
       <>
-        When a business says yes to your terms, we draft the contract with those
-        exact terms — compensation, deliverables, timeline, compliance
-        disclosures. You review and sign. If a business counters, we show you
-        their offer and you decide: accept, reject, or counter back. We pass
-        your response along — no negotiation work on your end unless you want
-        to engage.
+        When a business says yes to your terms, NILPro auto-fills our contract
+        template with those exact terms — compensation, deliverables, timeline,
+        compliance reminders. You review and sign. If a business counters,
+        NILPro surfaces the counter in your dashboard and gives you a one-click
+        reply template — you send the response from your own inbox, every time.
       </>
     ),
   },

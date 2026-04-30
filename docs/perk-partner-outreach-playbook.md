@@ -6,9 +6,15 @@
 
 ---
 
+## Legal posture (read first)
+
+All perk-partner outreach in this playbook is sent **from NILPro to a local business** to set up a discount NILPro's verified athlete community can use. It is **NOT** outreach on any specific athlete's behalf, and the discount is **NOT** an NIL deal. Athletes do not negotiate, sign, or receive payment in connection with perks. Keep this distinction visible in every email — never let a perk pitch sound like a sponsorship pitch. NILPro's "Inform Don't Act" principle (see memory) governs all athlete-facing flows; perk-partner outreach is the one channel where NILPro itself is the sender, and it must always frame the discount as a NILPro-to-business commercial relationship, not a representation of any athlete.
+
+---
+
 ## The pitch in one sentence
 
-> NILPro athletes get exclusive discounts at local businesses in their hometown — we're inviting Tony's Pizza to be one of them, free of charge, in exchange for foot traffic and visibility with verified local high school and college athletes and their families.
+> NILPro's verified athlete community gets discounts at local businesses in their hometown — we're inviting Tony's Pizza to be one of them, free of charge, in exchange for foot traffic and visibility with verified local high school and college athletes and their families.
 
 ---
 

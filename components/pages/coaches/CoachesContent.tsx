@@ -16,17 +16,19 @@ export function CoachesContent() {
             <h3>How NILPro fits</h3>
             <p>
               We&apos;re not an agent. We don&apos;t negotiate. We don&apos;t
-              take commission. We handle the mechanical work of reaching out to
-              local businesses on an athlete&apos;s behalf. Your athletes stay
-              in control of every interaction. You stay out of the middle.
+              take commission. We give athletes the templates, target lists, and
+              tooling to do their own outreach to local businesses — they&apos;re
+              the sender, every time. Your athletes stay in control of every
+              interaction. You stay out of the middle.
             </p>
 
             <h3>Team partnerships</h3>
             <p>
               If 5 or more of your athletes sign up, we set up a team dashboard
               so you can see participation at a high level (no personal
-              financial data) and monitor compliance disclosures across your
-              roster. You qualify for our coach partnership program.
+              financial data). Disclosure filings are between each athlete and
+              your athletic department — NILPro provides athletes with templates
+              and reminders only. You qualify for our coach partnership program.
             </p>
 
             <h3>What&apos;s included</h3>
@@ -36,8 +38,8 @@ export function CoachesContent() {
                 signups (contact us for a quote)
               </li>
               <li>
-                Team-level compliance dashboard (participation &amp; disclosure
-                tracking)
+                Team-level participation dashboard (no financial data, no
+                disclosure filings)
               </li>
               <li>Quarterly sync on what&apos;s working, what isn&apos;t</li>
               <li>Priority onboarding for your signup cohort</li>
@@ -57,7 +59,8 @@ export function CoachesContent() {
               Nothing to set up. Athletes subscribe at a discounted team rate
               (10+ signups required — contact us for a quote). Want to sponsor
               subscriptions out of athletic department funds? We invoice the
-              school directly.
+              school directly for the software subscription only — never for
+              any athlete deal proceeds.
             </p>
           </div>
 

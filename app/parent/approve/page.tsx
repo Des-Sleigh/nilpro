@@ -575,7 +575,7 @@ function ApprovalCard({
             }}
           >
             <li style={{ marginBottom: "0.4rem" }}>
-              NILPro can pitch local businesses on {fn}&rsquo;s behalf.
+              {fn} can use NILPro&rsquo;s tools and templates to pitch local businesses themselves.
             </li>
             <li style={{ marginBottom: "0.4rem" }}>
               {fn} approves every business before any pitch goes out.

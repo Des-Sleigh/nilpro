@@ -62,7 +62,7 @@ function buildHtml(
             <td style="padding:8px 32px 8px 32px;color:#ffffff;font-size:16px;line-height:1.55;">
               <p style="margin:18px 0 14px 0;color:#ffffff;font-size:18px;font-weight:700;">You&rsquo;re cleared to go, ${af}.</p>
               <p style="margin:0 0 22px 0;color:#aeb8cc;font-size:16px;">
-                Your parent ${pf} just approved your NILPro account. We&rsquo;re moving forward with outreach as soon as your Instagram is verified. You&rsquo;ll see pitches and replies in your dashboard.
+                Your parent ${pf} just approved your NILPro account. As soon as your Instagram is verified, your pitch queue goes live &mdash; drafts ready for you to send under your name. You&rsquo;ll see pitches and replies in your dashboard.
               </p>
             </td>
           </tr>
@@ -99,7 +99,7 @@ function buildText(
   return [
     `You're cleared to go, ${p.athleteFirstName}.`,
     ``,
-    `Your parent ${p.parentFirstName} just approved your NILPro account. We're moving forward with outreach as soon as your Instagram is verified. You'll see pitches and replies in your dashboard.`,
+    `Your parent ${p.parentFirstName} just approved your NILPro account. As soon as your Instagram is verified, your pitch queue goes live — drafts ready for you to send under your name. You'll see pitches and replies in your dashboard.`,
     ``,
     `Open your dashboard: ${dashboardUrl}`,
     ``,
