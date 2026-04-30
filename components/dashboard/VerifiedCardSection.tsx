@@ -1,13 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { PhotoForm } from "@/components/auth/PhotoForm";
 
 type Props = {
   memberId: string | null;
   isVerified: boolean;
+  userId: string;
+  profilePhotoUrl: string | null;
 };
 
-export function VerifiedCardSection({ memberId, isVerified }: Props) {
+export function VerifiedCardSection({
+  memberId,
+  isVerified,
+  userId,
+  profilePhotoUrl,
+}: Props) {
   const [format, setFormat] = useState<"story" | "post">("story");
 
   if (!memberId) {
@@ -36,6 +44,36 @@ export function VerifiedCardSection({ memberId, isVerified }: Props) {
           Once your Instagram is verified, your Verified Athlete Card unlocks
           here — downloadable for your IG Story or feed post.
         </p>
+      </div>
+    );
+  }
+
+  // Verified but no photo — prompt for upload right here so they can
+  // generate a custom card. The card endpoint already falls back to an
+  // initials avatar if they skip, but the photo is what makes it personal.
+  if (!profilePhotoUrl) {
+    return (
+      <div className="vcard-section">
+        <div className="vcard-section__head">
+          <span className="label">YOUR VERIFIED CARD · {memberId}</span>
+          <h2>
+            Add your photo to <span className="accent-green">unlock your card</span>
+          </h2>
+          <p className="vcard-section__lede">
+            Your Instagram is verified — last step is your photo. Upload a clean
+            head-and-shoulders shot below; we&apos;ll drop it onto your Verified
+            Athlete Card so you can post it to your IG Story or feed.
+          </p>
+        </div>
+
+        <div className="vcard-section__photo-upload">
+          <PhotoForm
+            userId={userId}
+            allowSkip={false}
+            nextHref="/dashboard"
+            submitLabel="Upload &amp; generate my card →"
+          />
+        </div>
       </div>
     );
   }

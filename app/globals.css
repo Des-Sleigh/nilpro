@@ -5116,6 +5116,13 @@
   flex-shrink: 0;
 }
 
+.vcard-section__photo-upload {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 1.4rem 1.5rem;
+}
+
 /* Public profile page */
 .public-profile {
   background: var(--bg);

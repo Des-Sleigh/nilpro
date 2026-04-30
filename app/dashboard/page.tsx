@@ -261,6 +261,8 @@ export default async function Dashboard({
         <VerifiedCardSection
           memberId={(athlete.member_id as string | null) ?? null}
           isVerified={Boolean(social?.verified)}
+          userId={user.id}
+          profilePhotoUrl={(athlete.profile_photo_url as string | null) ?? null}
         />
 
         <div className="dash-sign-out">
