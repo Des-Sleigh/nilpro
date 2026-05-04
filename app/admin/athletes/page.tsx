@@ -53,7 +53,25 @@ export default async function AdminAthletesPage() {
       <h1 className="admin-h1">
         Athletes <em>{rows.length}</em>
       </h1>
-      <div className="admin-sub">All signed-up athletes</div>
+      <div
+        className="admin-sub"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "1rem",
+          flexWrap: "wrap",
+        }}
+      >
+        <span>All signed-up athletes</span>
+        <a
+          href="/admin/athletes/export"
+          download
+          className="btn btn--ghost btn--sm"
+        >
+          Download all as CSV ↓
+        </a>
+      </div>
 
       <AthletesTable rows={rows} />
     </>

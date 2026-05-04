@@ -5123,6 +5123,70 @@
   padding: 1.4rem 1.5rem;
 }
 
+/* ============================================================
+ * WAITLIST PAGE — /waitlist
+ * Pre-launch email capture
+ * ============================================================ */
+
+.waitlist-shell {
+  background: var(--bg);
+  min-height: 100vh;
+  padding: clamp(2rem, 5vw, 4rem) 0;
+}
+
+.waitlist-section {
+  padding: 1.5rem 0;
+}
+
+.waitlist-form {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 1.6rem 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.waitlist-form__error {
+  background: rgba(255, 58, 87, 0.1);
+  border: 1px solid var(--red);
+  border-radius: var(--r-sm);
+  padding: 0.7rem 1rem;
+  color: var(--red);
+  font-size: 0.9rem;
+}
+
+.waitlist-success {
+  background: var(--bg-card);
+  border: 1px solid var(--green);
+  border-radius: var(--r-md);
+  padding: 2rem 2.2rem;
+  text-align: center;
+  box-shadow:
+    0 0 0 1px rgba(0, 230, 118, 0.4),
+    0 0 32px rgba(0, 230, 118, 0.18);
+}
+
+.waitlist-success h2 {
+  font-family: var(--cond);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+}
+
+.waitlist-success p {
+  margin-top: 1rem;
+  color: var(--text-dim);
+  font-size: 1rem;
+  line-height: 1.55;
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Public profile page */
 .public-profile {
   background: var(--bg);

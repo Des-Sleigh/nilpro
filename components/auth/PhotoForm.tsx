@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { track } from "@/lib/analytics/track";
 
 type Props = {
   userId: string;
@@ -278,6 +279,7 @@ export function PhotoForm({
         return;
       }
 
+      track("photo_uploaded", { user_id: userId });
       router.push(nextHref);
       router.refresh();
     } catch (err) {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PhotoForm } from "@/components/auth/PhotoForm";
+import { track } from "@/lib/analytics/track";
 
 type Props = {
   memberId: string | null;
@@ -144,6 +145,7 @@ export function VerifiedCardSection({
               href={cardSrc}
               download={downloadName}
               className="btn btn--primary btn--lg"
+              onClick={() => track("card_downloaded", { format, member_id: memberId })}
             >
               Download {format === "story" ? "Story" : "Post"} →
             </a>
