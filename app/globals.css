@@ -5124,6 +5124,79 @@
 }
 
 /* ============================================================
+ * IN-DEVELOPMENT BANNER — site-wide top stripe
+ * Above the nav. Honest "we're pre-launch" notice + waitlist CTA.
+ * ============================================================ */
+.dev-banner {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 184, 0, 0.18) 0%,
+    rgba(0, 230, 118, 0.16) 100%
+  );
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+.dev-banner__inner {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.6rem var(--rail);
+  flex-wrap: wrap;
+}
+.dev-banner__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--gold);
+  color: var(--bg);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--r-pill);
+  font-size: 0.7rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.dev-banner__text {
+  color: var(--text-dim);
+  font-family: var(--body);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  flex: 1;
+  min-width: 220px;
+}
+.dev-banner__cta {
+  color: var(--green);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: none;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--green);
+  border-radius: var(--r-pill);
+  background: rgba(0, 230, 118, 0.08);
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.dev-banner__cta:hover {
+  background: var(--green);
+  color: var(--bg);
+}
+@media (max-width: 640px) {
+  .dev-banner__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding: 0.7rem var(--rail);
+  }
+}
+
+/* ============================================================
  * WAITLIST PAGE — /waitlist
  * Pre-launch email capture
  * ============================================================ */

@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { TickerBar } from "@/components/TickerBar";
 import { RevealOnScroll } from "@/components/RevealOnScroll";
 import { PostHogTracker } from "@/components/providers/PostHogTracker";
+import { DevBanner } from "@/components/DevBanner";
 import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
@@ -61,6 +62,7 @@ export default async function RootLayout({
       <body className="antialiased">
         <PostHogTracker />
         <RevealOnScroll />
+        <DevBanner />
         <TickerBar />
         <Nav isSignedIn={isSignedIn} />
         {children}
