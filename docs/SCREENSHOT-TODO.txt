@@ -1,0 +1,21 @@
+SCREENSHOT TODO (for Des)
+=========================
+
+The README references an image at:  docs/screenshot.png
+
+I (Claude) can't capture the live site, so please drop a real screenshot or GIF
+there yourself. Suggestions for the most impressive shot:
+
+  - The public state-rules explorer with the interactive U.S. map
+    (https://thenilpro.com/state-rules), OR
+  - An athlete dashboard showing the "Your state's rules" card, OR
+  - A verified athlete card / QR card image.
+
+Steps:
+  1. Take the screenshot (or record a short GIF).
+  2. Save it as exactly:  docs/screenshot.png   (a .gif also works if you
+     update the README image line to point at it).
+  3. Commit it:  git add docs/screenshot.png && git commit -m "Add README screenshot"
+
+Until then, the image link in the README will show as broken on GitHub.
+Recommended width ~1200px for a crisp render on the repo homepage.
