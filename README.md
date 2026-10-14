@@ -34,13 +34,14 @@ NILPro gives athletes a guided, compliance-aware path from signup to a shareable
 
 | Layer | Choice |
 |---|---|
-| Framework | Next.js 14 (App Router), React 18, TypeScript |
-| Data / auth | Supabase — PostgreSQL, Auth, Storage (13 SQL migrations) |
+| Framework | Next.js 15 (App Router), React 19, TypeScript |
+| Data / auth | Supabase — PostgreSQL, Auth, Storage (16 SQL migrations) |
 | Styling | Tailwind CSS |
 | Email | Resend (parent consent, verification, welcome) |
 | Geo / search | Google Places API; d3-geo + topojson for the U.S. map |
 | Card images | `next/og` (ImageResponse) + `qrcode` |
 | Observability | Sentry (instrumentation hook) + PostHog (product analytics) |
+| Quality | Vitest unit tests, ESLint, `tsc --noEmit`, GitHub Actions CI |
 
 ## Architecture
 
@@ -66,7 +67,7 @@ lib/
 ├── cards/                card template + font loading
 └── places/               business categories + Places search
 
-supabase/migrations/      0001–0013: schema, RLS, security hardening
+supabase/migrations/      0001–0016: schema, RLS, security hardening
 middleware.ts             refreshes the Supabase auth session on every request
 instrumentation.ts        Sentry init (Node + Edge runtimes)
 ```
@@ -76,15 +77,36 @@ The compliance logic is deliberately split in two: `nilStatus.ts` holds the simp
 ## What's notable (engineering)
 
 - **Compliance encoded as data, with provenance.** Each state rule carries a `sourceLabel` + `sourceUrl` and a `lastUpdated` date (e.g. Ohio cites OHSAA Bylaw 4-11, approved Nov 2025). Entries are marked `documented` so the UI can honestly show "documentation in progress" rather than a guess — and the dataset notes values should be confirmed with counsel before being relied upon.
-- **Defense-in-depth at the database layer.** Beyond row-level security, a `BEFORE UPDATE` trigger (`0012_athletes_protected_columns.sql`) blocks non-admin athletes from modifying protected fields — parent-approval state, subscription tier/status, `member_id`, admin notes — so a tampered client request can't grant consent, upgrade a plan, or rewrite an identity. Postgres has no native column-level write control; this implements it.
+- **Defense-in-depth at the database layer.** Beyond row-level security, `BEFORE INSERT`/`UPDATE` triggers (`0012`, `0015`) block non-admin athletes from writing protected fields — parent-approval state, subscription tier/status, `member_id`, admin notes — so a tampered client request can't grant consent, upgrade a plan, or rewrite an identity. Postgres has no native column-level write control; this implements it.
 - **Storage hardened against stored XSS.** Avatar uploads are restricted to JPEG/PNG/WebP with a 10 MB cap at the storage layer (`0011_avatars_security.sql`), closing an SVG/HTML-upload XSS vector on a user-served subdomain.
 - **Tamper-resistant public identities.** `member_id` is a zero-padded sequence value, immutable once assigned, and public profiles are read through a `SECURITY DEFINER` function that exposes only public columns — so the public card route never leaks private athlete data.
-- **Minor-safety as a first-class flow.** Parent consent uses a high-entropy UUID link *and* a rate-limited 6-digit code (email-deliverability fallback), with consent timestamps writable only by the service role.
+- **Minor-safety as a first-class flow.** Parent consent uses a high-entropy UUID link *and* a unique 6-digit code (email-deliverability fallback). Code entry is rate-limited in Postgres (per-IP and global windows) so the limit holds across serverless instances, and consent state is writable only by the service role. Social-account verification is likewise admin-only at the database layer.
 - **Production hygiene.** Auth session refresh in middleware on every request, Sentry across Node + Edge runtimes, and PostHog product analytics.
+
+## Running locally
+
+Requires Node.js 20.9+ and a Supabase project.
+
+```bash
+cp .env.example .env.local   # fill in Supabase, Resend, Places keys
+npm install
+npm run dev                  # http://localhost:3000
+```
+
+Apply the SQL in `supabase/migrations/` in order (Supabase SQL editor or `supabase db push`).
+
+```bash
+npm test            # unit tests (redirect safety, consent credentials, state-rules dataset integrity)
+npm run lint
+npm run typecheck
+npm run build
+```
+
+CI runs all four on every push and pull request.
 
 ## Status & roadmap
 
-NILPro is **live in beta** at [thenilpro.com](https://thenilpro.com) (~59 commits), running behind an "In Development" banner with an open waitlist.
+NILPro is **live in beta** at [thenilpro.com](https://thenilpro.com), running behind an "In Development" banner with an open waitlist.
 
 - **Working:** athlete onboarding, state-rules engine + explorer, parent consent, verified cards, admin console + CSV export, business targeting, analytics & error monitoring.
 - **In progress:** legal review / confirmation of the per-state ruleset before public reliance; subscription tiers (starter / pro / champion) are modeled and admin-tracked but self-serve billing is not yet wired; outreach / pitch pipeline.
