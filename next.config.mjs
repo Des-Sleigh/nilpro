@@ -1,4 +1,4 @@
-import { withSentryConfig } from "@sentry/nextjs";
+import { withSentryConfig } from "@sentry/nextjs/config";
 
 /**
  * Security headers applied to every response. Sourced from the security
@@ -15,13 +15,16 @@ import { withSentryConfig } from "@sentry/nextjs";
  *   older browsers that don't honor frame-ancestors.
  * - Permissions-Policy: opt out of risky browser features by default.
  */
+// React Refresh needs eval in development only; production bundles don't.
+const isDev = process.env.NODE_ENV !== "production";
+
 const SECURITY_HEADERS = [
   {
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
       // Next.js inlines small scripts; PostHog + Sentry need their hosts.
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://us.i.posthog.com https://*.ingest.us.sentry.io https://*.ingest.sentry.io",
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://us.i.posthog.com https://us-assets.i.posthog.com`,
       // Tailwind/inline styles + Google Fonts.
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       // Avatars come from Supabase storage (public bucket); cards from
@@ -30,7 +33,7 @@ const SECURITY_HEADERS = [
       // Google Fonts woff2 binaries.
       "font-src 'self' data: https://fonts.gstatic.com",
       // Supabase, PostHog, Sentry, Resend webhooks, Google Places.
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://us.i.posthog.com https://*.ingest.us.sentry.io https://*.ingest.sentry.io https://cdn.jsdelivr.net",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://us.i.posthog.com https://us-assets.i.posthog.com https://*.ingest.us.sentry.io https://*.ingest.sentry.io https://cdn.jsdelivr.net",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
@@ -72,8 +75,8 @@ export default sentryEnabled
       org: process.env.SENTRY_ORG,
       project: process.env.SENTRY_PROJECT,
       authToken: process.env.SENTRY_AUTH_TOKEN,
-      hideSourceMaps: true,
-      disableLogger: true,
-      automaticVercelMonitors: false,
+      webpack: {
+        treeshake: { removeDebugLogging: true },
+      },
     })
   : nextConfig;

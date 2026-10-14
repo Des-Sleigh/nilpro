@@ -105,6 +105,9 @@ export function VerifiedCardSection({
 
       <div className="vcard-section__body">
         <div className="vcard-section__preview">
+          {/* Server-rendered PNG from /api/cards; already sized for display,
+              so next/image optimization would only re-encode it. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={cardSrc}
             alt={`Verified athlete card · ${memberId}`}

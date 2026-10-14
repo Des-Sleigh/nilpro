@@ -103,6 +103,8 @@ export function CardTemplate({
         }}
       >
         {data.profilePhotoUrl ? (
+          // Satori (next/og) renders plain <img> only; next/image doesn't apply.
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={data.profilePhotoUrl}
             alt=""
@@ -373,6 +375,7 @@ export function CardTemplate({
               alignItems: "flex-end",
             }}
           >
+            {/* eslint-disable-next-line @next/next/no-img-element -- Satori */}
             <img
               src={data.qrDataUrl}
               alt=""

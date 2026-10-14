@@ -2,46 +2,18 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { clientIp, consumeRateLimit } from "@/lib/rateLimit";
+import { absoluteUrl } from "@/lib/site";
 import { sendParentApprovedAthleteEmail } from "@/lib/email/parentApprovedAthlete";
 
-// ---- In-memory token bucket, keyed by client IP. Best-effort only.
-// Code entry is the brute-forceable surface; the link path uses a UUID
-// so it doesn't need throttling. 10 attempts / 5 min per IP.
-const BUCKET_CAPACITY = 10;
-const BUCKET_WINDOW_SEC = 300; // 5 minutes
-const BUCKET_REFILL_PER_SEC = BUCKET_CAPACITY / BUCKET_WINDOW_SEC;
-type Bucket = { tokens: number; lastRefillAt: number };
-const buckets: Map<string, Bucket> = new Map();
-
-async function clientIp(): Promise<string> {
-  const hdrs = await headers();
-  const fwd = hdrs.get("x-forwarded-for");
-  if (fwd) {
-    const first = fwd.split(",")[0]?.trim();
-    if (first) return first;
-  }
-  return hdrs.get("x-real-ip") ?? "unknown";
-}
-
-function takeToken(ip: string): boolean {
-  const now = Date.now();
-  const b = buckets.get(ip) ?? {
-    tokens: BUCKET_CAPACITY,
-    lastRefillAt: now,
-  };
-  const elapsed = (now - b.lastRefillAt) / 1000;
-  b.tokens = Math.min(BUCKET_CAPACITY, b.tokens + elapsed * BUCKET_REFILL_PER_SEC);
-  b.lastRefillAt = now;
-  if (b.tokens < 1) {
-    buckets.set(ip, b);
-    return false;
-  }
-  b.tokens -= 1;
-  buckets.set(ip, b);
-  return true;
-}
+// Code entry is the brute-forceable surface (1M combinations); the link
+// path uses a UUID so it doesn't need throttling. The limit is stored in
+// Postgres so it holds across serverless instances: 10 attempts / 5 min
+// per IP, plus a global ceiling that caps distributed guessing.
+const CODE_ATTEMPTS_PER_IP = 10;
+const CODE_ATTEMPTS_GLOBAL = 300;
+const CODE_WINDOW_SEC = 300;
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -117,9 +89,7 @@ export async function approveByTokenAction(formData: FormData): Promise<void> {
         athleteFirstName: firstName,
         athleteEmail,
         parentFirstName,
-        dashboardUrl: `${
-          process.env.NEXT_PUBLIC_SITE_URL ?? "https://thenilpro.com"
-        }/dashboard`,
+        dashboardUrl: absoluteUrl("/dashboard"),
       });
     }
   } catch (err) {
@@ -142,7 +112,11 @@ export async function approveByTokenAction(formData: FormData): Promise<void> {
  *  the same approval card renders. */
 export async function lookUpByCodeAction(formData: FormData): Promise<void> {
   const ip = await clientIp();
-  if (!takeToken(ip)) {
+  const [ipOk, globalOk] = await Promise.all([
+    consumeRateLimit(`parent-code:ip:${ip}`, CODE_ATTEMPTS_PER_IP, CODE_WINDOW_SEC),
+    consumeRateLimit("parent-code:global", CODE_ATTEMPTS_GLOBAL, CODE_WINDOW_SEC),
+  ]);
+  if (!ipOk || !globalOk) {
     redirect("/parent/approve?error=rate_limited");
   }
 

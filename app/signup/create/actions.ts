@@ -1,9 +1,9 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { absoluteUrl } from "@/lib/site";
 
 export async function signUpAction(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
@@ -32,14 +32,12 @@ export async function signUpAction(formData: FormData) {
   }
 
   const supabase = await createClient();
-  const hdrs = await headers();
-  const origin = hdrs.get("origin") ?? "https://thenilpro.com";
 
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${origin}/auth/callback?next=/signup/profile`,
+      emailRedirectTo: absoluteUrl("/auth/callback?next=/signup/profile"),
       data: referralCode ? { referred_by_code: referralCode } : {},
     },
   });

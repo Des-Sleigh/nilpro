@@ -1,10 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { newParentToken } from "@/lib/email/parentTokens";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { absoluteUrl } from "@/lib/site";
+import { newParentToken, newUniqueParentCode } from "@/lib/email/parentTokens";
 import {
   sendParentConsentEmail,
   consentResultSent,
@@ -42,28 +43,44 @@ export async function resendParentConsentAction(): Promise<void> {
     return;
   }
 
-  // Keep the existing code if we have one; otherwise the row was created
-  // before migration 0008 — bail rather than send a link without a code.
-  const code = (athlete.parent_approval_code as string | null) ?? null;
+  // The consent columns are protected by the 0012 trigger, so an update
+  // through the athlete's own session is rejected. Ownership was
+  // established above (row read via RLS for the signed-in user); the
+  // writes themselves go through the service role.
+  const admin = createAdminClient();
+
+  // Keep the existing code so anything already shared with the parent
+  // still works. Rows created before migration 0008 (or whose duplicate
+  // code was cleared by 0014) get a fresh one.
+  let code = (athlete.parent_approval_code as string | null) ?? null;
   if (!code) {
-    revalidatePath("/dashboard");
-    return;
+    try {
+      code = await newUniqueParentCode(admin);
+    } catch (err) {
+      console.error(
+        `[dashboard/resend] ${err instanceof Error ? err.message : String(err)}`
+      );
+      redirect("/dashboard?email_resent=0");
+    }
   }
 
   const newToken = newParentToken();
-  await supabase
+  const { error: tokenErr } = await admin
     .from("athletes")
     .update({
       parent_approval_token: newToken,
+      parent_approval_code: code,
       parent_approval_token_sent_at: new Date().toISOString(),
     })
     .eq("id", user.id);
 
-  const hdrs = await headers();
-  const origin =
-    hdrs.get("origin") ??
-    (process.env.NEXT_PUBLIC_SITE_URL ?? "https://thenilpro.com");
-  const approveUrl = `${origin}/parent/approve?token=${newToken}`;
+  // Never email a link whose token didn't persist — it would 404.
+  if (tokenErr) {
+    console.error(`[dashboard/resend] token rotate failed: ${tokenErr.message}`);
+    redirect("/dashboard?email_resent=0");
+  }
+
+  const approveUrl = absoluteUrl(`/parent/approve?token=${newToken}`);
 
   const result = await sendParentConsentEmail({
     athleteFirstName: athlete.first_name as string,
@@ -80,13 +97,16 @@ export async function resendParentConsentAction(): Promise<void> {
     ? "sent"
     : "failed";
 
-  await supabase
+  const { error: statusErr } = await admin
     .from("athletes")
     .update({ parent_approval_email_status: status })
     .eq("id", user.id);
+  if (statusErr) {
+    console.error(`[dashboard/resend] status write failed: ${statusErr.message}`);
+  }
 
   revalidatePath("/dashboard");
   // Drop a flag in the URL so the dashboard can flip the resend button
   // to the green "✓ Email sent" pill for a moment after this returns.
-  redirect("/dashboard?email_resent=1");
+  redirect(`/dashboard?email_resent=${status === "sent" ? 1 : 0}`);
 }

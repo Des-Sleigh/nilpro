@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import { safeRedirectPath } from "@/lib/auth/redirect";
 
 /**
  * Single landing pad for every auth email.
@@ -19,19 +20,6 @@ import { createClient } from "@/lib/supabase/server";
  * dashboard, except for password recovery where we send the athlete to
  * /update-password so they can set a new one.
  */
-/**
- * Whitelist a `next` redirect target to a same-origin path.
- * Blocks open-redirect via `//evil.com`, `/\evil.com`, full URLs, etc.
- * Returns null if the input is not a safe `/`-relative path.
- */
-function safeRedirectPath(next: string | null): string | null {
-  if (!next || typeof next !== "string") return null;
-  if (!next.startsWith("/") || next.startsWith("//") || next.startsWith("/\\")) {
-    return null;
-  }
-  return next;
-}
-
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
