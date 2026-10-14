@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import crypto from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { consumeRateLimit } from "@/lib/rateLimit";
 
 const VALID_LEVELS = new Set(["HS", "College", "Parent", "Coach", "Business"]);
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -44,6 +45,12 @@ export async function joinWaitlistAction(formData: FormData): Promise<void> {
     "unknown";
   const ipHash = crypto.createHash("sha256").update(ipRaw).digest("hex").slice(0, 32);
   const userAgent = cap(hdrs.get("user-agent") ?? "", 256);
+
+  // Public, unauthenticated form: cap signups per IP so it can't be used
+  // to flood the table. 5 per 10 minutes is well above real usage.
+  if (!(await consumeRateLimit(`waitlist:${ipHash}`, 5, 600))) {
+    fail("Too many attempts — try again in a few minutes.");
+  }
 
   const sb = createAdminClient();
   const { error } = await sb.from("waitlist_signups").insert({

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { isSameOrigin } from "@/lib/auth/redirect";
 
 /**
  * Sign the user out. POST-only so it can't be triggered by a stray
@@ -11,12 +12,12 @@ export async function POST(request: Request) {
   const requestUrl = new URL(request.url);
   const requestOrigin = requestUrl.origin;
   const senderOrigin =
-    request.headers.get("origin") || request.headers.get("referer") || "";
+    request.headers.get("origin") || request.headers.get("referer");
 
   // Allow sign-out from same-origin only. Empty Origin header (rare) is
   // treated as suspect — the standard browser behavior is to send Origin
   // for POSTs.
-  if (!senderOrigin || !senderOrigin.startsWith(requestOrigin)) {
+  if (!isSameOrigin(senderOrigin, requestOrigin)) {
     return new NextResponse("Forbidden", { status: 403 });
   }
 

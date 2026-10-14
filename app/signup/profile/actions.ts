@@ -2,14 +2,16 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
+import crypto from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
-import { newParentToken, newParentCode } from "@/lib/email/parentTokens";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { newParentToken, newUniqueParentCode } from "@/lib/email/parentTokens";
 import {
   sendParentConsentEmail,
   consentResultSent,
 } from "@/lib/email/parentConsent";
 import { hsNilStatusFor, stateName } from "@/lib/states/nilStatus";
+import { absoluteUrl } from "@/lib/site";
 
 const VALID_LEVELS = ["D1", "D2", "D3", "NAIA", "JUCO", "HS", "Club"] as const;
 type Level = (typeof VALID_LEVELS)[number];
@@ -33,7 +35,7 @@ function genReferralCode(): string {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let code = "";
   for (let i = 0; i < 8; i++) {
-    code += alphabet[Math.floor(Math.random() * alphabet.length)];
+    code += alphabet[crypto.randomInt(alphabet.length)];
   }
   return code;
 }
@@ -116,11 +118,19 @@ export async function saveProfileAction(formData: FormData) {
   }
   const hsStateRestricted = level === "HS" && hsStatus === "partial";
 
+  // Server-controlled writes (the athlete row itself, consent state) use
+  // the service role: clients can't insert into `athletes` (migration
+  // 0015) and consent columns are trigger-protected (0012). Everything
+  // written below has been validated above.
+  const admin = createAdminClient();
+
   // Generate a referral code; retry a few times if we hit a collision.
+  // Must use the service role — an RLS-scoped read only sees this
+  // athlete's own row, so it could never detect a collision.
   let referralCode = "";
   for (let attempt = 0; attempt < 5; attempt++) {
     const candidate = genReferralCode();
-    const { data: existing } = await supabase
+    const { data: existing } = await admin
       .from("athletes")
       .select("id")
       .eq("referral_code", candidate)
@@ -139,10 +149,20 @@ export async function saveProfileAction(formData: FormData) {
   // both go in on the initial INSERT (single round-trip, no race window
   // where a row exists without its consent state).
   const parentToken = isMinor ? newParentToken() : null;
-  const parentCode = isMinor ? newParentCode() : null;
+  let parentCode: string | null = null;
+  if (isMinor) {
+    try {
+      parentCode = await newUniqueParentCode(admin);
+    } catch (err) {
+      console.error(
+        `[signup/profile] ${err instanceof Error ? err.message : String(err)}`
+      );
+      fail("Something went wrong on our end — please try again.");
+    }
+  }
   const parentSentAt = isMinor ? new Date().toISOString() : null;
 
-  const { error } = await supabase.from("athletes").insert({
+  const { error } = await admin.from("athletes").insert({
     id: user.id,
     first_name: firstName,
     last_name: lastName,
@@ -172,18 +192,23 @@ export async function saveProfileAction(formData: FormData) {
     referred_by_code: referredBy,
   });
 
-  if (error) fail(error.message);
+  if (error) {
+    // Don't surface raw Postgres messages (constraint names, columns) to
+    // the athlete; the detail goes to the server log instead.
+    console.error(`[signup/profile] athlete insert failed: ${error.message}`);
+    fail(
+      error.code === "23505"
+        ? "Looks like your profile already exists — try signing in again."
+        : "We couldn't save your profile — please try again."
+    );
+  }
 
   // Fire the consent email if this athlete is a minor. We never block the
   // signup on email delivery — if Resend is misconfigured or the send
   // fails, the athlete still gets the fallback code in their dashboard
   // banner. We do record the outcome on the row so admins can see it.
   if (isMinor && parentEmail && parentFirstName && parentToken && parentCode) {
-    const hdrs = await headers();
-    const origin =
-      hdrs.get("origin") ??
-      (process.env.NEXT_PUBLIC_SITE_URL ?? "https://thenilpro.com");
-    const approveUrl = `${origin}/parent/approve?token=${parentToken}`;
+    const approveUrl = absoluteUrl(`/parent/approve?token=${parentToken}`);
 
     const result = await sendParentConsentEmail({
       athleteFirstName: firstName,
@@ -202,10 +227,15 @@ export async function saveProfileAction(formData: FormData) {
 
     // Best-effort status write — if this fails the athlete still gets
     // the code on their dashboard, so we don't surface the error.
-    await supabase
+    const { error: statusErr } = await admin
       .from("athletes")
       .update({ parent_approval_email_status: status })
       .eq("id", user.id);
+    if (statusErr) {
+      console.error(
+        `[signup/profile] email status write failed: ${statusErr.message}`
+      );
+    }
   }
 
   revalidatePath("/", "layout");

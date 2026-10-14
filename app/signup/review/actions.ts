@@ -2,11 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CATEGORIES, categoryFromPlaceType } from "@/lib/places/categories";
 import { sendWelcomeEmail } from "@/lib/email/welcome";
+import { absoluteUrl } from "@/lib/site";
 
 function fail(msg: string): never {
   redirect(`/signup/review?error=${encodeURIComponent(msg)}`);
@@ -113,14 +113,10 @@ export async function submitReviewAction(formData: FormData) {
       const athleteEmail = userRes.data?.user?.email ?? null;
 
       if (firstName && athleteEmail) {
-        const hdrs = await headers();
-        const origin =
-          hdrs.get("origin") ??
-          (process.env.NEXT_PUBLIC_SITE_URL ?? "https://thenilpro.com");
         await sendWelcomeEmail({
           athleteFirstName: firstName,
           athleteEmail,
-          dashboardUrl: `${origin}/dashboard`,
+          dashboardUrl: absoluteUrl("/dashboard"),
         });
       }
     } catch (err) {

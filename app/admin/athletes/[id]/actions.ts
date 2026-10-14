@@ -1,10 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { requireAdmin } from "@/lib/auth/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { newParentToken, newParentCode } from "@/lib/email/parentTokens";
+import { newParentToken, newUniqueParentCode } from "@/lib/email/parentTokens";
+import { absoluteUrl } from "@/lib/site";
 import {
   sendParentConsentEmail,
   consentResultSent,
@@ -76,9 +76,7 @@ export async function verifyAthleteAction(formData: FormData) {
         await sendVerificationApprovedEmail({
           athleteFirstName: firstName,
           athleteEmail,
-          dashboardUrl: `${
-            process.env.NEXT_PUBLIC_SITE_URL ?? "https://thenilpro.com"
-          }/dashboard`,
+          dashboardUrl: absoluteUrl("/dashboard"),
         });
       }
     } catch (err) {
@@ -157,10 +155,11 @@ export async function adminResendParentConsentAction(formData: FormData) {
   }
 
   const code =
-    (athlete.parent_approval_code as string | null) ?? newParentCode();
+    (athlete.parent_approval_code as string | null) ??
+    (await newUniqueParentCode(sb));
   const newToken = newParentToken();
 
-  await sb
+  const { error: tokenErr } = await sb
     .from("athletes")
     .update({
       parent_approval_token: newToken,
@@ -168,12 +167,11 @@ export async function adminResendParentConsentAction(formData: FormData) {
       parent_approval_token_sent_at: new Date().toISOString(),
     })
     .eq("id", athleteId);
+  if (tokenErr) {
+    throw new Error(`Couldn't rotate consent token: ${tokenErr.message}`);
+  }
 
-  const hdrs = await headers();
-  const origin =
-    hdrs.get("origin") ??
-    (process.env.NEXT_PUBLIC_SITE_URL ?? "https://thenilpro.com");
-  const approveUrl = `${origin}/parent/approve?token=${newToken}`;
+  const approveUrl = absoluteUrl(`/parent/approve?token=${newToken}`);
 
   const result = await sendParentConsentEmail({
     athleteFirstName: athlete.first_name as string,

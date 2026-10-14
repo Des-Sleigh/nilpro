@@ -11,6 +11,7 @@ import * as Sentry from "@sentry/nextjs";
 import { CardTemplate, type CardFormat } from "@/lib/cards/template";
 import { getCardFonts } from "@/lib/cards/fonts";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { absoluteUrl } from "@/lib/site";
 
 export const runtime = "nodejs";
 
@@ -63,8 +64,7 @@ export async function GET(
     const row = data as ProfileRow;
 
     // Generate QR pointing to the public profile page.
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://thenilpro.com";
-    const profileUrl = `${baseUrl}/a/${memberId}`;
+    const profileUrl = absoluteUrl(`/a/${memberId}`);
     let qrDataUrl: string;
     try {
       qrDataUrl = await QRCode.toDataURL(profileUrl, {
